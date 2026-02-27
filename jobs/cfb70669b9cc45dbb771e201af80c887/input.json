@@ -1,0 +1,360 @@
+{
+  "metadata": {
+    "title": "JavaScript",
+    "subtitle": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Primeiros passos e o ambiente mental do JavaScript"
+    },
+    {
+      "type": "paragraph",
+      "text": "Parte 1 — Fundamentos, contexto real e modelo mental inicial"
+    },
+    {
+      "type": "paragraph",
+      "text": "Elemento gráfico (conceitual): um diagrama minimalista em 3 camadas — **Código (source)**, **Motor JS (engine)**, **Ambiente (host)** — mostrando que JavaScript roda “dentro” de um host (navegador/Node) e não sozinho."
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Sumário interno da Parte 1"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1. Contextualização do problema real: por que “aprender JS” costuma travar",
+        "2. Fundamentação: o que é JavaScript (de verdade) e onde ele roda",
+        "3. Modelo mental correto: engine, runtime, host e o que significa “executar”",
+        "4. Primeiros passos práticos: REPL, console, arquivos e feedback rápido",
+        "5. Atividades práticas (Parte 1)",
+        "Referências (Parte 1)"
+      ]
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Contextualização do problema real: por que “aprender JS” costuma travar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando alguém diz que quer “aprender JavaScript”, normalmente está pensando em uma dessas metas: criar páginas interativas no navegador, automatizar tarefas, construir APIs no servidor com Node.js, ou simplesmente entender o código que já aparece em projetos e tutoriais. O problema é que JavaScript tem uma característica que engana iniciantes: você consegue escrever algo que “parece funcionar” rapidamente — mas, logo depois, encontra comportamentos que não batem com a sua intuição."
+    },
+    {
+      "type": "paragraph",
+      "text": "Exemplos clássicos aparecem cedo: comparar valores e obter resultados estranhos; lidar com variáveis que parecem existir antes de serem declaradas; usar funções e ver o `this` “mudar” sem você pedir; e, principalmente, mexer com assíncrono e sentir que a ordem do mundo foi embaralhada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esses problemas não são “defeitos da sua inteligência”. São sintomas de um modelo mental incompleto. E aqui está a boa notícia: JavaScript é muito mais previsível do que parece — desde que você entenda (a) o que a linguagem é, (b) onde ela roda, e (c) quais são as regras de execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste capítulo, a meta é construir o terreno firme: você vai entender o mapa do ecossistema (engine/runtime/host), montar um fluxo de prática que te dá feedback rápido, e aprender a separar o que é **linguagem** do que é **ambiente**. Essa separação evita 80% das confusões iniciais."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Um acordo honesto para o estudo pessoal"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Você não precisa decorar tudo. Precisa entender por que as coisas acontecem.",
+        "Você vai praticar em micro-experimentos curtos (1–5 minutos) e observar resultados.",
+        "Você vai escrever pequenas anotações do tipo “quando X acontece, a regra é Y”.",
+        "Você vai errar — e isso faz parte do método: erro em JS é um professor rápido."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nota 1: “Aprender todos os conceitos” não significa esgotar cada API existente. Significa dominar os conceitos estruturais: valores e tipos, escopo, funções, protótipos, módulos, assíncrono, e as convenções modernas que tornam seu código sustentável."
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Fundamentação: o que é JavaScript (de verdade) e onde ele roda"
+    },
+    {
+      "type": "paragraph",
+      "text": "JavaScript é uma linguagem de programação com especificação formal chamada **ECMAScript**. A especificação descreve a sintaxe (como o código é escrito) e a semântica (o que significa executar cada construção). Quando você aprende “a linguagem”, você está, no fundo, aprendendo esse conjunto de regras."
+    },
+    {
+      "type": "paragraph",
+      "text": "Mas existe um detalhe decisivo: JavaScript não roda no vácuo. Para seu código executar, ele precisa de um **motor** (engine) e de um **ambiente hospedeiro** (host). O motor interpreta/compila e executa o JavaScript; o host fornece APIs do mundo real (como manipular a página, fazer requisições, ler arquivos, abrir sockets)."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Linguagem vs. ambiente: o que confunde iniciantes"
+    },
+    {
+      "type": "paragraph",
+      "text": "No navegador, você usa `document`, `window`, `fetch`, `setTimeout`. Em Node.js, você usa `fs`, `process`, `http`, `Buffer`. É comum achar que tudo isso “é JavaScript”. Não é. Essas são APIs do host. A linguagem é o que está por trás: funções, objetos, escopo, protótipos, promises, etc."
+    },
+    {
+      "type": "paragraph",
+      "text": "Pense assim:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "**ECMAScript (linguagem):** define `let`, `const`, funções, classes, promises, módulos, operadores, objetos, arrays, etc.",
+        "**Engine (motor):** executa a linguagem (ex.: V8, SpiderMonkey, JavaScriptCore).",
+        "**Host (ambiente):** oferece APIs (Browser: DOM, Web APIs; Node: sistema operacional, rede, arquivos)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nota 2: ao longo do livro, vamos distinguir claramente: “isso é regra da linguagem” vs “isso é API do ambiente”. Você vai perceber que isso reduz drasticamente a sensação de caos."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "O que significa “executar” em JavaScript"
+    },
+    {
+      "type": "paragraph",
+      "text": "Executar um programa, aqui, significa: (1) carregar o código-fonte, (2) analisá-lo (parsing), (3) preparar estruturas internas (escopos, funções, variáveis), e (4) avaliar as instruções em uma ordem determinada. Motores modernos fazem otimizações e JIT compilation, mas o seu modelo mental inicial não precisa disso agora — só precisa entender que há uma fase de **preparação** e uma fase de **execução**."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa distinção vai explicar, mais adiante, fenômenos como hoisting e TDZ (zona morta temporal). Por enquanto, guarde a ideia: o motor não “vai lendo e fazendo” de maneira ingênua. Ele prepara o terreno."
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Modelo mental correto: engine, runtime, host e o que significa “executar”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vamos montar um modelo mental simples — e correto o suficiente para você evoluir sem tropeçar nos mesmos buracos."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.1 Engine (motor) — quem entende a linguagem"
+    },
+    {
+      "type": "paragraph",
+      "text": "A engine é responsável por entender ECMAScript e executar seu programa. Ela cria estruturas internas (como o *call stack*), gerencia memória (heap/garbage collector) e aplica as regras da linguagem."
+    },
+    {
+      "type": "list",
+      "items": [
+        "**Call stack:** uma pilha de chamadas onde funções entram e saem conforme são chamadas e retornam.",
+        "**Heap:** área de memória onde objetos e estruturas vivem.",
+        "**Garbage collector:** mecanismo que limpa memória de coisas que não são mais alcançáveis."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Você não precisa dominar GC agora, mas precisa saber que objetos vivem no heap e que referências importam — isso vai aparecer quando falarmos de mutabilidade."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.2 Host (ambiente) — quem dá poderes ao programa"
+    },
+    {
+      "type": "paragraph",
+      "text": "A engine sozinha executa a linguagem, mas não “abre um arquivo” nem “desenha um botão”. Isso vem do host. No navegador, o host é o runtime do browser; no servidor, o host é o runtime do Node.js (que, por baixo, conversa com o sistema operacional)."
+    },
+    {
+      "type": "paragraph",
+      "text": "O host também participa do assíncrono: timers, IO, rede. Ele agenda eventos, entrega callbacks, resolve operações. Por isso, entender assíncrono exige entender a parceria engine + host."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.3 Runtime — o conjunto em funcionamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando alguém diz “o runtime do JavaScript”, geralmente está se referindo ao pacote completo rodando: engine + host + APIs + filas de tarefas. No navegador, isso inclui Web APIs e o event loop do ambiente; no Node, inclui libuv, timers, IO e integrações."
+    },
+    {
+      "type": "paragraph",
+      "text": "Modelo mental em uma frase:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Você escreve **código** (ECMAScript).",
+        "A **engine** executa regras da linguagem (stack/heap).",
+        "O **host** fornece APIs e agenda eventos (IO/timers).",
+        "O **runtime** é a soma disso em operação."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.4 O que você controla e o que você não controla (ainda)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro comum é achar que o programa sempre segue a ordem visual do arquivo. Em código síncrono, geralmente sim. Mas quando você usa APIs do host (como timers e IO), você está pedindo ao ambiente: “faça isso e me avise depois”. A engine continua executando outras coisas, e o host entrega o resultado quando estiver pronto. Esse é o coração do assíncrono."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso este livro te treina com micro-experimentos: você vai observar a diferença entre o que é imediato e o que é agendado."
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Primeiros passos práticos: REPL, console, arquivos e feedback rápido"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você vai aprender mais rápido se conseguir testar ideias em segundos. Para estudo pessoal, recomendo dois modos de prática em paralelo: (1) um REPL (interativo) e (2) um arquivo `.js` executado por um runtime (Node ou navegador)."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.1 Modo REPL (experimentos de 10 linhas) — a bancada de laboratório"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um REPL é um ambiente em que você digita uma expressão, executa, vê o resultado e repete. Use-o para entender valores, tipos, coerções e pequenas funções. A regra é: experimento curto, hipótese clara, observação do resultado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Exemplo (conceitual): testar `typeof`, testar igualdade, testar criação de objeto. Você vai fazer isso muito no Capítulo 2."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.2 Modo arquivo (programa mínimo) — o treino de “projeto de verdade”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Crie um arquivo `index.js` e rode com um comando do runtime que você tiver. O importante aqui é organizar código em blocos, dar nomes, e ver como o fluxo se comporta com múltiplas linhas e funções. Esse modo prepara você para módulos e projetos maiores."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.3 Um ritual de estudo que funciona"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escolha um conceito (ex.: “o que é uma expressão?”).",
+        "Crie 2–3 micro-experimentos no REPL.",
+        "Escreva 1 pequeno arquivo com esse conceito em contexto (10–30 linhas).",
+        "Anote 3 regras em linguagem simples (o seu “manual pessoal”).",
+        "Finalize com 1 atividade prática (exercício) e critérios de sucesso."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nota 3: A constância vence a maratona. Melhor 30 minutos por dia com feedback real do que 5 horas em um sábado com fadiga."
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Atividades práticas (Parte 1)"
+    },
+    {
+      "type": "paragraph",
+      "text": "As atividades abaixo são para consolidar o modelo mental e criar hábito de experimentação. Critério de sucesso: você deve conseguir explicar o que aconteceu sem apelar para “porque sim”."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Atividade 1 — Linguagem vs. Host (observação guiada)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Liste 10 coisas que você acha que “são JavaScript”.",
+        "Reclassifique em duas colunas: “Regra da linguagem (ECMAScript)” vs “API do ambiente (host)”.",
+        "Explique por que `Promise` fica na linguagem, mas `fetch` (no browser) é do host."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Critério de sucesso: suas classificações não precisam ser perfeitas agora, mas você deve justificar com a ideia engine/host."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Atividade 2 — O ciclo “hipótese → experimento → anotação”"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Hipótese: “`typeof` me diz o tipo do valor”.",
+        "Experimente com: número, string, boolean, undefined, null, objeto literal e função.",
+        "Anote onde sua hipótese falhou e refine a regra."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Critério de sucesso: produzir uma regra mais precisa do que a hipótese inicial."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Atividade 3 — Programa mínimo com logs (fluxo de execução)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Crie um arquivo com 3 funções que se chamam em cadeia (A chama B, B chama C).",
+        "Coloque logs antes e depois de cada chamada.",
+        "Explique como a call stack se comporta (quem entra, quem sai)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Critério de sucesso: você descreve a ordem dos logs e relaciona com “empilha/desempilha”."
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Referências (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "ECMA-262 (Especificação ECMAScript) — referência formal da linguagem.",
+        "MDN Web Docs — referência prática do ecossistema no navegador.",
+        "Documentação do Node.js — visão do host no servidor."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nota 4: referências formais são âncoras para quando surgir dúvida. Você não precisa ler tudo agora — mas precisa saber que existe um “texto base” por trás da linguagem."
+    }
+  ]
+}
