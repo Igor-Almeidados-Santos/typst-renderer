@@ -1,0 +1,292 @@
+openapi: 3.1.0
+info:
+  title: Typst Renderer API
+  version: "2.0.0"
+  description: >
+    Minimal schema for the Custom GPT workflow that generates a cover image and
+    renders PDFs with Typst.
+
+servers:
+  - url: http://127.0.0.1:8000
+
+paths:
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /templates:
+    get:
+      operationId: getTemplates
+      summary: List available templates
+      responses:
+        "200":
+          description: Templates loaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplatesResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /generate-cover-image:
+    post:
+      operationId: generateCoverImage
+      summary: Generate a cover background image and return a public URL
+      description: >
+        Generates a cover background image without embedded text. The image is saved
+        by the API and returned as a public URL that can be used in
+        metadata.cover_image_url during PDF rendering. The backend may use a local
+        generator, the native OpenAI Images API, or another configured provider.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateCoverImageRequest"
+      responses:
+        "200":
+          description: Cover image generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateCoverImageResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Generation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /render-pdf-wrapped:
+    post:
+      operationId: renderPdfWrapped
+      summary: Render one PDF using Typst (wrapped payload)
+      description: >
+        Renders a PDF from template_id and a wrapped editorial payload. Use
+        metadata.mode = cover, toc, or part.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenderRequestWrapped"
+      responses:
+        "200":
+          description: PDF rendered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenderResponse"
+        "400":
+          description: Invalid payload or template not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Render error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+
+    TemplatesResponse:
+      type: object
+      required:
+        - templates
+        - default
+      properties:
+        templates:
+          type: array
+          items:
+            type: string
+        default:
+          type: string
+
+    BrandPalette:
+      type: object
+      required:
+        - brand_primary
+        - brand_secondary
+        - brand_accent
+        - brand_ink
+        - brand_muted
+        - brand_line
+        - brand_tint
+      properties:
+        brand_primary:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        brand_secondary:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        brand_accent:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        brand_ink:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        brand_muted:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        brand_line:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        brand_tint:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+
+    Typography:
+      type: object
+      required:
+        - font_title
+        - font_body
+        - font_mono
+      properties:
+        font_title:
+          type: string
+        font_body:
+          type: string
+        font_mono:
+          type: string
+
+    GenerateCoverImageRequest:
+      type: object
+      required:
+        - book_title
+        - visual_concept
+        - illustration_brief
+        - palette
+        - typography
+      properties:
+        book_title:
+          type: string
+        subtitle:
+          type: string
+        visual_concept:
+          type: string
+        illustration_brief:
+          type: string
+        palette:
+          $ref: "#/components/schemas/BrandPalette"
+        typography:
+          $ref: "#/components/schemas/Typography"
+        style_keywords:
+          type: array
+          items:
+            type: string
+        aspect_ratio:
+          type: string
+          pattern: "^[0-9]+:[0-9]+$"
+          default: "2:3"
+        output_format:
+          type: string
+          enum: [png, jpg, jpeg, webp]
+          default: png
+        render_text_in_image:
+          type: boolean
+          default: false
+        safe_mode:
+          type: boolean
+          default: true
+
+    GenerateCoverImageResponse:
+      type: object
+      required:
+        - success
+        - image_url
+        - mime_type
+        - prompt_used
+      properties:
+        success:
+          type: boolean
+        image_url:
+          type: string
+        mime_type:
+          type: string
+        prompt_used:
+          type: string
+
+    RenderOptions:
+      type: object
+      properties:
+        paper_size:
+          type: string
+          default: A4
+        pdf_standard:
+          type: string
+
+    RenderWrappedPayload:
+      type: object
+      required:
+        - document
+      properties:
+        document:
+          type: object
+          description: Editorial JSON with metadata and content.
+        options:
+          $ref: "#/components/schemas/RenderOptions"
+
+    RenderRequestWrapped:
+      type: object
+      required:
+        - template_id
+        - payload
+      properties:
+        template_id:
+          type: string
+          description: Use getTemplates.default first. Preferred fallback is livro_tecnico_v2.
+        payload:
+          $ref: "#/components/schemas/RenderWrappedPayload"
+
+    RenderResponse:
+      type: object
+      required:
+        - success
+        - file_url
+        - warnings
+      properties:
+        success:
+          type: boolean
+        file_url:
+          type: string
+        warnings:
+          type: array
+          items:
+            type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string

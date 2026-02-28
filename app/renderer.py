@@ -25,6 +25,34 @@ def list_templates() -> list[str]:
     return sorted([p.name for p in TEMPLATES_DIR.iterdir() if p.is_dir()])
 
 
+def _extension_from_content_type(content_type: str | None) -> str | None:
+    if not content_type:
+        return None
+
+    value = content_type.lower()
+    if "jpeg" in value or "jpg" in value:
+        return ".jpg"
+    if "png" in value:
+        return ".png"
+    if "webp" in value:
+        return ".webp"
+    return None
+
+
+def _extension_from_image_bytes(data: bytes) -> str | None:
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return ".png"
+    if data.startswith(b"\xff\xd8\xff"):
+        return ".jpg"
+    if data.startswith(b"RIFF") and data[8:12] == b"WEBP":
+        return ".webp"
+    return None
+
+
+def _pick_cover_extension(data: bytes, content_type: str | None = None) -> str:
+    return _extension_from_content_type(content_type) or _extension_from_image_bytes(data) or ".png"
+
+
 def _validate_document(doc: dict[str, Any]) -> list[str]:
     warnings: list[str] = []
 
@@ -56,6 +84,24 @@ def _validate_document(doc: dict[str, Any]) -> list[str]:
     return warnings
 
 
+def _cover_usage_warnings(template_id: str, doc: dict[str, Any]) -> list[str]:
+    metadata = doc.get("metadata", {}) if isinstance(doc, dict) else {}
+    if not isinstance(metadata, dict):
+        return []
+
+    has_cover_image = bool(metadata.get("cover_image_base64") or metadata.get("cover_image_url"))
+    if not has_cover_image:
+        return []
+
+    if template_id == "livro_tecnico_v1":
+        return ["Template livro_tecnico_v1 nao usa imagem de capa; use livro_tecnico_v2 com metadata.mode = 'cover'."]
+
+    if template_id == "livro_tecnico_v2" and metadata.get("mode", "part") != "cover":
+        return ["Imagem de capa enviada, mas metadata.mode nao e 'cover'; a imagem nao aparecera nesta renderizacao."]
+
+    return []
+
+
 def _write_cover_image(job_dir: Path, document: dict[str, Any]) -> list[str]:
     """
     Suporta:
@@ -77,9 +123,13 @@ def _write_cover_image(job_dir: Path, document: dict[str, Any]) -> list[str]:
     if b64:
         try:
             s = b64.strip()
+            content_type = None
             if "base64," in s:
-                s = s.split("base64,", 1)[1]
+                prefix, s = s.split("base64,", 1)
+                if prefix.startswith("data:"):
+                    content_type = prefix[5:].split(";", 1)[0].strip().lower()
             data = base64.b64decode(s, validate=False)
+            out_path = job_dir / f"cover{_pick_cover_extension(data, content_type)}"
             out_path.write_bytes(data)
             meta["cover_image_path"] = out_path.name
         except Exception as e:
@@ -91,14 +141,7 @@ def _write_cover_image(job_dir: Path, document: dict[str, Any]) -> list[str]:
             with urlopen(req, timeout=25) as resp:
                 data = resp.read()
                 ctype = (resp.headers.get("Content-Type") or "").lower()
-
-            # tenta escolher extensão pelo content-type
-            if "jpeg" in ctype or "jpg" in ctype:
-                out_path = job_dir / "cover.jpg"
-            elif "webp" in ctype:
-                out_path = job_dir / "cover.webp"
-            else:
-                out_path = job_dir / "cover.png"
+            out_path = job_dir / f"cover{_pick_cover_extension(data, ctype)}"
 
             out_path.write_bytes(data)
             meta["cover_image_path"] = out_path.name
@@ -117,6 +160,7 @@ def render_typst(template_id: str, document: dict[str, Any], pdf_standard: str |
         raise FileNotFoundError(f"Template não encontrado: {template_id}")
 
     warnings = _validate_document(document)
+    warnings.extend(_cover_usage_warnings(template_id, document))
 
     job_id = uuid.uuid4().hex
     job_dir = JOBS_DIR / job_id
