@@ -1,0 +1,410 @@
+{
+  "metadata": {
+    "book_title": "Teste Técnico",
+    "title": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Teste técnico: validação de geração de PDF",
+    "part_number": 1,
+    "part_title": "Fundamentos e critérios de validação",
+    "brand_primary": [
+      11,
+      59,
+      140
+    ],
+    "brand_secondary": [
+      17,
+      103,
+      177
+    ],
+    "brand_accent": [
+      242,
+      193,
+      78
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      96,
+      112,
+      138
+    ],
+    "brand_line": [
+      215,
+      226,
+      242
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      11,
+      18,
+      32
+    ],
+    "color_heading": [
+      11,
+      59,
+      140
+    ],
+    "color_heading_muted": [
+      17,
+      103,
+      177
+    ],
+    "color_heading_rule": [
+      215,
+      226,
+      242
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      230,
+      237,
+      247
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      26,
+      46
+    ],
+    "color_code_header_text": [
+      185,
+      199,
+      230
+    ],
+    "color_table_header_bg": [
+      11,
+      59,
+      140
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      11,
+      18,
+      32
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Teste técnico: validação de geração de PDF"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e critérios de validação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em produção, um PDF não é “um arquivo que abre”. Ele é um artefato de contrato: a mesma entrada deve produzir a mesma saída (dentro de tolerâncias definidas), com legibilidade, consistência e rastreabilidade. Esta parte estabelece o que validar e por quê — antes de discutir como automatizar."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: o que um “PDF válido” precisa entregar em produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Times costumam descobrir problemas de PDF tarde: quando clientes imprimem, quando auditorias exigem metadados, quando um leitor de tela falha, ou quando um deploy altera fontes e a paginação muda. O custo não é o PDF; é a quebra de confiança no documento."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Se o PDF é recibo/nota/laudo: pequenas diferenças de layout podem invalidar processos.",
+        "Se o PDF é relatório: a paginação e a hierarquia orientam leitura e comparação entre versões.",
+        "Se o PDF é contrato: consistência e metadados suportam arquivamento, busca e auditoria."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Portanto, validar PDF em produção é validar três dimensões ao mesmo tempo: (1) o conteúdo (correto e completo), (2) o layout (legível e consistente) e (3) o artefato (metadados, reprodutibilidade e inspeção)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Requisitos funcionais e não funcionais"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Requisitos funcionais"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Renderizar todo o conteúdo esperado (sem truncar, sem sumir com blocos).",
+        "Manter a ordem e a hierarquia (títulos, seções, listas, código).",
+        "Aplicar regras de quebra de página previsíveis (evitar títulos “órfãos”).",
+        "Preservar trechos de código com fonte mono e contraste adequado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Requisitos não funcionais"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Determinismo: mesma entrada → mesmo PDF (ou hash estável por seção/stream).",
+        "Portabilidade: abrir em leitores diferentes sem “desmontar” layout.",
+        "Performance: gerar dentro do SLO do serviço, sem estourar memória.",
+        "Observabilidade: logar versão do gerador, templates, fontes e parâmetros.",
+        "Evolutividade: mudanças de estilo não devem quebrar o conteúdo (compatibilidade)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Modelo mental: pipeline de geração (conteúdo → layout → render → artefato)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um pipeline de PDF em produção é uma cadeia de transformações. Cada elo introduz classes de falha diferentes. Validar bem significa posicionar verificações em camadas, reduzindo ambiguidade quando algo dá errado."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Conteúdo (semântico): dados, textos, seções, cálculos e regras de negócio.",
+        "Layout (tipográfico): hierarquia, espaçamentos, quebras, tabelas, código.",
+        "Render (engine): fontes embutidas, resolução, compatibilidade, bugs de renderização.",
+        "Artefato (documento): metadados, páginas, tamanho, assinatura, versionamento."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O erro mais comum é testar apenas o artefato final (“abre?”) sem validar conteúdo e layout. O resultado é um teste que passa até o dia em que não passa — e você não sabe por quê."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Checklists de validação editorial"
+    },
+    {
+      "type": "paragraph",
+      "text": "Checklist editorial é sobre leitura humana e consistência. Ele reduz regressões silenciosas: aquelas que não quebram o PDF tecnicamente, mas pioram a experiência e a credibilidade do documento."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.1 Hierarquia e navegação"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Existe título principal (H1) e ele é único?",
+        "Subtítulos (H2/H3) estão em ordem e sem “pulos” (H1→H3 sem H2)?",
+        "Listas são listas (marcação consistente), não parágrafos com hífen?",
+        "Blocos de código estão claramente delimitados, com fonte mono?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.2 Legibilidade e ritmo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Contraste adequado (texto/código) e tamanho de fonte confortável.",
+        "Espaçamento: títulos não colam no texto; listas têm respiro.",
+        "Quebras de página: evitar título no fim da página sem conteúdo abaixo.",
+        "Tabelas não ficam “espremidas” nem vazam a margem."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.3 Consistência editorial"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Nomes de seções repetem exatamente o sumário (sem variação de capitalização).",
+        "Termos técnicos têm grafia consistente (ex.: pipeline, render, metadados).",
+        "Numeração e rótulos seguem o mesmo padrão ao longo do documento.",
+        "Notas e checklists usam o mesmo estilo visual (caixas, tint, regras)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Checklists de validação técnica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Checklist técnico é sobre propriedades verificáveis e automação. Ele evita que mudanças de infraestrutura (imagem Docker, fonts, locale) alterem o artefato sem aviso."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.1 Metadados e propriedades do documento"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Metadados preenchidos: título, autor, idioma, modo/parte/capítulo.",
+        "Fontes embutidas ou garantidas no ambiente (evitar substituição silenciosa).",
+        "Número de páginas dentro do esperado (alerta para crescimento anormal).",
+        "Tamanho do arquivo dentro de faixa (indica imagens/fontes duplicadas)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.2 Determinismo e repetibilidade"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Mesma entrada gera PDFs idênticos em ambientes equivalentes (CI e prod).",
+        "Locale e timezone controlados (datas e separadores numéricos).",
+        "Versão do gerador e do template registrada (sem “última versão” implícita).",
+        "Seed/ordenação determinística para coleções (evitar ordem aleatória)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.3 Critérios objetivos (exemplo)"
+    },
+    {
+      "type": "table",
+      "caption": "Exemplo de critérios objetivos para gates em CI",
+      "columns": [
+        "Sinal",
+        "Como medir",
+        "Alerta quando",
+        "Ação recomendada"
+      ],
+      "rows": [
+        [
+          "Páginas",
+          "Contagem total",
+          "Δ > 10% sem ticket",
+          "Revisar quebras e conteúdo inesperado"
+        ],
+        [
+          "Tamanho",
+          "Bytes do PDF",
+          "Δ > 20%",
+          "Verificar fontes/imagens duplicadas"
+        ],
+        [
+          "Metadados",
+          "Campos obrigatórios",
+          "Qualquer campo vazio",
+          "Bloquear merge, corrigir pipeline"
+        ],
+        [
+          "Fontes",
+          "Lista de fontes",
+          "Fonte substituída",
+          "Embute/instala fonte e fixa fallback"
+        ],
+        [
+          "Determinismo",
+          "Hash de bytes/segmentos",
+          "Hash muda sem mudança de conteúdo",
+          "Fixar versão/locale e isolar variáveis"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Exemplo mínimo para “anatomia” de um documento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo quando o conteúdo é simples, o gerador deve distinguir corretamente: título, seção, lista e código. O trecho abaixo é intencionalmente pequeno e serve como amostra para verificar render de fonte mono, recuo e contraste."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Amostra mínima: separação clara entre texto e código.\nfunction renderSection(title, items) {\n  return {\n    title,\n    bullets: items.map((x) => String(x).trim()),\n  };\n}\n\nconst section = renderSection('Critérios', ['Metadados', 'Determinismo', 'Legibilidade']);\nconsole.log(section);\n"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns quando os critérios não são explicitados"
+    },
+    {
+      "type": "list",
+      "items": [
+        "“Mudou a fonte e ninguém percebeu”: o layout parece OK, mas a paginação muda e referências quebram.",
+        "“Quebras de página aleatórias”: títulos ficam no fim da página; o leitor perde contexto.",
+        "“Sumário não bate”: o documento vira um conjunto de páginas sem navegação mental.",
+        "“Teste frágil”: comparação por imagem sem tolerância gera falsos positivos; comparação por bytes sem controle de variáveis gera ruído."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas (base) para sustentar a validação"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fixe versões: engine, template e fontes (e registre no artefato).",
+        "Normalize entrada: datas, timezone, ordenação de arrays e casas decimais.",
+        "Projete com inspeção: metadados, rótulos de seção e estrutura previsível.",
+        "Separe gates: editorial (humano/amostral) e técnico (automatizado/CI)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional desta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Defini critérios editoriais (legibilidade, hierarquia, consistência).",
+        "Defini critérios técnicos (metadados, fontes, tamanho, determinismo).",
+        "Identifiquei variáveis de ambiente que afetam o render (locale, timezone, fonts).",
+        "Tenho métricas e limiares para alertas (páginas, bytes, hashes)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Conexão: na Parte 2, transformamos esses critérios em casos de teste, inspeções e um smoke test automatizado em JS/Node, pronto para rodar em CI/CD."
+    }
+  ]
+}

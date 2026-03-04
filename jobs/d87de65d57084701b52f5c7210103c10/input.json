@@ -1,0 +1,194 @@
+{
+  "metadata": {
+    "book_title": "Teste técnico",
+    "title": "Teste - Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B2A4A",
+    "brand_secondary": "#124E8A",
+    "brand_accent": "#F28C1A",
+    "brand_ink": "#0E1116",
+    "brand_muted": "#6B7A8C",
+    "brand_line": "#D7DEE7",
+    "brand_tint": "#EEF4FB",
+    "brand_paper": "#FFFFFF",
+    "color_body": "#1A2430",
+    "color_heading": "#0B2A4A",
+    "color_heading_muted": "#124E8A",
+    "color_heading_rule": "#D7DEE7",
+    "color_code_bg": "#0F172A",
+    "color_code_text": "#E6EDF6",
+    "color_table_header_bg": "#0B2A4A",
+    "color_table_header_text": "#FFFFFF",
+    "color_table_body_bg": "#FFFFFF",
+    "color_table_body_text": "#1A2430",
+    "font_title": "New Computer Modern Sans",
+    "font_heading": "New Computer Modern Sans",
+    "font_body": "New Computer Modern Sans",
+    "font_mono": "New Computer Modern Mono",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Pipeline mínimo de geração de PDF (JS/Node)",
+    "part_number": 2,
+    "part_title": "Implementação e validação em Produção"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Pipeline mínimo de geração de PDF (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Implementação e validação em Produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com o contrato de saída definido (Parte 1), a implementação em Produção precisa garantir três propriedades: (1) montar payloads corretos e versionados, (2) gerar PDFs de forma determinística, e (3) validar continuamente para evitar regressões. Esta Parte assume que o renderizador é um serviço/Action externo e foca na disciplina de integração em Node.js."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.8 Integração em JS/Node: organização do payload e versionamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em Produção, o payload é um artefato: deve ser validado, versionado e observável. Isso evita que mudanças de conteúdo “quebrem” o pipeline sem diagnóstico. Um padrão simples é separar: (a) montagem de conteúdo; (b) montagem de metadata; (c) execução do render; (d) persistência do PDF e dos logs."
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "// Estrutura sugerida (Node.js)\n// src/\n//   pdf/\n//     build-metadata.js\n//     build-content.js\n//     render.js\n//     validate.js\n//   jobs/\n//     generate-part.js\n\n// A regra prática: payload é um objeto puro, sem efeitos colaterais.\n// Efeitos colaterais (rede, FS) ficam em render/persist."
+    },
+    {
+      "type": "paragraph",
+      "text": "Versionamento: guarde (no mínimo) template_id, hash do payload e versão do seu código. Assim, quando um PDF “muda”, você sabe se mudou por conteúdo, por template ou por build."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.9 Estratégias de teste: snapshot, comparação visual, golden files"
+    },
+    {
+      "type": "paragraph",
+      "text": "PDF é binário e pode conter metadados voláteis. Por isso, testes precisam separar o que é essencial do que é ruído. Três estratégias se complementam:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Snapshot semântico: validar o payload antes do render (blocos permitidos, headings, tabelas).",
+        "Golden file: armazenar um PDF aprovado e comparar (quando possível) por render idêntico ou por extração de texto/estrutura.",
+        "Comparação visual: rasterizar páginas e comparar imagens com tolerância; ideal para detectar regressões de layout."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O porquê: conteúdo “igual” com layout “pior” ainda é bug. E conteúdo “pior” com layout “igual” também é bug. É preciso testar as duas dimensões."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.10 Observabilidade: logs, warnings, rastreabilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em Produção, um pipeline sem observabilidade vira um gerador de incidentes silenciosos. O mínimo recomendado:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Correlation ID por execução (job_id).",
+        "Logar template_id, mode, chapter/part e tamanho do payload.",
+        "Registrar warnings retornados pelo renderizador como eventos (não como texto solto).",
+        "Persistir artefatos intermediários (payload JSON) em storage com retenção curta para auditoria."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "json",
+      "content": "{\n  \"job_id\": \"2026-03-04T12:00:00Z#abc123\",\n  \"template_id\": \"livro_tecnico_v1\",\n  \"mode\": \"part\",\n  \"chapter\": 1,\n  \"part\": 2,\n  \"payload_bytes\": 48219,\n  \"warnings\": []\n}"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.11 Estudo de caso: execução ponta a ponta"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cenário: você gera “Teste - Parte 2.pdf” a partir de um payload versionado. Passos recomendados:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Validar payload localmente (schema e regras editoriais).",
+        "2) Renderizar com template_id fixo e mode correto.",
+        "3) Armazenar PDF e payload com o mesmo job_id.",
+        "4) Rodar verificação pós-render: abre, número de páginas esperado, presença de headings e blocos de código.",
+        "5) Submeter para revisão humana rápida (checklist) e promover a “golden file” se aprovado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.12 Erros comuns (e como evitar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tabelas inválidas: rows com número de células diferente de columns → validar antes do envio.",
+        "Estilos ausentes: não reenviar identidade visual em cada chamada → tratar metadata como obrigatória sempre.",
+        "Modo incorreto: enviar mode=part sem chapter/part → validação de schema na borda.",
+        "Conteúdo grande: timeouts/limites → impor tamanho máximo e chunking quando necessário.",
+        "Não tratar warnings: pipeline “verde” com warnings recorrentes → elevar warnings críticos a erro."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.13 Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Idempotência: mesmo payload gera o mesmo PDF; use hashing e cache quando fizer sentido.",
+        "Padronização: builders de metadata e content centralizados; evite “montagem” espalhada.",
+        "Validação pré-envio: rejeitar payloads com tabelas inválidas ou headings fora de ordem.",
+        "Ambiente controlado: fixar versões e evitar dependência de fontes do SO.",
+        "Trilha de auditoria: job_id liga payload, PDF e logs."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.14 Checklist profissional de go-live"
+    },
+    {
+      "type": "list",
+      "items": [
+        "(Contrato) Critérios de aceite documentados e automatizados parcialmente.",
+        "(Observabilidade) Logs com job_id; warnings capturados; template_id rastreável.",
+        "(Resiliência) Retentativa controlada; timeouts definidos; filas se necessário.",
+        "(Qualidade) Golden files para casos representativos; comparação visual para regressão.",
+        "(Segurança) Sanitização do input; limites de tamanho; armazenamento com permissão adequada."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.15 Conclusão e próximos passos"
+    },
+    {
+      "type": "paragraph",
+      "text": "O teste técnico foi desenhado para ser pequeno, mas completo: define contrato, implementa disciplina de integração e estabelece validação contínua. Próximo passo natural é ampliar o conjunto de golden files com conteúdos reais (relatórios, faturas, propostas) e automatizar a comparação visual em CI."
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Livro finalizado"
+    }
+  ]
+}

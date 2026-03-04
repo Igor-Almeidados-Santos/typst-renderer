@@ -1,0 +1,263 @@
+{
+  "metadata": {
+    "book_title": "Teste",
+    "title": "Capítulo 1 — Parte 1 — Fundamentos e pipeline confiável",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B3D91",
+    "brand_secondary": "#1E66F5",
+    "brand_accent": "#22A2FF",
+    "brand_ink": "#0A1B33",
+    "brand_muted": "#5C7FB8",
+    "brand_line": "#B7C9E8",
+    "brand_tint": "#EAF2FF",
+    "brand_paper": "#F7FAFF",
+    "color_body": "#0A1B33",
+    "color_heading": "#0B3D91",
+    "color_heading_muted": "#2F5EA8",
+    "color_heading_rule": "#B7C9E8",
+    "color_code_bg": "#EAF2FF",
+    "color_code_text": "#0A1B33",
+    "color_table_header_bg": "#0B3D91",
+    "color_table_header_text": "#F7FAFF",
+    "color_table_body_bg": "#F2F7FF",
+    "color_table_body_text": "#0A1B33",
+    "font_title": "Helvetica-Bold",
+    "font_heading": "Helvetica-Bold",
+    "font_body": "New Computer Modern",
+    "font_mono": "Courier",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Geração de PDF em Produção (JS/Node)",
+    "part_number": 1,
+    "part_title": "Fundamentos e pipeline confiável"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Geração de PDF em Produção (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e pipeline confiável"
+    },
+    {
+      "type": "paragraph",
+      "text": "Gerar PDF parece simples até o primeiro incidente em produção. O mesmo conteúdo que “funciona na máquina” falha sob concorrência, variações de fonte, caracteres fora do ASCII, diferenças de ambiente e limites de memória. Esta Parte estabelece o modelo mental e a arquitetura mínima para uma geração confiável — determinística, rastreável e operacionalizável."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1. Problema real: por que “gerar PDF” falha em produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Falhas em PDF raramente são “um bug só”. Normalmente surgem da interação entre quatro variáveis: (1) dados variáveis (tamanho e caracteres), (2) layout sensível (quebras, fontes, margens), (3) motor de renderização (HTML→PDF, template engine, ou biblioteca), e (4) ambiente (container, fontes instaladas, permissões, limites). Em produção, essas variáveis mudam o tempo todo, e o sistema precisa ser desenhado para absorver variação sem perder previsibilidade."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sintoma comum: PDF truncado por timeout, especialmente sob pico de carga.",
+        "Sintoma comum: layout “quebrando” por dados longos (nome, endereço, observações).",
+        "Sintoma comum: caracteres virando quadrados (fonte sem glifos) ou texto com espaçamento estranho.",
+        "Sintoma comum: diferenças entre ambientes (dev/stage/prod) por fontes, versões de runtime ou libs nativas."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "A decisão arquitetural central é tratar a geração como um pipeline de produção, não como um “print” acoplado ao endpoint HTTP. Isso reduz risco, aumenta observabilidade e permite controles como idempotência e retries."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2. Requisitos não funcionais: consistência, performance, rastreabilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de escolher biblioteca ou motor de renderização, é preciso fixar requisitos não funcionais. Eles definem o que é “sucesso” quando as entradas variam e o sistema opera sob carga."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consistência: o mesmo payload deve gerar o mesmo PDF (mesmo layout e quebras) entre execuções e ambientes.",
+        "Performance: tempo de geração previsível; picos não podem derrubar o serviço principal.",
+        "Rastreabilidade: cada PDF deve ser atribuível a uma requisição, payload e versão de template.",
+        "Resiliência: falhas transitórias devem ter retry controlado; falhas permanentes devem ser diagnosticáveis.",
+        "Segurança: dados sensíveis devem ser tratados com cuidado, inclusive em logs e armazenamento temporário."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Por quê isso importa: sem consistência você não consegue depurar; sem rastreabilidade você não consegue provar o que foi emitido; sem resiliência você transforma picos normais em incidentes."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3. Modelo mental: documento, template, dados e renderização determinística"
+    },
+    {
+      "type": "paragraph",
+      "text": "O modelo mental correto separa responsabilidades em quatro camadas: documento, template, dados e renderização. Misturar essas camadas é a raiz de muitos problemas."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Documento: a estrutura editorial (seções, títulos, listas, tabelas, códigos).",
+        "Template: como a estrutura vira layout (tipografia, margens, regras, estilos).",
+        "Dados: valores variáveis que preenchem o documento (campos, itens, textos).",
+        "Renderização: o processo que transforma template+dados em bytes PDF."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Determinismo significa reduzir variabilidade do ambiente: fixar versões, embutir/empacotar fontes, evitar dependências externas durante render (ex.: imagens via URL), e controlar locale/timezone quando datas e números aparecem no documento."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4. Arquitetura do pipeline"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma arquitetura mínima para produção separa a solicitação (API) da geração (worker). O endpoint dispara um “job” com um payload validado; o worker renderiza; o resultado é armazenado; a API entrega um identificador e um meio de acesso."
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "4.1 Camada de dados (payload)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O payload é o contrato. Ele precisa ser validado e versionado. Sem isso, qualquer mudança de dados vira regressão invisível."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Validação: tipos, limites de tamanho, campos obrigatórios, normalização de strings.",
+        "Versionamento: inclua template_version e schema_version no payload.",
+        "Normalização: trate quebras de linha, espaços em branco e unicode (NFC) quando necessário."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "4.2 Camada de template"
+    },
+    {
+      "type": "paragraph",
+      "text": "O template deve ser tratado como artefato. Uma mudança de template precisa de controle e capacidade de rollback. Em produção, ‘editar direto’ é convite ao caos."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Empacote templates com a aplicação (build) ou use um repositório de artefatos com versionamento.",
+        "Evite dependências de rede no render (CSS remoto, fontes remotas, imagens remotas).",
+        "Defina regras explícitas de quebra (page-break) e tamanhos máximos para blocos sensíveis."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "4.3 Camada de renderização"
+    },
+    {
+      "type": "paragraph",
+      "text": "A renderização é o ponto de maior risco operacional: consumo de CPU/memória, tempo variável e dependências nativas. O objetivo é tornar esse ponto previsível e isolado."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Isole em worker/container próprio com limites de recursos (CPU/mem).",
+        "Aplique timeout explícito e capture logs detalhados (sem PII).",
+        "Implemente retries apenas para falhas transitórias, com idempotência."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "4.4 Armazenamento e entrega (download/stream)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Armazenar o PDF como artefato permite reentrega sem regenerar, reduz custo e evita inconsistências. A entrega pode ser via URL assinada (temporária) ou endpoint autenticado com streaming."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Evite guardar PDFs em disco local do container por longos períodos.",
+        "Prefira storage durável (objeto) com retenção e política de expiração.",
+        "Inclua metadados: job_id, template_version, hash do payload, timestamps."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5. Tratamento de fontes, layout e quebras de página"
+    },
+    {
+      "type": "paragraph",
+      "text": "Fonte é uma dependência. Se a fonte não está disponível — ou não tem glifos — você terá texto quebrado. Em motores HTML→PDF, isso é ainda mais sensível. Por isso, a estratégia mais segura é empacotar fontes (ou usar uma família padrão estável) e testar com dados extremos."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Empacote fontes e garanta fallback para caracteres acentuados e símbolos.",
+        "Teste com strings longas (200–500 caracteres) e palavras sem espaços.",
+        "Defina estilos de quebra: quebra de linha, hifenização (quando suportada) e overflow controlado.",
+        "Garanta margens e espaçamento consistentes em múltiplas páginas."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Quebras de página devem ser intencionais. Elementos como tabelas, blocos de código e seções com título precisam de regras para não “partirem” de forma ilegível."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6. Erros comuns e sintomas típicos (encoding, fontes, imagens, CSS)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Encoding/Unicode: caracteres ‘estranhos’ ou perda de acentos → normalização e fonte adequada.",
+        "Fontes ausentes: quadrados/caixas no lugar de letras → empacotar fontes e definir fallback.",
+        "Imagens remotas: render intermitente → embutir/baixar imagens previamente e referenciar localmente.",
+        "CSS inconsistente: diferenças entre versões do motor → pin de versão e testes de regressão visual.",
+        "Timeout: PDFs truncados → isolar worker, dimensionar recursos e otimizar template."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7. Boas práticas e checklist mínimo de produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Boas práticas não são ‘capricho’: elas reduzem custo de incidente. O objetivo é tornar a geração previsível e auditável."
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Checklist mínimo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "[ ] Payload validado e versionado (schema_version, template_version).",
+        "[ ] Render isolado em worker com limites de recursos e timeout.",
+        "[ ] Templates e fontes empacotados/versão fixada.",
+        "[ ] Sem dependências de rede durante render (imagens/CSS/fontes remotas).",
+        "[ ] Job idempotente (mesmo job_id não gera duplicata).",
+        "[ ] Logs e métricas (tempo de render, taxa de erro, filas).",
+        "[ ] Armazenamento durável com metadados e política de expiração.",
+        "[ ] Testes com dados extremos e regressão visual (quando aplicável)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Conexão: na Parte 2, o foco sai da arquitetura e entra na implementação e validação: exemplos em Node.js, estratégia de testes, observabilidade e um estudo de caso de incidente para fechar o ciclo operacional."
+    }
+  ]
+}

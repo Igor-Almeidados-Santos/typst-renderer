@@ -19,6 +19,16 @@ class CoverImageProvider(Protocol):
         ...
 
 
+def _external_fetch_headers(extra: dict[str, str] | None = None) -> dict[str, str]:
+    headers = {
+        "User-Agent": "typst-renderer/1.0",
+        "ngrok-skip-browser-warning": "1",
+    }
+    if extra:
+        headers.update(extra)
+    return headers
+
+
 class LocalProceduralCoverImageProvider:
     def generate(self, req: GenerateCoverImageRequest, prompt: str) -> tuple[bytes, str]:
         width, height = _resolve_dimensions(req.aspect_ratio)
@@ -102,11 +112,12 @@ class RemoteHTTPImageProvider:
             "safe_mode": req.safe_mode,
         }
 
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json, image/png, image/jpeg, image/webp",
-            "User-Agent": "typst-renderer/1.0",
-        }
+        headers = _external_fetch_headers(
+            {
+                "Content-Type": "application/json",
+                "Accept": "application/json, image/png, image/jpeg, image/webp",
+            }
+        )
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
@@ -133,7 +144,7 @@ class RemoteHTTPImageProvider:
             return _decode_base64_image(image_b64), mime_type
 
         if image_url:
-            fetch_request = Request(image_url, headers={"User-Agent": "typst-renderer/1.0"})
+            fetch_request = Request(image_url, headers=_external_fetch_headers())
             with urlopen(fetch_request, timeout=self.timeout) as response:
                 image_content = response.read()
                 remote_type = (response.headers.get("Content-Type") or "").lower()
@@ -174,12 +185,13 @@ class OpenAIImageAPIProvider:
         if self.compression is not None and output_format in ["jpeg", "webp"]:
             payload["output_compression"] = self.compression
 
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "User-Agent": "typst-renderer/1.0",
-        }
+        headers = _external_fetch_headers(
+            {
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            }
+        )
 
         request = Request(
             f"{self.base_url}/v1/images",
@@ -205,7 +217,7 @@ class OpenAIImageAPIProvider:
             return _decode_base64_image(image_b64), mime_type
 
         if image_url:
-            fetch_request = Request(image_url, headers={"User-Agent": "typst-renderer/1.0"})
+            fetch_request = Request(image_url, headers=_external_fetch_headers())
             with urlopen(fetch_request, timeout=self.timeout) as response:
                 image_content = response.read()
                 remote_type = (response.headers.get("Content-Type") or "").lower()

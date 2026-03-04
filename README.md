@@ -29,16 +29,11 @@ Este repositorio foi desenhado para um fluxo simples de renderizacao:
 
 ## Templates disponiveis
 
-Atualmente o projeto possui estes templates:
+Atualmente o projeto suporta somente:
 
-- `livro_tecnico_v1`
 - `livro_tecnico_v2`
 
-O endpoint `GET /templates` retorna a lista de templates encontrados no diretorio `templates/` e define o template padrao com esta prioridade:
-
-1. `livro_tecnico_v2`
-2. `livro_tecnico_v1`
-3. Primeiro diretorio encontrado, em ordem alfabetica
+O endpoint `GET /templates` sempre retorna apenas `livro_tecnico_v2`.
 
 ## Estrutura do projeto
 
@@ -51,9 +46,6 @@ assets/
 jobs/
 storage/
 templates/
-  livro_tecnico_v1/
-    main.typ
-    theme.typ
   livro_tecnico_v2/
     main.typ
     theme.typ
@@ -115,6 +107,39 @@ Rotas uteis apos subir o servico:
 
 Importante: embora exista um arquivo `.env` no repositorio, a aplicacao nao carrega variaveis automaticamente desse arquivo. Se quiser usar `PUBLIC_BASE_URL`, exporte a variavel no shell antes de iniciar o `uvicorn`.
 
+## Uso com ngrok-free
+
+Para usar o projeto com `ngrok-free.dev` e Custom GPT, ha dois pontos obrigatorios:
+
+1. `PUBLIC_BASE_URL` deve usar a URL publica do ngrok
+2. as chamadas HTTP precisam enviar o header `ngrok-skip-browser-warning: 1`
+
+Exemplo:
+
+```powershell
+$env:PUBLIC_BASE_URL = "https://SEU-SUBDOMINIO.ngrok-free.dev"
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir app --reload-dir templates
+```
+
+Em outro terminal:
+
+```powershell
+ngrok http 8000
+```
+
+Teste manual com PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Get `
+  -Headers @{ "ngrok-skip-browser-warning" = "1" } `
+  -Uri "https://SEU-SUBDOMINIO.ngrok-free.dev/templates"
+```
+
+O arquivo `openapi.yaml` ja foi preparado para o fluxo com `ngrok-free` e exige esse header nas operacoes do GPT. Antes de importar a Action, troque `servers.url` pela sua URL publica atual do ngrok.
+
+Internamente, a API tambem envia esse header ao baixar `cover_image_url` e ao consultar providers HTTP de imagem, evitando que o intersticial do ngrok quebre a capa ou a renderizacao.
+
 ## Endpoints
 
 | Metodo | Rota | Descricao |
@@ -145,7 +170,7 @@ Resposta esperada:
 
 ```json
 {
-  "templates": ["livro_tecnico_v1", "livro_tecnico_v2"],
+  "templates": ["livro_tecnico_v2"],
   "default": "livro_tecnico_v2"
 }
 ```
@@ -412,7 +437,6 @@ Quando algum desses campos e fornecido com sucesso, a API salva a imagem dentro 
 
 Importante:
 
-- `livro_tecnico_v1` nao renderiza imagem de capa.
 - Para a imagem aparecer no `livro_tecnico_v2`, use `metadata.mode: "cover"`.
 - O backend detecta automaticamente se o base64 enviado e PNG, JPEG ou WEBP e salva com a extensao correta.
 

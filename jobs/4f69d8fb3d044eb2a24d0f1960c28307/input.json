@@ -1,0 +1,442 @@
+{
+  "metadata": {
+    "mode": "part",
+    "book_title": "Teste técnico",
+    "title": "Capítulo 1 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "chapter_number": "1",
+    "chapter_title": "Validação da geração de PDF em Produção (JS/Node)",
+    "part_number": "2",
+    "part_title": "Casos de teste e suíte de validação",
+    "brand_primary": "#0B4F8A",
+    "brand_secondary": "#1667B1",
+    "brand_accent": "#2E90D1",
+    "brand_ink": "#0A1B2B",
+    "brand_muted": "#5E86A6",
+    "brand_line": "#C7D8E8",
+    "brand_tint": "#EAF3FB",
+    "brand_paper": "#F6FAFE",
+    "color_body": "#10263A",
+    "color_heading": "#0B4F8A",
+    "color_heading_muted": "#2D6FA3",
+    "color_heading_rule": "#B7CDE1",
+    "color_code_bg": "#0B1F33",
+    "color_code_text": "#E8F2FF",
+    "color_code_border": "#1E4E73",
+    "color_code_header_bg": "#123A5A",
+    "color_code_header_text": "#D6EBFF",
+    "color_table_header_bg": "#0F3F66",
+    "color_table_header_text": "#F2F8FF",
+    "color_table_body_bg": "#F0F7FF",
+    "color_table_body_text": "#10263A",
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Validação da geração de PDF em Produção (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Casos de teste e suíte de validação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se a Parte 1 define o “porquê” e o “como” do pipeline, esta parte define o “o quê” em termos de casos de teste. O objetivo é transformar critérios editoriais e operacionais em uma suíte repetível: você roda, compara, mede e decide. O foco é detectar regressões de layout, quebras de página, problemas de codificação e degradação de performance antes de afetar usuários."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.10 Casos de teste essenciais (golden files, snapshots, diffs)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A estratégia mais eficiente para PDF em produção é combinar três técnicas: (1) golden files para estabilidade binária (quando possível), (2) snapshots visuais para detectar mudanças sutis de layout, e (3) extração de texto/estrutura para validar presença e ordem de seções. Nem todo renderer permite PDF binário idêntico; quando não permitir, defina um “diff aceitável” e documente."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Golden file: um PDF aprovado como referência, associado a uma versão de template e a uma entrada fixa.",
+        "Snapshot visual: renderize páginas em imagens e compare por diffs (tolerância definida).",
+        "Extração de texto: valide títulos, ordem de seções e presença de elementos-chave.",
+        "Metadados: verifique versão do template, job_id, checksum e timestamps."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.11 Teste de paginação: títulos, viúvas/órfãs, quebras previsíveis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Paginação é onde regressões aparecem primeiro. Pequenas mudanças de fonte, kerning ou margem podem “empurrar” conteúdo e quebrar páginas em pontos ruins. O teste precisa provocar isso com conteúdo próximo dos limites de página."
+    },
+    {
+      "type": "table",
+      "caption": "Cenários de paginação",
+      "columns": [
+        "Cenário",
+        "Entrada",
+        "Esperado"
+      ],
+      "rows": [
+        [
+          "Título no fim da página",
+          "Um H2 seguido de 1–2 linhas de texto",
+          "Renderer deve mover o bloco inteiro para a próxima página"
+        ],
+        [
+          "Lista longa",
+          "Lista com 30–60 itens",
+          "Quebras mantêm marcadores e indentação; sem “item solto”"
+        ],
+        [
+          "Parágrafo extenso",
+          "Texto contínuo com 2–3 páginas",
+          "Quebras não cortam palavras; espaçamento consistente"
+        ],
+        [
+          "Tabela grande",
+          "Tabela com muitas linhas",
+          "Cabeçalho se repete ou a quebra preserva entendimento"
+        ],
+        [
+          "Código longo",
+          "Bloco com muitas linhas",
+          "Quebra de página não perde cabeçalho/identificação do bloco"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.12 Teste de código: monospace, bordas, fundo, numeração, overflow"
+    },
+    {
+      "type": "paragraph",
+      "text": "Código é um componente sensível: linhas longas, indentação e caracteres especiais expõem falhas de wrapping e métricas de fonte. O teste deve incluir exemplos com URLs, tokens e trechos que excedem a largura."
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "// Caso: linhas longas + caracteres especiais\nconst url = \"https://example.com/api/v1/resource?search=valor-com-acentuação&emoji=🚀&token=abcdefghijklmnopqrstuvwxyz0123456789\";\n\nfunction renderJob({ jobId, templateVersion, payload }) {\n  if (!jobId || !templateVersion) throw new Error(\"job inválido: faltou jobId/templateVersion\");\n  // garantir determinismo: ordenar chaves, normalizar datas e locale\n  return { jobId, templateVersion, payload };\n}\n\n// Caso: string muito longa (overflow)\nconst longToken = \"x\".repeat(220);\nconsole.log(longToken);\n"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Verifique se o bloco mantém monoespaçamento e alinhamento de indentação.",
+        "Verifique wrapping: preferir quebra controlada (soft wrap) a estourar a página.",
+        "Verifique caracteres especiais (acentos e emoji) sem substituições estranhas.",
+        "Verifique contraste: fundo e texto devem garantir leitura em tela e impressão."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.13 Teste de tabela: cabeçalho repetido, largura, quebra de linha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Tabelas expõem dois limites: largura (colunas) e altura (muitas linhas). O teste deve incluir colunas com conteúdo curto e longo, além de células que exigem quebra de linha."
+    },
+    {
+      "type": "table",
+      "caption": "Tabela de estresse (largura e quebra)",
+      "columns": [
+        "Campo",
+        "Exemplo curto",
+        "Exemplo longo"
+      ],
+      "rows": [
+        [
+          "job_id",
+          "a1b2c3",
+          "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+        ],
+        [
+          "template_version",
+          "v1.0.0",
+          "v12.34.56-rc.7+build.20260304"
+        ],
+        [
+          "input_size",
+          "12KB",
+          "987654KB (entrada artificialmente grande para teste)"
+        ],
+        [
+          "notes",
+          "ok",
+          "Texto propositalmente grande para forçar quebra de linha dentro da célula e validar se a tabela preserva legibilidade sem estourar a margem."
+        ]
+      ]
+    },
+    {
+      "type": "list",
+      "items": [
+        "Cabeçalho deve se distinguir do corpo (fundo e cor do texto).",
+        "Colunas não devem estourar a largura; célula longa precisa quebrar linha.",
+        "Em tabelas com muitas linhas, defina regra: repetir cabeçalho ou inserir marcador de continuação.",
+        "Evite “serrilhar” visual: padding e alinhamento devem ser estáveis."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.14 Teste de sumário: hierarquia, indentação e consistência editorial"
+    },
+    {
+      "type": "paragraph",
+      "text": "O sumário é um ponto de referência do leitor e um detector de inconsistência: se a hierarquia editorial está errada, o sumário denuncia. O teste deve validar indentação, níveis e ordem."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Níveis: Pré-textuais → Capítulo → Parte → Seções numeradas.",
+        "Indentação consistente (capítulo/parte/seção).",
+        "Nomenclatura idêntica aos títulos internos (sem variações).",
+        "Ordem correta: Parte 1 antes da Parte 2; seções 1.1…1.20 sequenciais."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.15 Teste de performance: tempo, memória, concorrência"
+    },
+    {
+      "type": "paragraph",
+      "text": "Performance não é “otimização”; é confiabilidade sob carga. O teste deve medir latência e memória em cenários realistas e em picos. Em produção, o que importa é p95/p99, não apenas a média."
+    },
+    {
+      "type": "table",
+      "caption": "Métricas mínimas de performance",
+      "columns": [
+        "Métrica",
+        "Como medir",
+        "Sinal de problema"
+      ],
+      "rows": [
+        [
+          "duration_ms (p95/p99)",
+          "cronometre do validate ao store",
+          "p99 cresce com conteúdo semelhante"
+        ],
+        [
+          "memory_peak_mb",
+          "colete pico por job",
+          "crescimento progressivo indica leak"
+        ],
+        [
+          "queue_time_ms",
+          "tempo na fila (se assíncrono)",
+          "fila cresce sem aumentar throughput"
+        ],
+        [
+          "retry_rate",
+          "taxa de reprocessamento",
+          "excesso de retries mascara instabilidade"
+        ],
+        [
+          "cpu_time",
+          "tempo de CPU do processo",
+          "render monopoliza CPU e degrada o nó"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.16 Teste de robustez: entradas inválidas, campos grandes, caracteres especiais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Robustez é a diferença entre “falhar” e “falhar com controle”. O sistema deve rejeitar entradas inválidas cedo e de forma explicável, e deve tratar conteúdo extremo sem corromper o artefato."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entrada inválida: campos obrigatórios ausentes → erro com mensagem clara e job_id.",
+        "Campos grandes: strings com milhares de caracteres → truncamento/limite definido, sem crash.",
+        "Caracteres especiais: PT-BR (ç, ã, ê), símbolos (©, ™) e emoji → render consistente.",
+        "Localidade: datas e números formatados de modo previsível quando aplicável.",
+        "Redaction: logs não devem vazar dados sensíveis do payload."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.17 Estudo de caso: “job falhou em produção” (diagnóstico guiado)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cenário: uma fila de jobs começa a falhar após um deploy. O sintoma é “erro de render”. Sem rastreabilidade, você fica cego. Com rastreabilidade, você segue um roteiro."
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Identifique o job_id e a versão do template associada ao deploy.",
+        "2) Compare com o último job bem-sucedido: entrada normalizada, tamanho e tempo.",
+        "3) Verifique logs do renderer: fonte ausente? erro de glyph? falta de memória?",
+        "4) Reproduza localmente com a mesma imagem/container e a mesma versão do template.",
+        "5) Se o problema é regressão de layout, rode diffs visuais com o golden file anterior.",
+        "6) Aplique rollback do template (separado do código) para restabelecer operação.",
+        "7) Documente a causa raiz e adicione um caso de teste que impediria o retorno do bug."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.18 Boas práticas finais e padrão de entrega do artefato"
+    },
+    {
+      "type": "paragraph",
+      "text": "A entrega do PDF é parte do sistema, não um detalhe. Produzir um binário sem metadados e sem política de versionamento é gerar dívida técnica. Defina um padrão e siga."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Nome do arquivo previsível e estável; inclua versão quando necessário (ex.: -v1.3.0).",
+        "Persistência com checksum e metadados (job_id, template_version, created_at).",
+        "Política de retenção: quanto tempo manter artefatos e entradas normalizadas.",
+        "Separação de concerns: template versionado independente do código de orquestração.",
+        "Documente diffs aceitáveis e processo de aprovação de mudanças visuais."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.19 Checklist de validação da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "( ) Golden file aprovado e versionado por template.",
+        "( ) Diffs visuais detectam mudanças e têm tolerância documentada.",
+        "( ) Extração de texto valida ordem e presença das seções.",
+        "( ) Blocos de código suportam linhas longas sem overflow.",
+        "( ) Tabelas suportam células longas e muitas linhas sem quebrar layout.",
+        "( ) Performance medida (p95/p99) e memória de pico observada.",
+        "( ) Entradas inválidas falham cedo com erro explicável e rastreável."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.20 Próximos passos (como evoluir de teste para esteira real)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com o teste estabilizado, o próximo passo é incorporar a geração de PDF como produto interno: contratos, versionamento, observabilidade e governança de mudanças. A disciplina de “compilação de documento” deve virar rotina do time."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Transforme os casos desta parte em suíte de CI (snapshot + extração + performance).",
+        "Adote versionamento semântico do template e processo de aprovação para mudanças visuais.",
+        "Crie ambiente de staging com as mesmas fontes e dependências de produção.",
+        "Implemente reprocessamento idempotente: mesmo input, mesmo resultado, com job_id.",
+        "Adicione monitoramento e alertas (taxa de falha, p99, memória de pico)."
+      ]
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Pós-textuais"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Apêndice A — Payloads de exemplo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Os payloads abaixo são deliberadamente simples e focam em provocar comportamentos de layout. Adapte-os ao contrato real do seu sistema (campos obrigatórios, limites e regras)."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "A.1 Mínimo viável"
+    },
+    {
+      "type": "code",
+      "lang": "json",
+      "content": "{\n  \"job_id\": \"ex-001\",\n  \"template_version\": \"v1.0.0\",\n  \"title\": \"Documento mínimo\",\n  \"sections\": [\n    {\"type\": \"heading\", \"level\": 1, \"text\": \"Olá\"},\n    {\"type\": \"paragraph\", \"text\": \"Texto curto para validar tipografia e margens.\"}\n  ]\n}\n"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "A.2 Com tabela"
+    },
+    {
+      "type": "code",
+      "lang": "json",
+      "content": "{\n  \"job_id\": \"ex-002\",\n  \"template_version\": \"v1.0.0\",\n  \"title\": \"Documento com tabela\",\n  \"sections\": [\n    {\"type\": \"table\", \"columns\": [\"Campo\", \"Valor\"], \"rows\": [\n      [\"job_id\", \"ex-002\"],\n      [\"notes\", \"texto longo para forçar quebra de linha dentro da célula e validar largura\"]\n    ]}\n  ]\n}\n"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "A.3 Com código longo"
+    },
+    {
+      "type": "code",
+      "lang": "json",
+      "content": "{\n  \"job_id\": \"ex-003\",\n  \"template_version\": \"v1.0.0\",\n  \"title\": \"Documento com código longo\",\n  \"sections\": [\n    {\"type\": \"code\", \"lang\": \"js\", \"content\": \"const long = 'x'.repeat(400);\\nconsole.log(long);\"}\n  ]\n}\n"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Apêndice B — Estratégia de regressão (golden PDFs e política de atualização)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma política simples impede que regressões virem “ruído”. A ideia é que toda mudança visual seja intencional, revisada e registrada."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Mantenha um diretório por versão de template: /golden/v1.0.0/*.pdf",
+        "Toda alteração de template exige atualização consciente do golden file + revisão (2 olhos).",
+        "Guarde snapshots por página para diffs rápidos; registre tolerância e ferramenta usada.",
+        "Se o renderer não for binariamente determinístico, prefira diffs visuais + extração de texto.",
+        "Inclua o checksum do golden file no repositório (manifest.json) para auditoria."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Glossário"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Determinismo: propriedade de produzir a mesma saída para a mesma entrada, na mesma versão de template e ambiente controlado.",
+        "Golden file: artefato de referência aprovado, usado para detectar regressões.",
+        "Snapshot visual: imagem renderizada de uma página do PDF, comparada por diffs.",
+        "Viúvas/órfãs: linhas ou títulos isolados no topo/rodapé de página, prejudicando leitura.",
+        "Job: unidade de processamento do pipeline (um pedido de geração de PDF)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Bibliografia essencial"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Documentação do motor de renderização/geração de PDF adotado no seu stack.",
+        "Referências de tipografia e hierarquia editorial para documentos técnicos.",
+        "Boas práticas de observabilidade (logs, métricas e tracing) aplicadas a pipelines de render.",
+        "Princípios de testes de regressão (golden files, snapshots e diffs)."
+      ]
+    }
+  ]
+}

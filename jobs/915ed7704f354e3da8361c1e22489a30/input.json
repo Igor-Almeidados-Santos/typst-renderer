@@ -1,0 +1,285 @@
+{
+  "metadata": {
+    "book_title": "Teste",
+    "title": "Capítulo 1 — Parte 2 — Implementação, testes e validação final",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B3D91",
+    "brand_secondary": "#1E66F5",
+    "brand_accent": "#22A2FF",
+    "brand_ink": "#0A1B33",
+    "brand_muted": "#5C7FB8",
+    "brand_line": "#B7C9E8",
+    "brand_tint": "#EAF2FF",
+    "brand_paper": "#F7FAFF",
+    "color_body": "#0A1B33",
+    "color_heading": "#0B3D91",
+    "color_heading_muted": "#2F5EA8",
+    "color_heading_rule": "#B7C9E8",
+    "color_code_bg": "#EAF2FF",
+    "color_code_text": "#0A1B33",
+    "color_table_header_bg": "#0B3D91",
+    "color_table_header_text": "#F7FAFF",
+    "color_table_body_bg": "#F2F7FF",
+    "color_table_body_text": "#0A1B33",
+    "font_title": "Helvetica-Bold",
+    "font_heading": "Helvetica-Bold",
+    "font_body": "New Computer Modern",
+    "font_mono": "Courier",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Geração de PDF em Produção (JS/Node)",
+    "part_number": 2,
+    "part_title": "Implementação, testes e validação final"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Geração de PDF em Produção (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Implementação, testes e validação final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o modelo mental e o pipeline estão definidos, o objetivo é validar na prática: como implementar em Node.js de forma previsível, como testar sem ilusão (testes que realmente pegam regressão) e como instrumentar para que o problema seja diagnosticável quando algo der errado."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1. Exemplo prático comentado (JS/Node)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A seguir, um exemplo de arquitetura em camadas: API cria um job idempotente; worker renderiza; o resultado é armazenado; a API fornece acesso. O exemplo é propositalmente genérico para servir como molde, independentemente do motor de renderização (HTML→PDF, template nativo, etc.)."
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "1.1 Contrato do job e idempotência"
+    },
+    {
+      "type": "paragraph",
+      "text": "Idempotência é o que impede duplicatas e permite retry seguro. Em PDFs, isso significa que o mesmo job_id (ou chave de idempotência) deve apontar para o mesmo resultado, sem gerar múltiplos arquivos."
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "// job.js\n// Um job descreve o que gerar, com qual template e com quais dados.\n// A chave de idempotência deve ser derivada do contexto do negócio (ex.: invoiceId).\n\nexport function buildPdfJob({ idempotencyKey, templateVersion, payload }) {\n  return {\n    jobId: idempotencyKey,\n    templateVersion,\n    schemaVersion: 1,\n    createdAt: new Date().toISOString(),\n    payload,\n  };\n}\n\nexport function hashPayload(payload) {\n  // Evite dependências externas; use crypto do Node.\n  // Normalize strings antes, se necessário.\n  const { createHash } = await import('node:crypto');\n  return createHash('sha256').update(JSON.stringify(payload)).digest('hex');\n}\n"
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que assim: separar buildPdfJob do handler HTTP torna explícito o contrato. JobId fixo = reentrega sem regenerar. Hash do payload ajuda auditoria e detecção de mudanças não intencionais."
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "1.2 API: criação do job e enfileiramento"
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "// api.js\n// Exemplo simplificado: valida payload, cria job idempotente, enfileira.\n\nimport { buildPdfJob } from './job.js';\n\nexport async function requestPdf(req, res, { queue, validatePayload }) {\n  const businessId = req.params.id; // ex.: invoiceId\n  const payload = req.body;\n\n  const result = validatePayload(payload);\n  if (!result.ok) {\n    return res.status(400).json({ error: 'invalid_payload', details: result.errors });\n  }\n\n  const job = buildPdfJob({\n    idempotencyKey: `invoice:${businessId}`,\n    templateVersion: 'v1',\n    payload,\n  });\n\n  // Enfileire com deduplicação por jobId, se sua infra permitir.\n  await queue.enqueue(job.jobId, job);\n\n  // Retorne um identificador; o cliente consulta status ou recebe callback/webhook.\n  return res.status(202).json({ jobId: job.jobId, status: 'queued' });\n}\n"
+    },
+    {
+      "type": "paragraph",
+      "text": "Decisão: 202 Accepted, não 200. Isso sinaliza que a geração não deve travar o request. Em produção, render pode ser caro e variável."
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "1.3 Worker: render com timeout e classificação de erro"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um worker robusto classifica falhas: transitórias (retry) vs permanentes (falha final). Também registra metadados para rastreabilidade sem vazar PII."
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "// worker.js\n// Render genérico com timeout e classificação de erro.\n\nfunction withTimeout(promise, ms) {\n  const controller = new AbortController();\n  const t = setTimeout(() => controller.abort(), ms);\n  return {\n    signal: controller.signal,\n    run: promise.finally(() => clearTimeout(t)),\n  };\n}\n\nfunction classifyError(err) {\n  // Exemplo: ajuste conforme seu motor/infra.\n  const msg = String(err?.message || err);\n  if (msg.includes('ETIMEDOUT') || msg.includes('ECONNRESET')) return 'transient';\n  if (msg.includes('font') || msg.includes('template')) return 'permanent';\n  return 'unknown';\n}\n\nexport async function processJob(job, { renderer, storage, logger }) {\n  const startedAt = Date.now();\n  logger.info({ jobId: job.jobId, templateVersion: job.templateVersion }, 'pdf_job_started');\n\n  try {\n    // renderer.render deve retornar um Buffer (bytes do PDF)\n    const { signal, run } = withTimeout(renderer.render(job, { signal }), 30_000);\n    const pdfBuffer = await run;\n\n    const key = `pdf/${job.jobId}/${job.templateVersion}.pdf`;\n    await storage.put(key, pdfBuffer, {\n      contentType: 'application/pdf',\n      metadata: {\n        jobId: job.jobId,\n        templateVersion: job.templateVersion,\n        schemaVersion: String(job.schemaVersion),\n      },\n    });\n\n    logger.info(\n      { jobId: job.jobId, ms: Date.now() - startedAt, bytes: pdfBuffer.length },\n      'pdf_job_succeeded'\n    );\n\n    return { ok: true, key };\n  } catch (err) {\n    const kind = classifyError(err);\n    logger.error(\n      { jobId: job.jobId, kind, ms: Date.now() - startedAt, err: String(err?.message || err) },\n      'pdf_job_failed'\n    );\n\n    return { ok: false, kind };\n  }\n}\n"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ponto crítico: logs não devem incluir o payload completo se ele tiver PII. Em vez disso, registre jobId, templateVersion e, quando útil, um hash do payload."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2. Estudo de caso: incidente de produção e correção (pós-morte curta)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cenário realista: em um pico de final de mês, a geração começou a falhar intermitentemente. Sintoma: PDFs truncados e alguns totalmente vazios. A causa raiz foi um conjunto de fatores: o render rodava no mesmo processo do servidor HTTP; o tempo de CPU aumentou; o balanceador derrubava conexões; e a aplicação interpretava isso como “falha de render” sem diagnóstico."
+    },
+    {
+      "type": "list",
+      "items": [
+        "O que deu errado: render acoplado ao request, sem timeout explícito, sem isolamento de recursos.",
+        "Efeito cascata: pico de carga → CPU alta → latência → timeouts → retrabalho → mais carga.",
+        "Correção: mover render para worker, adicionar idempotência, timeout e filas com backpressure.",
+        "Prevenção: métricas de tempo de render, tamanho de fila, taxa de erro por categoria."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3. Observabilidade: logs, métricas e tracing para PDF"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sem observabilidade, PDF vira “caixa preta”. O objetivo é responder rapidamente: quantos falham, por quê falham, e onde o tempo é gasto."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Logs estruturados: job_started/job_succeeded/job_failed com jobId e templateVersion.",
+        "Métricas: tempo de render (p50/p95/p99), taxa de erro por tipo, tamanho de fila, taxa de retries.",
+        "Tracing: propague traceId do request até o worker para ligar a geração ao pedido original."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4. Estratégia de testes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Teste de PDF não é apenas “gerou um arquivo”. Você precisa testar contrato, layout e regressões. A estratégia abaixo evita falsos positivos."
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "4.1 Unit: montagem e validação de payload"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Valide schemaVersion e campos obrigatórios.",
+        "Teste normalização de strings (acentos, quebras de linha).",
+        "Teste limites: campos longos, listas grandes, textos sem espaços."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "4.2 Integração: render real"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Rode o render em ambiente similar ao de produção (container, fontes empacotadas).",
+        "Teste templates versionados (v1, v2) com payloads representativos.",
+        "Valide: arquivo não vazio, número de páginas esperado (quando determinístico), metadados."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "4.3 Regressão visual: golden files"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o layout é sensível, o método mais confiável é manter “golden PDFs” ou imagens renderizadas de referência e comparar diffs com tolerância."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Armazene saídas de referência por templateVersion.",
+        "Compare em CI com tolerância (pequenas variações de render podem ocorrer).",
+        "Dispare alerta quando uma alteração muda quebras ou alinhamentos críticos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5. Segurança e compliance (PII, redaction, acesso a arquivos)"
+    },
+    {
+      "type": "paragraph",
+      "text": "PDF frequentemente contém PII. Isso impacta logs, armazenamento temporário e permissões."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Nunca logue payload completo com PII; prefira hash e campos não sensíveis.",
+        "Criptografe em repouso no storage e use URLs temporárias/assinadas quando aplicável.",
+        "Aplique controle de acesso: quem pode gerar e quem pode baixar.",
+        "Defina retenção e expiração: evite guardar além do necessário."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6. Checklist profissional de validação (antes do deploy)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "[ ] Render isolado (worker) com limites de CPU/mem e timeout.",
+        "[ ] Templates e fontes versionados e empacotados.",
+        "[ ] Idempotência e deduplicação (jobId estável).",
+        "[ ] Retry somente para falhas transitórias, com backoff.",
+        "[ ] Observabilidade: logs estruturados + métricas + correlação com traceId.",
+        "[ ] Testes: payload extremes + integração + regressão visual (se necessário).",
+        "[ ] Segurança: PII protegida, acesso controlado, retenção definida."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7. Conexão e encerramento do capítulo"
+    },
+    {
+      "type": "paragraph",
+      "text": "A Parte 1 definiu o modelo mental e o pipeline; esta Parte fechou o ciclo operacional com implementação, testes e observabilidade. Com isso, você tem um conjunto mínimo — porém profissional — para gerar PDFs de forma confiável em produção com Node.js."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "8. Apêndices"
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "A. Glossário essencial"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Idempotência: executar a mesma operação múltiplas vezes produz o mesmo efeito, sem duplicatas.",
+        "Backpressure: mecanismo para desacelerar produção de jobs quando o consumo está saturado.",
+        "Golden file: arquivo de referência usado para detectar regressão em saídas (visual/layout).",
+        "Determinismo: mesmas entradas → mesma saída, com variabilidade reduzida do ambiente."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "B. Referências e leituras sugeridas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Documentação do Node.js (Timers, Streams, Crypto).",
+        "Princípios de sistemas distribuídos: filas, retries e idempotência.",
+        "Boas práticas de observabilidade: logs estruturados, métricas e tracing."
+      ]
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Livro finalizado"
+    },
+    {
+      "type": "paragraph",
+      "text": "O sumário aprovado foi integralmente coberto nesta entrega em duas Partes, com consistência editorial e identidade visual aplicada em todos os PDFs."
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+{
+  "metadata": {
+    "book_title": "Teste técnico",
+    "title": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B2A4A",
+    "brand_secondary": "#124E8A",
+    "brand_accent": "#F28C1A",
+    "brand_ink": "#0E1116",
+    "brand_muted": "#6B7A8C",
+    "brand_line": "#D7DEE7",
+    "brand_tint": "#EEF4FB",
+    "brand_paper": "#FFFFFF",
+    "color_body": "#1A2430",
+    "color_heading": "#0B2A4A",
+    "color_heading_muted": "#124E8A",
+    "color_heading_rule": "#D7DEE7",
+    "color_code_bg": "#0F172A",
+    "color_code_text": "#E6EDF6",
+    "color_table_header_bg": "#0B2A4A",
+    "color_table_header_text": "#FFFFFF",
+    "color_table_body_bg": "#FFFFFF",
+    "color_table_body_text": "#1A2430",
+    "font_title": "New Computer Modern Sans",
+    "font_heading": "New Computer Modern Sans",
+    "font_body": "New Computer Modern Sans",
+    "font_mono": "New Computer Modern Mono",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Pipeline mínimo de geração de PDF (JS/Node)",
+    "part_number": 1,
+    "part_title": "Fundamentos e contrato de saída"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Pipeline mínimo de geração de PDF (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e contrato de saída"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta Parte define o contrato de saída do seu pipeline: o que significa “um PDF válido” no mundo real, quais invariantes precisam ser preservadas, e como modelar o documento como uma árvore de blocos (AST) para garantir determinismo em Produção."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.1 Problema real: por que PDFs “quebram” em Produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em Produção, a geração de PDF falha de maneiras repetíveis: textos que extrapolam margens, tabelas com colunas inconsistentes, blocos que truncam em quebras de página, fontes indisponíveis e variações de layout entre execuções. O problema raramente é “o PDF” em si; é o contrato implícito entre conteúdo, layout e renderizador."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sintoma: o PDF abre, mas o conteúdo está desalinhado → geralmente layout não determinístico ou estilos faltando.",
+        "Sintoma: o PDF não abre em alguns leitores → geralmente metadados/estrutura inválida ou corrupção na escrita.",
+        "Sintoma: páginas vazias ou blocos sumidos → geralmente paginação/overflow sem tratamento.",
+        "Sintoma: saída muda a cada execução → geralmente datas/ids/ordem não estabilizadas, ou engine não configurada."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.2 Fundamentação: o PDF como produto editorial"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um PDF técnico precisa cumprir requisitos editoriais mínimos: hierarquia tipográfica, consistência visual, espaçamento, legibilidade de código e previsibilidade de paginação. Em vez de “gerar um PDF”, pense em “publicar um documento”: existe uma forma esperada de leitura."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Requisitos funcionais (contrato visível)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Hierarquia: títulos com níveis claros (H1/H2/H3) e regras visuais consistentes.",
+        "Corpo: parágrafos com largura e espaçamento confortáveis; sem densidade excessiva.",
+        "Listas: bullets/números alinhados; quebras não podem embaralhar itens.",
+        "Código: monoespaçado, contraste alto, sem cortar linhas de modo invisível.",
+        "Tabelas: cabeçalho distinto, colunas consistentes e sem células fora do grid.",
+        "Paginação: quebras previsíveis; blocos não devem ser truncados sem aviso."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Requisitos não funcionais (contrato invisível)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Determinismo: mesmo input → mesma saída (bytes ou, no mínimo, layout).",
+        "Reprodutibilidade: ambiente versionado (template, fontes, engine).",
+        "Observabilidade: warnings e logs apontam exatamente o bloco/problemática.",
+        "Performance: tempo de render compatível com o SLA do serviço.",
+        "Manutenibilidade: payload validável antes do render (schema e invariantes)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.3 Modelo mental correto: documento como AST de blocos"
+    },
+    {
+      "type": "paragraph",
+      "text": "A abordagem robusta é tratar o documento como uma AST (árvore) composta por blocos tipados. Cada bloco tem regras: campos obrigatórios, limites de conteúdo e comportamento de paginação. Isso permite validar antes de renderizar e reduzir falhas tardias."
+    },
+    {
+      "type": "list",
+      "items": [
+        "heading(level,text): define navegação visual e semântica.",
+        "paragraph(text): unidade básica de leitura; não deve carregar estrutura escondida.",
+        "list(items): sequência linear; itens devem ser strings coerentes e curtas o suficiente para quebra.",
+        "code(lang,content): preserva espaçamento; precisa de fonte mono e fundo próprio.",
+        "table(columns,rows): exige consistência dimensional; qualquer divergência deve virar erro/warning.",
+        "pagebreak(): controle explícito quando necessário."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Por que isso funciona"
+    },
+    {
+      "type": "paragraph",
+      "text": "Porque separa conteúdo de render. Você valida a AST, aplica estilos e só então renderiza. A engine deixa de ser “lugar de regra” e vira “lugar de execução”."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.4 Estrutura de metadados: identidade e modo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Metadados são parte do contrato. Eles carregam identidade visual e parâmetros de montagem (capítulo/parte). Em pipelines maduros, metadados são versionados e auditáveis."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Campos obrigatórios recomendados"
+    },
+    {
+      "type": "list",
+      "items": [
+        "book_title, title, author, language: catálogo e rastreabilidade.",
+        "mode: diferencia ‘toc’ de ‘part’ e evita confusão de template.",
+        "chapter_number/chapter_title e part_number/part_title (em mode=part): ordenação e referência.",
+        "Identidade visual completa: evita estilo “herdado” por acidente."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.5 Exemplos práticos comentados (JS/Node)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A seguir, um payload mínimo (com validação mental do contrato): poucos blocos, mas com todos os campos essenciais. O objetivo é ter um “golden payload” para smoke test."
+    },
+    {
+      "type": "code",
+      "lang": "json",
+      "content": "{\n  \"metadata\": {\n    \"book_title\": \"Teste técnico\",\n    \"title\": \"Capítulo 1 — Parte 1\",\n    \"author\": \"Mestre André\",\n    \"language\": \"pt-BR\",\n    \"mode\": \"part\",\n    \"chapter_number\": 1,\n    \"chapter_title\": \"Pipeline mínimo de geração de PDF (JS/Node)\",\n    \"part_number\": 1,\n    \"part_title\": \"Fundamentos e contrato de saída\"\n  },\n  \"content\": [\n    {\"type\":\"heading\",\"level\":1,\"text\":\"Título\"},\n    {\"type\":\"paragraph\",\"text\":\"Um parágrafo curto e verificável.\"},\n    {\"type\":\"list\",\"items\":[\"Item A\",\"Item B\"]},\n    {\"type\":\"code\",\"lang\":\"js\",\"content\":\"console.log('ok')\"}\n  ]\n}"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este payload testa quatro coisas rápidas: hierarquia de heading, render de paragraph, alinhamento de list e bloco de code com fonte mono."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.6 Casos de borda que você deve testar (mínimo viável)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em Produção, os casos de borda são o que determinam se o pipeline é confiável. Liste-os e trate-os como bateria fixa de regressão."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Parágrafo muito longo (3–5 páginas) para detectar viúvas/órfãs e overflow.",
+        "Lista com 50+ itens para verificar quebras consistentes.",
+        "Código com linhas longas e blocos grandes (200+ linhas).",
+        "Tabela com muitas colunas (8–12) e variação de conteúdo.",
+        "Quebra de página intencional entre seções críticas.",
+        "Caracteres especiais (acentos, emoji moderado, símbolos técnicos)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.7 Checklist profissional de validação (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "O PDF abre em pelo menos 2 leitores (ex.: navegador e app nativo).",
+        "H1/H2/H3 têm diferença clara de tamanho/peso e espaçamento.",
+        "Nenhum bloco ultrapassa margens visíveis; não há texto cortado.",
+        "Listas mantêm alinhamento de bullets e recuo em todas as páginas.",
+        "Código é legível (mono), com contraste e sem “colar” no texto ao redor.",
+        "Ao repetir a renderização com o mesmo input, o layout permanece igual.",
+        "Metadados do documento exibem título/autor corretamente."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Conexão: na Parte 2, o contrato definido aqui será transformado em rotina de validação e integração em JS/Node, com testes (snapshot/golden files), observabilidade e checklist de go-live."
+    }
+  ]
+}

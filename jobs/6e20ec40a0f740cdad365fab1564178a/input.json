@@ -1,0 +1,208 @@
+{
+  "metadata": {
+    "book_title": "Teste",
+    "title": "Capítulo 1 — Geração de PDF em Produção (JS/Node) — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B3D91",
+    "brand_secondary": "#1E66F5",
+    "brand_accent": "#22A2FF",
+    "brand_ink": "#0A1B33",
+    "brand_muted": "#5C7FB8",
+    "brand_line": "#B7C9E8",
+    "brand_tint": "#EAF2FF",
+    "brand_paper": "#F7FAFF",
+    "color_body": "#0A1B33",
+    "color_heading": "#0B3D91",
+    "color_heading_muted": "#2F5EA8",
+    "color_heading_rule": "#B7C9E8",
+    "color_code_bg": "#EAF2FF",
+    "color_code_text": "#0A1B33",
+    "color_table_header_bg": "#0B3D91",
+    "color_table_header_text": "#F7FAFF",
+    "color_table_body_bg": "#F2F7FF",
+    "color_table_body_text": "#0A1B33",
+    "font_title": "Helvetica-Bold",
+    "font_heading": "Helvetica-Bold",
+    "font_body": "New Computer Modern",
+    "font_mono": "Courier",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Geração de PDF em Produção (JS/Node)",
+    "part_number": 1,
+    "part_title": "Fundamentos e pipeline confiável"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Geração de PDF em Produção (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e pipeline confiável"
+    },
+    {
+      "type": "paragraph",
+      "text": "Geração de PDF parece um problema “resolvido” até o primeiro incidente em produção: páginas cortadas, fontes substituídas, caracteres quebrados, travamentos por memória e discrepâncias entre ambientes. Nesta parte, a meta é estabelecer um modelo mental correto e um pipeline determinístico, capaz de produzir o mesmo documento hoje e amanhã, independentemente da carga ou do nó de execução."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: por que “gerar PDF” falha em produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em produção, o PDF deixa de ser um artefato estático e passa a ser uma função do ambiente: versão do motor de renderização, fontes disponíveis, variáveis de locale, limites de CPU/memória, concorrência e até o conteúdo (picos de volume e dados “esquisitos”). A falha raramente é “o PDF”; é a combinação de:\n\n• Entrada variável (dados) + regras frágeis de layout.\n• Dependências implícitas (fontes do sistema, timezone, configurações regionais).\n• Um renderizador que não foi pensado para determinismo sob concorrência.\n• Ausência de observabilidade: você não sabe qual payload gerou qual arquivo.\n\nO objetivo profissional é reduzir o espaço de estados: tornar explícitas as dependências e tornar previsível a renderização."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Requisitos não funcionais: consistência, performance, rastreabilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de escolher biblioteca, defina requisitos não funcionais. Eles decidem arquitetura.\n\nConsistência\nO mesmo payload deve produzir o mesmo PDF (byte-a-byte quando possível). Isso implica controlar fontes, versões e parâmetros de renderização.\n\nPerformance\nPDFs são CPU-bound (layout) e frequentemente memory-bound (imagens). A capacidade do sistema depende do pior caso, não da média.\n\nRastreabilidade\nCada PDF deve ser rastreável ao payload, à versão do template e ao job que o produziu. Sem isso, incidentes viram “caça ao fantasma”."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist de requisitos (mínimo)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Determinismo: mesma entrada → mesma saída (ou diferenças explicáveis e controladas).",
+        "Isolamento: render não deve depender de estado global do processo.",
+        "Limites: tempo máximo por render e limite de memória por job.",
+        "Observabilidade: correlacionar request_id/job_id → payload_hash → pdf_id.",
+        "Reprocessamento seguro: idempotência e deduplicação.",
+        "Degradação graciosa: fallback de fontes e imagens com logs claros."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Modelo mental: documento, template, dados e renderização determinística"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um pipeline robusto separa quatro responsabilidades:\n\n1) Documento: o que será dito (estrutura, seções, parágrafos, listas, código).\n2) Template: como será apresentado (tipografia, cores, hierarquia, margens).\n3) Dados: valores variáveis (nomes, itens, tabelas, totais).\n4) Renderização: o motor que transforma documento + template + dados em PDF.\n\nQuando esses elementos se misturam — por exemplo, regras de quebra de página embutidas no código de dados — a manutenção vira tentativa e erro. O modelo correto permite testar cada parte isoladamente e evoluir sem regressões."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Representação canônica do conteúdo (exemplo)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Adote uma representação intermediária (IR) para o documento. Ela permite validar estrutura antes de renderizar e facilita testes."
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "// Exemplo de IR (intermediate representation) em JS\nconst doc = {\n  metadata: {\n    title: \"Relatório X\",\n    version: \"2026-03-04\",\n    locale: \"pt-BR\",\n  },\n  blocks: [\n    { type: \"heading\", level: 1, text: \"Relatório\" },\n    { type: \"paragraph\", text: \"Resumo executivo...\" },\n    { type: \"code\", lang: \"js\", content: \"console.log('ok')\" },\n  ],\n};\n\n// A etapa de render recebe doc + theme + rendererOptions\n// e devolve { pdfBuffer, meta }"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Arquitetura do pipeline"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma arquitetura típica, estável sob carga, tem componentes claros e contratos rígidos entre eles.\n\nCamada de dados (payload)\nResponsável por coletar e validar dados. Deve produzir um payload normalizado e versionado.\n\nCamada de template\nDefine estilo e componentes reutilizáveis (títulos, listas, caixas de código). Deve ser versionada como software.\n\nCamada de renderização\nExecuta o motor de layout. Idealmente isolada em processo/worker para limitar impacto de vazamentos e travamentos.\n\nArmazenamento e entrega\nPersistência do PDF (S3-like, filesystem, blob store) e entrega via download/stream. Deve suportar cache e deduplicação."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Arquitetura recomendada (visão operacional)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "API: recebe requisição, autentica, valida parâmetros e cria job.",
+        "Fila: enfileira jobs de render (prioridades quando necessário).",
+        "Workers: consomem jobs e renderizam PDFs com limites de CPU/memória.",
+        "Storage: grava PDF com chave determinística (ex.: hash do payload + template).",
+        "CDN/Download: entrega o arquivo e reduz carga do backend.",
+        "Observabilidade: logs estruturados, métricas de duração e taxa de erro, tracing."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Tratamento de fontes, layout e quebras de página"
+    },
+    {
+      "type": "paragraph",
+      "text": "Fontes são a causa mais comum de “funciona na minha máquina”. Para consistência:\n\n• Empacote fontes junto da aplicação (não dependa de fontes do sistema).\n• Defina fallback explícito (primária + secundária) e registre substituições.\n• Normalize encoding (UTF-8) e teste com acentuação e caracteres especiais.\n\nQuebras de página\nA quebra correta é uma negociação entre legibilidade e regras. Regra prática: evite “forçar” quebras com offsets mágicos; prefira componentes que saibam se medir (ex.: títulos que não ficam órfãos da seção). Em documentos longos, defina:\n\n• política de órfãos/viúvas (linhas soltas no topo/rodapé),\n• títulos que “andam” com o primeiro parágrafo,\n• tabelas que se repartem com cabeçalho repetido (quando aplicável)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Erros comuns e sintomas típicos (encoding, fontes, imagens, CSS)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Caracteres quebrados (�): encoding incorreto ou fonte sem glifos necessários.",
+        "Fonte “mudou sozinha”: fallback do motor porque a fonte declarada não está disponível no runtime.",
+        "Layout diferente entre ambientes: versões diferentes do motor (Chromium/engine), DPI, ou CSS não suportado.",
+        "PDF enorme e lento: imagens sem compressão/redimensionamento, ou conteúdo repetido indevidamente.",
+        "Estouro de memória: render de páginas muito longas, muitas imagens em alta resolução, ou concorrência alta no worker.",
+        "Cortes em tabelas/listas: ausência de regras de quebra ou componente não fragmentável."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Boas práticas e checklist mínimo de produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Boas práticas não são “capricho”; elas reduzem incidentes e tempo de diagnóstico."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Boas práticas essenciais"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Versione template e payload: inclua template_version e payload_version no metadado do PDF.",
+        "Calcule hash do payload normalizado para deduplicação e idempotência.",
+        "Isolar render em worker/processo separado, com limites e timeouts rígidos.",
+        "Armazenar artefatos de debug (payload redigido, logs, métricas) com correlação.",
+        "Testar com casos extremos: strings longas, muitos itens, emojis, acentuação, imagens grandes.",
+        "Definir política de fallback: quando falhar, retornar erro rastreável (não PDF corrompido)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist mínimo (para o seu teste de geração)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "O PDF abre em leitores diferentes (Chrome, Acrobat, mobile).",
+        "Títulos e regras (linhas) mantêm consistência visual em todas as páginas.",
+        "Blocos de código mantêm alinhamento e não estouram margens.",
+        "Acentos e caracteres especiais renderizam corretamente (pt-BR).",
+        "O nome do arquivo corresponde ao esperado (Teste - Parte 1.pdf).",
+        "Metadados do documento (título/autor) estão presentes.",
+        "Quebras de página não cortam seções no meio de títulos e listas."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 2, você validará a robustez operacional: implementação em JS/Node, filas/workers, testes e observabilidade — isto é, o que transforma “gera PDF” em um serviço confiável."
+    },
+    {
+      "type": "paragraph",
+      "text": "(continua na Parte 2)"
+    }
+  ]
+}

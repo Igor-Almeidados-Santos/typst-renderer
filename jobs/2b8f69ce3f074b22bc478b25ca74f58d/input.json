@@ -1,0 +1,451 @@
+{
+  "metadata": {
+    "book_title": "Teste Técnico",
+    "title": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "01",
+    "chapter_title": "Teste técnico: validação de geração de PDF",
+    "part_number": "1",
+    "part_title": "Fundamentos e critérios de validação",
+    "brand_primary": [
+      11,
+      59,
+      140
+    ],
+    "brand_secondary": [
+      17,
+      103,
+      177
+    ],
+    "brand_accent": [
+      242,
+      193,
+      78
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      96,
+      112,
+      138
+    ],
+    "brand_line": [
+      215,
+      226,
+      242
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      11,
+      18,
+      32
+    ],
+    "color_heading": [
+      11,
+      59,
+      140
+    ],
+    "color_heading_muted": [
+      17,
+      103,
+      177
+    ],
+    "color_heading_rule": [
+      215,
+      226,
+      242
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      230,
+      237,
+      247
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      26,
+      46
+    ],
+    "color_code_header_text": [
+      185,
+      199,
+      230
+    ],
+    "color_table_header_bg": [
+      11,
+      59,
+      140
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      11,
+      18,
+      32
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Teste técnico: validação de geração de PDF"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e critérios de validação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em produção, “gerar um PDF” não é um detalhe de implementação: é um pipeline de entrega de informação. Um PDF que falha (ou varia) compromete auditoria, faturamento, contratos, relatórios e qualquer documento que seja consumido por humanos e por sistemas. Esta parte define o que significa “PDF válido” sob duas lentes complementares: editorial (leitura, hierarquia, consistência) e técnica (metadados, repetibilidade, integridade)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: o que um “PDF válido” precisa entregar em produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "O problema real raramente é “renderizar texto”. O problema é garantir que o documento continue correto quando o conteúdo muda, quando a carga aumenta, quando a fonte do sistema muda, quando a biblioteca é atualizada e quando o PDF precisa ser verificado por terceiros. Em produção, um PDF válido é aquele que preserva significado e verificabilidade: o leitor encontra o que precisa, na ordem esperada, com legibilidade consistente; e o sistema consegue reproduzir o mesmo artefato a partir do mesmo input, com metadados e estrutura confiáveis."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Validade semântica: títulos, seções e listas comunicam hierarquia de forma inequívoca.",
+        "Validade visual: contraste, espaçamento, alinhamento e quebras de página não sabotam a leitura.",
+        "Validade operacional: o pipeline é determinístico (ou controladamente versionado), observável e testável.",
+        "Validade forense: é possível comprovar versão, origem e integridade do artefato (metadados, hash, logs)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Requisitos funcionais e não funcionais"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Requisitos funcionais"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Gerar o PDF a partir de um input estruturado (conteúdo + metadados).",
+        "Suportar blocos editoriais: títulos (H1–H3), parágrafos, listas, código e tabelas.",
+        "Incluir metadados mínimos: título, autor, idioma, modo e identificação de parte.",
+        "Permitir paginação e quebras previsíveis (sem sobreposição e sem truncamento)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Requisitos não funcionais"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Repetibilidade: mesmo input → mesmo output (ou diferenças explicáveis por versão controlada).",
+        "Legibilidade: tipografia estável e contrastes adequados (especialmente em código).",
+        "Portabilidade: render consistente em leitores comuns (desktop, mobile, impressão).",
+        "Desempenho: tempo de geração dentro de SLO; uso de memória controlado.",
+        "Observabilidade: logs, métricas e correlação por request/artefato.",
+        "Segurança: evitar injeções no conteúdo, vazamento de dados e dependências não confiáveis."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Modelo mental: pipeline de geração"
+    },
+    {
+      "type": "paragraph",
+      "text": "Trate a geração de PDF como uma linha de montagem. Cada etapa transforma um tipo de dado e introduz riscos específicos. O erro comum é validar só o “resultado final” visualmente. O modelo correto valida o pipeline por invariantes: contratos entre etapas, versões de dependências e critérios de aceitação verificáveis."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Conteúdo (AST editorial): estrutura explícita (títulos, listas, código).",
+        "Layout: regras de estilo (fontes, tamanhos, espaçamentos, cores) aplicadas de forma determinística.",
+        "Render: motor que converte layout em páginas (paginação, quebras, hifenização, incorporação de fontes).",
+        "Artefato: PDF final com metadados, compressão, compatibilidade e integridade."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.1 Riscos por etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Conteúdo: campos ausentes, caracteres invisíveis, encoding inconsistente, tamanhos extremos.",
+        "Layout: fontes indisponíveis, regras conflitantes, estilos não versionados.",
+        "Render: diferenças entre plataformas, mudanças de engine, bugs em paginação.",
+        "Artefato: metadados incompletos, fontes não incorporadas, tamanho excessivo, incompatibilidades."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Checklists de validação editorial"
+    },
+    {
+      "type": "paragraph",
+      "text": "A validação editorial garante que o documento “se sustenta” para leitura e referência. Não é estética: é ergonomia cognitiva. Um PDF pode estar tecnicamente correto e editorialmente inválido se a hierarquia não estiver clara ou se a leitura for cansativa."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.1 Hierarquia e navegação"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Existe H1 único por capítulo e H2/H3 seguem ordem lógica.",
+        "Títulos não ficam isolados no fim da página (evitar “título órfão”).",
+        "Listas têm itens homogêneos (mesmo padrão de redação e pontuação).",
+        "Código aparece em bloco próprio, com fonte monoespaçada e contraste alto."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.2 Legibilidade e consistência"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Corpo do texto com tamanho confortável e espaçamento regular.",
+        "Regras/linhas (divisórias) discretas: ajudam, não poluem.",
+        "Notas e checklists destacados por fundo leve (tint), sem competir com o texto.",
+        "Tabelas com cabeçalho forte e linhas suficientes para leitura (sem “efeito zebra” obrigatório)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Checklists de validação técnica"
+    },
+    {
+      "type": "paragraph",
+      "text": "A validação técnica transforma “parece bom” em “está sob controle”. Aqui o foco é previsibilidade: metadados, fontes, determinismo, compatibilidade e sinais para diagnóstico quando algo sai do esperado."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.1 Metadados e rastreabilidade"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Title e Author preenchidos; idioma definido (pt-BR) quando aplicável.",
+        "Campos de modo/parte presentes para auditoria interna.",
+        "Identificador do artefato (hash) registrado no pipeline (fora do PDF, em logs/DB).",
+        "Versões de dependências registradas (engine, fontes, libs)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.2 Fontes e renderização"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fontes essenciais incorporadas (embedding) para estabilidade entre máquinas.",
+        "Fallbacks definidos e testados (sem troca silenciosa de métricas de fonte).",
+        "Quebras de linha e paginação estáveis em inputs representativos.",
+        "Tamanho do PDF controlado (compressão, imagens, fontes subset)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.3 Repetibilidade e regressão"
+    },
+    {
+      "type": "paragraph",
+      "text": "Determinismo absoluto pode ser inviável quando há timestamps, IDs ou ordenações não controladas. O objetivo prático é repetibilidade sob contrato: diferenças permitidas e rastreáveis. Em CI, compare o que importa: número de páginas, presença de seções, metadados e (quando possível) hash do conteúdo normalizado."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "content": "Invariantes recomendadas (smoke):\n- metadados obrigatórios presentes\n- PDF abre em leitores padrão\n- numero de paginas dentro do esperado\n- sumario e cabecalhos presentes\n- fontes incorporadas (ou fallback permitido)\n- blocos de codigo com contraste e monoespaçada\n- tamanho do arquivo abaixo do limite (ex.: 5–10 MB)\n- hash do input registrado e correlacionado",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "Invariantes "
+          },
+          {
+            "kind": "function",
+            "text": "recomendadas"
+          },
+          {
+            "kind": "plain",
+            "text": " (smoke)"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " metadados obrigatórios presentes"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " PDF abre em leitores padrão"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " numero de paginas dentro do esperado"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " sumario e cabecalhos presentes"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " fontes "
+          },
+          {
+            "kind": "function",
+            "text": "incorporadas"
+          },
+          {
+            "kind": "plain",
+            "text": " (ou fallback permitido)"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " blocos de codigo com contraste e monoespaçada"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " tamanho do arquivo abaixo do "
+          },
+          {
+            "kind": "function",
+            "text": "limite"
+          },
+          {
+            "kind": "plain",
+            "text": " (ex."
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "–"
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " MB)"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " hash do input registrado e correlacionado"
+          }
+        ]
+      ]
+    }
+  ]
+}

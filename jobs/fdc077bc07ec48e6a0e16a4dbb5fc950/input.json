@@ -1,0 +1,371 @@
+{
+  "metadata": {
+    "book_title": "Teste Técnico",
+    "title": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Teste técnico: validação de geração de PDF",
+    "part_number": 1,
+    "part_title": "Fundamentos e critérios de validação",
+    "brand_primary": [
+      11,
+      59,
+      140
+    ],
+    "brand_secondary": [
+      17,
+      103,
+      177
+    ],
+    "brand_accent": [
+      242,
+      193,
+      78
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      96,
+      112,
+      138
+    ],
+    "brand_line": [
+      215,
+      226,
+      242
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      11,
+      18,
+      32
+    ],
+    "color_heading": [
+      11,
+      59,
+      140
+    ],
+    "color_heading_muted": [
+      17,
+      103,
+      177
+    ],
+    "color_heading_rule": [
+      215,
+      226,
+      242
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      230,
+      237,
+      247
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      26,
+      46
+    ],
+    "color_code_header_text": [
+      185,
+      199,
+      230
+    ],
+    "color_table_header_bg": [
+      11,
+      59,
+      140
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      11,
+      18,
+      32
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Teste técnico: validação de geração de PDF"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e critérios de validação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em produção, “gerar PDF” não é um detalhe de interface: é uma etapa de cadeia de custódia documental. Um PDF é considerado válido quando é legível, consistente e verificável sob repetição, variação de carga e mudanças controladas de conteúdo. Esta parte define o que validar — e por quê — antes de automatizar qualquer coisa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: o que um “PDF válido” precisa entregar em produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "O problema real raramente é “converter HTML em PDF”. O problema é operar um pipeline que transforma dados em um artefato que será lido por humanos e por processos (auditoria, compliance, suporte, clientes). Quando o PDF falha, o impacto costuma ser assimétrico: um relatório ilegível trava decisões; uma fatura com layout instável vira disputa; um documento sem metadados dificulta rastreabilidade."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Legibilidade: hierarquia tipográfica, contraste, margens e quebra de linha previsíveis.",
+        "Consistência: mesmo input → mesmo output (ou variação explicável), sem “saltos” de paginação.",
+        "Integridade: fontes incorporadas quando necessário, ausência de recursos externos frágeis, tamanho controlado.",
+        "Verificabilidade: metadados, identificação de versão, possibilidade de checar páginas/objetos programaticamente."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Requisitos funcionais e não funcionais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Requisitos funcionais descrevem o conteúdo e a estrutura do documento. Requisitos não funcionais descrevem qualidades: desempenho, estabilidade e previsibilidade do render. Separar esses dois grupos evita uma armadilha comum: testar apenas “se abriu” e ignorar quebras sutis de layout que aparecem sob carga ou com dados reais."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Funcionais (o que o PDF deve conter)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Título e seções conforme sumário editorial; numeração quando aplicável.",
+        "Tabelas e listas com alinhamento consistente e sem truncamento.",
+        "Blocos de código com fonte monoespaçada e contraste adequado.",
+        "Rodapé/cabeçalho quando forem requisito de marca ou rastreio (data, versão)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Não funcionais (como o PDF deve se comportar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Determinismo: mesma entrada gera o mesmo PDF (hash estável quando possível).",
+        "Robustez: não quebrar com caracteres especiais, nomes longos, campos vazios, grandes volumes.",
+        "Performance: latência aceitável e sem vazamento de memória no serviço de render.",
+        "Portabilidade: abrir corretamente em leitores comuns (desktop, mobile) e em pipelines de ingestão."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Modelo mental: conteúdo → layout → render → artefato"
+    },
+    {
+      "type": "paragraph",
+      "text": "Trate a geração de PDF como pipeline com contratos. Cada etapa deve produzir um resultado verificável e ter um fallback claro. Quando você não sabe em qual etapa a divergência nasceu, a depuração vira tentativa e erro."
+    },
+    {
+      "type": "table",
+      "caption": "Pipeline e pontos de falha típicos",
+      "columns": [
+        "Etapa",
+        "Entrada",
+        "Saída",
+        "Falhas comuns",
+        "O que validar"
+      ],
+      "rows": [
+        [
+          "Conteúdo",
+          "Dados (JSON), templates",
+          "Árvore semântica (seções, blocos)",
+          "Campos ausentes, ordem errada, strings gigantes",
+          "Cobertura de campos, regras de formatação, limites"
+        ],
+        [
+          "Layout",
+          "Árvore semântica, estilos",
+          "Modelo de layout (páginas/fluxo)",
+          "Quebras ruins, widows/orphans, tabelas estourando",
+          "Hierarquia de títulos, espaçamento, overflow"
+        ],
+        [
+          "Render",
+          "Modelo de layout",
+          "Bytes do PDF",
+          "Fontes não embutidas, imagens quebradas, erros intermitentes",
+          "Metadados, fontes, objetos, reprodutibilidade"
+        ],
+        [
+          "Artefato",
+          "Bytes do PDF",
+          "Arquivo distribuído",
+          "Cache errado, upload truncado, MIME incorreto",
+          "Tamanho, integridade, checksum, headers"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Checklists de validação editorial"
+    },
+    {
+      "type": "paragraph",
+      "text": "A validação editorial é sobre leitura: o documento precisa “se sustentar” visualmente, sem exigir esforço extra do leitor. Esse tipo de falha não aparece em logs; aparece em suporte e retrabalho."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.1 Hierarquia e consistência"
+    },
+    {
+      "type": "list",
+      "items": [
+        "H1 único por documento; H2/H3 usados sem pular níveis.",
+        "Títulos curtos e consistentes com o sumário (mesma grafia).",
+        "Espaçamento antes/depois de títulos e listas constante em todo o PDF.",
+        "Linhas de regra (se usadas) com cor discreta e alinhadas à largura do texto."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.2 Legibilidade e composição"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tamanho de fonte confortável; corpo com bom contraste no papel (branco).",
+        "Comprimento de linha estável; evitar colunas estreitas com texto longo.",
+        "Listas com marcadores uniformes; sem quebras que separem o rótulo do item.",
+        "Tabelas: cabeçalho destacado; evitar células com parágrafos extensos sem quebra."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Checklists de validação técnica"
+    },
+    {
+      "type": "paragraph",
+      "text": "A validação técnica garante que o PDF é um artefato confiável para armazenar, buscar e comparar. É aqui que entram metadados, fontes e determinismo."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.1 Metadados e rastreabilidade"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Title/Author/Language preenchidos; modo/parte/capítulo identificados.",
+        "Versão do gerador e timestamp (quando requerido) registrados de forma consistente.",
+        "Identificador do documento (ex.: requestId, jobId) disponível para auditoria interna."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.2 Fontes e recursos"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fontes críticas incorporadas (embed) para evitar substituição em leitores distintos.",
+        "Imagens (se houver) com resolução adequada e sem dependência de URLs externas no momento do render.",
+        "Tamanho final do arquivo dentro do limite operacional (armazenamento, e-mail, API)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.3 Determinismo e repetibilidade"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Mesmo payload de entrada produz paginação idêntica em execuções repetidas.",
+        "Sob concorrência, não há mistura de conteúdo entre requisições (isolamento).",
+        "Falhas são ruidosas e diagnosticáveis: erro explícito, não PDF “corrompido silencioso”."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Exemplo mínimo de contratos de validação (JS/Node)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo do exemplo é mostrar a forma do contrato, não a biblioteca. Em produção, você encapsula o gerador e expõe uma função pura o suficiente para ser testada com entradas determinísticas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// contrato mínimo: gerar bytes e metadados observáveis\n// (o renderPdf é um adaptador para sua stack real)\nexport async function generatePdfArtifact({ input, renderPdf }) {\n  const startedAt = new Date().toISOString();\n  const pdfBytes = await renderPdf(input);\n\n  if (!pdfBytes || pdfBytes.length < 1000) {\n    throw new Error('PDF inválido: bytes insuficientes');\n  }\n\n  // contrato de rastreabilidade (ex.: log estruturado/telemetria)\n  return {\n    pdfBytes,\n    meta: {\n      startedAt,\n      inputSignature: stableSignature(input),\n      generatorVersion: process.env.GENERATOR_VERSION ?? 'dev',\n    },\n  };\n}\n\nfunction stableSignature(input) {\n  // em produção use um hash estável (ex.: SHA-256) do payload normalizado\n  return JSON.stringify(input);\n}"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns (diagnóstico rápido)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Paginação “saltando”: fontes diferentes entre ambientes; falta de embed; CSS/estilos não determinísticos.",
+        "Texto truncado em tabela: largura fixa sem quebra; falta de regras de wrapping; conteúdo real maior que o mock.",
+        "PDF corrompido ocasionalmente: concorrência e reuso de buffers; upload parcial; timeout sem retry idempotente.",
+        "Diferenças entre leitores: transparência/imagens; fontes substituídas; recursos externos no momento do render."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional (pronto para usar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Defina contratos por etapa (conteúdo/layout/render/artefato) e registre métricas por etapa.",
+        "Tenha um conjunto fixo de PDFs “golden” versionado para comparação em CI.",
+        "Valide metadados e embed de fontes; trate como requisito, não como detalhe.",
+        "Inclua testes de borda (nomes longos, UTF-8, volumes) antes de ir a produção.",
+        "Falha deve ser explícita e rastreável: erro claro + correlação (requestId/jobId)."
+      ]
+    }
+  ]
+}

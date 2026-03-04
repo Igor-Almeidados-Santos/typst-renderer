@@ -1,0 +1,253 @@
+{
+  "metadata": {
+    "book_title": "Teste técnico",
+    "title": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B3D91",
+    "brand_secondary": "#155EEF",
+    "brand_accent": "#22A2FF",
+    "brand_ink": "#08244A",
+    "brand_muted": "#2E5C9A",
+    "brand_line": "#7AA7FF",
+    "brand_tint": "#EAF2FF",
+    "brand_paper": "#F7FAFF",
+    "color_body": "#0B2A4A",
+    "color_heading": "#0B3D91",
+    "color_heading_muted": "#2E5C9A",
+    "color_heading_rule": "#7AA7FF",
+    "color_code_bg": "#EAF2FF",
+    "color_code_text": "#08244A",
+    "color_table_header_bg": "#0B3D91",
+    "color_table_header_text": "#F7FAFF",
+    "color_table_body_bg": "#F1F6FF",
+    "color_table_body_text": "#0B2A4A",
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Geração de PDF em produção (JS/Node)",
+    "part_number": 1,
+    "part_title": "Fundamentos e especificação do teste"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Geração de PDF em produção (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e especificação do teste"
+    },
+    {
+      "type": "paragraph",
+      "text": "Gerar PDF em produção parece simples até o dia em que um detalhe “inofensivo” vira incidente: fonte que não carrega, quebra de página diferente entre ambientes, caracteres trocados, memória estourando, tempo de renderização variando ou arquivos inválidos para um leitor específico. Nesta Parte 1, o foco é construir o entendimento correto do problema e estabelecer um teste técnico que valide a geração de PDF com previsibilidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: “PDF que funciona em produção”"
+    },
+    {
+      "type": "paragraph",
+      "text": "O problema não é “gerar um PDF”, mas sim gerar o mesmo PDF (ou um PDF semanticamente equivalente) repetidamente, sob carga, com rastreabilidade, dentro de limites de tempo e memória, e com compatibilidade suficiente para leitores e integrações (e-mail, sistemas legados, assinatura, impressão). Em produção, você paga por variância: qualquer não-determinismo vira bug difícil de reproduzir."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "O que costuma quebrar"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fontes: fallback silencioso muda largura de texto e quebra de linha/página.",
+        "Encoding: caracteres acentuados, símbolos e emojis podem falhar ou “virar quadradinhos”.",
+        "Margens e métricas: diferenças de DPI/renderizador alteram paginação.",
+        "Assets: imagens remotas, SVGs complexos, URLs expiradas, CORS, cache inconsistente.",
+        "Concurrência: picos de requisições saturam CPU/memória; o serviço passa a “oscilar”.",
+        "Compatibilidade: PDF/A, transparência, camadas e features específicas não são aceitas por todos os leitores."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Requisitos não-funcionais que definem sucesso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em um teste técnico de produção, requisitos não-funcionais têm o mesmo peso que o “conteúdo” do PDF. Sem eles, o teste valida apenas uma demo. Abaixo estão os requisitos que mais influenciam arquitetura e escolha de renderizador."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Determinismo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Determinismo significa: dadas as mesmas entradas, o output deve ser o mesmo ou variar apenas dentro de limites explicitamente aceitos. O porquê: sem determinismo, você não tem como criar validações automáticas robustas (golden files) nem auditar regressões."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Performance e limites"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tempo: p95/p99 de geração por tipo de documento.",
+        "Memória: pico durante renderização (especialmente com imagens).",
+        "Tamanho do arquivo: PDFs gigantes aumentam latência e custos de armazenamento.",
+        "Throughput: quantos PDFs/minuto por worker sem degradar previsibilidade."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.3 Compatibilidade e portabilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "O mesmo PDF pode abrir “ok” no Chrome e falhar em um leitor corporativo antigo. Em produção, a pergunta não é “abre no meu computador?”, mas “abre no conjunto de leitores do meu ecossistema?”. Isso define regras como: evitar features exóticas, incorporar fontes, normalizar imagens e limitar transparências."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Modelo mental correto: pipeline de renderização"
+    },
+    {
+      "type": "paragraph",
+      "text": "Pense na geração como um pipeline com fronteiras claras. Separar responsabilidades reduz variação e facilita testes: (1) dados → (2) composição → (3) layout → (4) render → (5) validação/armazenamento."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.1 Dados → composição"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesta etapa, você transforma dados (JSON, DTOs) em um documento lógico: seções, parágrafos, listas, código. O porquê: isolar a composição permite testar sem renderização (testes de unidade) e diminui o acoplamento com o renderizador."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.2 Layout → render"
+    },
+    {
+      "type": "paragraph",
+      "text": "Aqui entram as decisões que causam efeitos colaterais: fontes, quebras, hifenização, métricas, imagens e paginação. O porquê de tratar como etapa distinta: é no layout/render que surgem os bugs difíceis (quebras divergentes entre ambientes)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Estrutura do documento: blocos, hierarquia e quebras"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para teste técnico, escolha uma estrutura de documento que seja: (a) expressiva o suficiente para representar o livro; (b) restrita o bastante para manter previsibilidade. Blocos bem definidos (heading/paragraph/list/code/pagebreak) eliminam ambiguidades."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.1 Regras práticas de composição"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Nunca dependa de “quebra automática” para páginas críticas; use quebras intencionais quando necessário.",
+        "Evite linhas muito longas em código; defina wrap ou faça quebra manual em exemplos didáticos.",
+        "Prefira listas para estruturas que parecem tabelas quando a precisão de colunas não for mandatória.",
+        "Trate títulos como âncoras semânticas; eles guiam navegação e testes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Exemplo prático comentado: documento mínimo (JS/Node)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo do exemplo é exercitar: headings em níveis diferentes, parágrafos, lista, bloco de código e uma quebra de página. Isso cria um “mínimo representativo” para validar layout e tipografia sem complexidade desnecessária."
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "// Exemplo conceitual de composição (independente do renderizador)\n// A ideia é gerar uma árvore de blocos determinística.\n\nfunction buildMinimalDoc(input) {\n  return [\n    { type: 'heading', level: 1, text: input.title },\n    { type: 'paragraph', text: `Versão: ${input.version}` },\n    { type: 'list', items: input.checks },\n    { type: 'pagebreak' },\n    { type: 'heading', level: 2, text: 'Trecho de código' },\n    { type: 'code', lang: 'js', content: input.snippet }\n  ];\n}\n\nconst doc = buildMinimalDoc({\n  title: 'Teste técnico',\n  version: '1.0.0',\n  checks: ['Fontes incorporadas', 'Unicode ok', 'Quebras previsíveis'],\n  snippet: \"console.log('PDF determinístico');\"\n});\n\nconsole.log(doc);"
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que esse exemplo funciona como teste: ele é pequeno, mas sensível a variações. Se a fonte falhar, a lista muda de largura; se o encoding falhar, caracteres especiais denunciam; se a paginação variar, a quebra de página e o heading seguinte “dançam”."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Estudo de caso (mini): incidente por fonte e fallback"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cenário comum: em staging, o servidor tem a fonte instalada; em produção, não. O renderizador faz fallback para uma fonte parecida, mas com métricas diferentes. Resultado: a última linha de um parágrafo empurra um item de lista para a página seguinte, quebrando a paginação esperada e, às vezes, sobrepondo rodapés/assinaturas."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sintoma: PDFs “quase iguais”, mas com paginação divergente.",
+        "Causa raiz: dependência implícita de fonte do sistema.",
+        "Correção: incorporar (embed) fontes e bloquear fallback silencioso quando possível.",
+        "Prevenção: teste automatizado que detecta variação de layout."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Comparar PDF por byte como único critério: metadados/ordem interna podem variar; prefira validações em camadas (ver Parte 2).",
+        "Buscar assets pela internet em tempo de render: latência e falhas externas contaminam o SLA.",
+        "Misturar composição e render no mesmo módulo: reduz testabilidade e aumenta regressões.",
+        "Não fixar versões de fontes/renderizador: pequenas mudanças mudam kerning e quebra de linha.",
+        "Ignorar limites de memória ao embutir imagens grandes sem otimização."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Boas práticas essenciais (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Defina contrato de entrada (schema) e normalize dados antes de compor.",
+        "Incorpore fontes e trate caracteres fora do conjunto esperado explicitamente.",
+        "Crie um documento mínimo representativo para rodar em CI e em produção como health-check.",
+        "Separe: (a) composição; (b) render; (c) validação/armazenamento.",
+        "Versione o template e o renderizador como dependências de produto."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Checklist profissional (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "[ ] Entradas normalizadas e validadas (schema).",
+        "[ ] Fontes incorporadas e fallback controlado.",
+        "[ ] Documento mínimo representativo definido e versionado.",
+        "[ ] Quebras de página intencionais onde necessário.",
+        "[ ] Execução reproduzível entre ambientes (staging vs produção).",
+        "[ ] Limites de tempo/memória documentados para o tipo de PDF."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Conexão: na Parte 2, o foco sai do “o que renderizar” e vai para “como operar”: validação automatizada (golden files), observabilidade, performance e resiliência do pipeline em produção."
+    }
+  ]
+}

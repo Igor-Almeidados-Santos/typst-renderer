@@ -1,0 +1,416 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla: do Zero ao Avançado (Edição de Estudo)",
+    "title": "Capítulo 1 — Ambiente, Console e Fundamentos do JS — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Ambiente, Console e Fundamentos do JS",
+    "part_number": 1,
+    "part_title": "O que é JavaScript (história, ECMAScript, engines, runtime)",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      127,
+      249
+    ],
+    "brand_accent": [
+      255,
+      107,
+      44
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      102,
+      112,
+      133
+    ],
+    "brand_line": [
+      208,
+      213,
+      221
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      16,
+      24,
+      40
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      71,
+      84,
+      103
+    ],
+    "color_heading_rule": [
+      208,
+      213,
+      221
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      230,
+      237,
+      243
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_header_bg": [
+      238,
+      244,
+      255
+    ],
+    "color_table_header_text": [
+      11,
+      16,
+      32
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      16,
+      24,
+      40
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Ambiente, Console e Fundamentos do JS"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — O que é JavaScript (história, ECMAScript, engines, runtime)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Problema real: “eu escrevi JS, mas não entendo onde ele roda”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quem começa em JavaScript costuma aprender “sintaxe” antes de entender o ambiente. O resultado aparece rápido: código que funciona no console do navegador, mas falha no Node; comportamentos diferentes entre browsers; APIs que “existem” em um lugar e somem em outro. A raiz é simples: JavaScript é a linguagem. O restante (DOM, fetch, timers, arquivos) são APIs do runtime, não da linguagem."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Fundamentação: linguagem, especificação e implementações"
+    },
+    {
+      "type": "paragraph",
+      "text": "JavaScript é uma linguagem padronizada pela especificação ECMAScript (ECMA-262). A especificação descreve o comportamento da linguagem (tipos, operadores, objetos nativos como Array/Promise, semântica de execução). Engines (motores) são implementações dessa especificação: elas leem seu código, executam e otimizam. Exemplos de engines incluem V8 (Chrome/Node), SpiderMonkey (Firefox) e JavaScriptCore (Safari)."
+    },
+    {
+      "type": "paragraph",
+      "text": "Um runtime é a “plataforma” que embala a engine e oferece APIs externas. No navegador, o runtime inclui Web APIs (DOM, eventos, fetch, Storage, timers), além do ambiente de renderização. No Node.js, o runtime fornece APIs de sistema (filesystem, processos, rede) e um modelo próprio para módulos e I/O. Portanto: a mesma linguagem, runtimes diferentes."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Modelo mental correto: 3 camadas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) ECMAScript (a linguagem): sintaxe + semântica + objetos nativos (Object, Array, Map, Set, Date, Promise etc.).",
+        "2) Engine (implementação): interpreta/compila/otimiza e executa ECMAScript (V8, SpiderMonkey, JavaScriptCore).",
+        "3) Runtime (ambiente): expõe APIs ao seu código (navegador: DOM/Web APIs; Node: fs/process/net), define o “mundo” ao redor da engine."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Arquitetura de execução (visão de alto nível)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você roda um script, a engine o executa em um contexto global do runtime. No navegador, esse contexto costuma estar associado ao objeto global (globalThis / window) e à página; no Node, ao objeto global (globalThis / global) e ao processo. A engine cuida da linguagem; o runtime cuida de integração com o mundo externo."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Exemplos práticos comentados"
+    },
+    {
+      "type": "paragraph",
+      "text": "O exemplo abaixo mostra o que é “da linguagem” (ECMAScript) e o que é “do runtime” (Web API ou Node API). Se você entender essa separação desde o início, você evita 80% das confusões de iniciante."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// ECMAScript (linguagem): existe no navegador e no Node\nconst xs = [1, 2, 3].map(x => x * 2);\nconsole.log(xs);\n\n// Runtime do navegador (Web API): existe no browser, não no Node puro\n// document.querySelector('#app');\n\n// Runtime do Node (Node APIs): existe no Node, não no navegador\n// const fs = require('node:fs');\n// fs.readFileSync('arquivo.txt', 'utf8');\n\n// Objeto global padrão\nconsole.log(globalThis);",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// ECMAScript (linguagem): existe no navegador e no Node"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " xs "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "]."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "(x "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(xs);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Runtime do navegador (Web API): existe no browser, não no Node puro"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// document.querySelector('#app');"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Runtime do Node (Node APIs): existe no Node, não no navegador"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// const fs = require('node:fs');"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// fs.readFileSync('arquivo.txt', 'utf8');"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Objeto global padrão"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(globalThis);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Estudo de caso: o mesmo algoritmo em dois runtimes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um algoritmo simples de validar entrada e transformar dados: ele é 100% ECMAScript e deve funcionar em qualquer lugar. Já “ler do usuário” muda por runtime: no navegador vem de um formulário (DOM/eventos); no Node vem de stdin/argv. Ao separar “núcleo” (puro) de “bordas” (I/O), seu código vira portátil, testável e mais fácil de evoluir."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir JavaScript com DOM: DOM é API do navegador, não parte da linguagem.",
+        "Achar que “console.log” define o que é JS: console é uma ferramenta do runtime.",
+        "Tentar usar APIs do Node no browser (fs, process) ou APIs do browser no Node (document).",
+        "Atribuir diferenças de comportamento à “linguagem”, quando são diferenças de runtime/versões."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sempre pergunte: isto é ECMAScript (linguagem) ou API do runtime?",
+        "Mantenha o “núcleo” do código independente de DOM/Node (funções puras quando possível).",
+        "Leia erros com foco no ambiente: “document is not defined” quase sempre significa “você está no Node”.",
+        "Use globalThis para raciocinar sobre o objeto global sem travar em window/global."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sei diferenciar linguagem (ECMAScript), engine e runtime.",
+        "Consigo dar exemplos de APIs do navegador vs APIs do Node.",
+        "Entendo por que o mesmo código pode falhar em ambientes diferentes.",
+        "Consigo identificar, por uma mensagem de erro, se estou no runtime errado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Conexão com as próximas partes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 2, você vai montar o ambiente de estudo (editor, Node e navegador) e aprender um fluxo mínimo de execução. Na Parte 3, vamos entrar em DevTools e depuração: como enxergar o código rodando de verdade, passo a passo."
+    }
+  ]
+}

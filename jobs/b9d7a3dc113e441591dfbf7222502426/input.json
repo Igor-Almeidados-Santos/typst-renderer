@@ -1,0 +1,264 @@
+{
+  "metadata": {
+    "book_title": "Teste técnico",
+    "title": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B1F3A",
+    "brand_secondary": "#123B73",
+    "brand_accent": "#2D6CDF",
+    "brand_ink": "#06121F",
+    "brand_muted": "#6E8FB8",
+    "brand_line": "#A9C2E6",
+    "brand_tint": "#E6F0FF",
+    "brand_paper": "#F7FAFF",
+    "color_body": "#0A1B2E",
+    "color_heading": "#0B2E5F",
+    "color_heading_muted": "#2B5B9A",
+    "color_heading_rule": "#8FB1DD",
+    "color_code_bg": "#0A2447",
+    "color_code_text": "#D9ECFF",
+    "color_table_header_bg": "#123B73",
+    "color_table_header_text": "#F7FAFF",
+    "color_table_body_bg": "#EAF2FF",
+    "color_table_body_text": "#0A1B2E",
+    "font_title": "Helvetica-Bold",
+    "font_heading": "Helvetica-Bold",
+    "font_body": "New Computer Modern",
+    "font_mono": "Courier",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Validação da geração de PDF em ambiente de Produção",
+    "part_number": 1,
+    "part_title": "Preparação e pipeline mínimo"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Validação da geração de PDF em ambiente de Produção"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Preparação e pipeline mínimo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta Parte estabelece um pipeline mínimo, reproduzível e validável para gerar PDFs com qualidade editorial em ambiente de Produção. O foco não é “gerar qualquer PDF”, mas produzir um artefato com previsibilidade: estrutura, hierarquia, tipografia, blocos de código, listas, tabelas e quebras de página devem se comportar de forma determinística."
+    },
+    {
+      "type": "paragraph",
+      "text": "A decisão central deste capítulo é tratar o PDF como produto final: uma saída compilada a partir de um contrato de entrada. Em Produção, contratos são mais importantes que exemplos. Se o contrato é estável, a operação é estável; se o contrato é frágil, a operação vira exceção como rotina."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Escopo do teste técnico e critérios de aceite"
+    },
+    {
+      "type": "paragraph",
+      "text": "O escopo deste teste técnico é validar o ciclo completo: (1) preparar o conteúdo e metadados, (2) renderizar, (3) verificar o artefato e (4) registrar evidências. O teste é bem-sucedido quando o PDF final atende a critérios objetivos, independentes do gosto de quem executa."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Critérios de aceite (objetivos)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Geração sem falhas: o job termina com sucesso e não há warnings críticos.",
+        "Renderização estável: títulos, parágrafos, listas e blocos de código não “quebram” o layout.",
+        "Hierarquia clara: headings refletem a estrutura (Capítulo > Parte > Seções).",
+        "Legibilidade: contraste adequado e fonte monoespaçada em código.",
+        "Quebras de página intencionais: início de seções-chave e separação de blocos longos.",
+        "Reprodutibilidade: mesma entrada gera saída idêntica (ou equivalente, quando houver timestamps controlados).",
+        "Rastreabilidade: logs e metadados permitem identificar versão, execução e ambiente."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Evidências mínimas a capturar"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Hash do PDF gerado (quando aplicável).",
+        "Tamanho do arquivo e contagem de páginas.",
+        "Versão do gerador/template e commit do repositório.",
+        "Log da execução (correlation id).",
+        "Snapshots visuais (golden) ou diff quando existir pipeline de regressão visual."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Estrutura mínima do conteúdo (blocos, tipografia, hierarquia)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em vez de “texto livre”, o conteúdo deve ser composto por blocos tipados. Essa decisão reduz ambiguidade: o renderizador não precisa inferir intenção a partir de marcação frágil. Cada bloco (heading, paragraph, list, code, table, pagebreak) é um contrato explícito: se houver problema, você sabe onde e por quê."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Modelo mental: PDF como compilação"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fonte de verdade: um documento estruturado (JSON) com metadados e blocos.",
+        "Compilador: o renderizador (template) transforma blocos em páginas.",
+        "Artefato: o PDF final é saída imutável, assinável, versionável.",
+        "Validador: testes garantem que mudanças no template não quebram documentos existentes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Hierarquia editorial recomendada"
+    },
+    {
+      "type": "list",
+      "items": [
+        "H1: Capítulo",
+        "H2: Parte e seções principais",
+        "H3: subseções e itens de aprofundamento",
+        "Listas: critérios, checklists, passos e requisitos",
+        "Code: exemplos e contratos (payloads, scripts, configurações)"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Estrutura do projeto (JS/Node) para renderização"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em Produção, a organização do projeto reduz o custo de manutenção. A estrutura abaixo separa responsabilidades: conteúdo, template, validações e entrega. A intenção é permitir que você troque conteúdo sem tocar em infra, e troque infra sem reescrever conteúdo."
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "content": "repo/\n  src/\n    documents/\n      teste-tecnico/\n        toc.json\n        cap01-parte01.json\n        cap01-parte02.json\n    render/\n      render.ts\n      validate.ts\n      hash.ts\n    config/\n      branding.ts\n      env.ts\n  scripts/\n    render-all.ts\n  package.json\n  README.md"
+    },
+    {
+      "type": "paragraph",
+      "text": "Separar documentos por arquivo facilita rodar o pipeline por parte, reduz tempo de feedback e limita o raio de explosão: um erro na Parte 2 não impede a Parte 1 de ser gerada e validada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Dados de entrada: metadados, identidade visual e contratos do payload"
+    },
+    {
+      "type": "paragraph",
+      "text": "A entrada do renderizador é um contrato. Em Produção, contratos precisam ser completos: nenhum estilo deve ser “presumido”. Isso evita bugs onde um PDF herda configurações de uma execução anterior, algo que costuma ocorrer em pipelines com cache agressivo."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Metadados essenciais"
+    },
+    {
+      "type": "list",
+      "items": [
+        "book_title e title (identificam o artefato).",
+        "author e language (padronizam catálogo e indexação).",
+        "Identidade visual completa (cores e fontes).",
+        "mode (toc ou part) e, para capítulos, chapter_number/chapter_title/part_number/part_title.",
+        "Versão do documento (opcional, mas recomendado em Produção)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Contrato de blocos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cada bloco é um objeto com type e campos obrigatórios. O validador deve rejeitar: blocos desconhecidos, headings sem level, listas sem items, code sem lang/content e tables sem columns/rows coerentes."
+    },
+    {
+      "type": "code",
+      "lang": "json",
+      "content": "{\n  \"metadata\": {\n    \"book_title\": \"Teste técnico\",\n    \"title\": \"Capítulo 1 — Parte 1\",\n    \"author\": \"Mestre André\",\n    \"language\": \"pt-BR\",\n    \"mode\": \"part\",\n    \"chapter_number\": 1,\n    \"chapter_title\": \"Validação da geração de PDF em ambiente de Produção\",\n    \"part_number\": 1,\n    \"part_title\": \"Preparação e pipeline mínimo\"\n  },\n  \"content\": [\n    { \"type\": \"heading\", \"level\": 1, \"text\": \"...\" },\n    { \"type\": \"paragraph\", \"text\": \"...\" },\n    { \"type\": \"list\", \"items\": [\"...\"] },\n    { \"type\": \"code\", \"lang\": \"js\", \"content\": \"...\" },\n    { \"type\": \"pagebreak\" }\n  ]\n}"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Geração local: validações automáticas (lint, schema, snapshot)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de rodar o renderizador, valide o documento. Isso reduz falhas “tardias” (descobertas só no PDF final) e melhora a mensagem de erro. O pipeline mínimo recomenda três níveis: (1) schema, (2) regras editoriais e (3) reprodutibilidade."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "(1) Validação por schema (Zod/Ajv) — por quê"
+    },
+    {
+      "type": "paragraph",
+      "text": "Schema falha cedo e com precisão. Em Produção, a melhor falha é a que ocorre antes de consumir recursos de renderização. Além disso, schema padroniza a evolução do documento: você versiona o contrato e migra conteúdos antigos com scripts."
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "// Exemplo conceitual (Zod)\nimport { z } from \"zod\";\n\nconst Heading = z.object({\n  type: z.literal(\"heading\"),\n  level: z.number().int().min(1).max(6),\n  text: z.string().min(1),\n});\n\nconst Paragraph = z.object({\n  type: z.literal(\"paragraph\"),\n  text: z.string().min(1),\n});\n\nconst List = z.object({\n  type: z.literal(\"list\"),\n  items: z.array(z.string().min(1)).min(1),\n});\n\nconst Code = z.object({\n  type: z.literal(\"code\"),\n  lang: z.string().min(1),\n  content: z.string().min(1),\n});\n\nconst Pagebreak = z.object({\n  type: z.literal(\"pagebreak\"),\n});\n\nexport const Block = z.union([Heading, Paragraph, List, Code, Pagebreak]);"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "(2) Regras editoriais — por quê"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo com schema válido, você pode ter um documento editorialmente ruim: headings pulando níveis (H1 para H3), listas enormes sem agrupamento, ou ausência de quebras de página em seções que deveriam iniciar em nova folha. Regras editoriais são “lint” de texto estruturado."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Não pular níveis de heading (H1 -> H2 -> H3).",
+        "Limitar tamanho de parágrafos muito longos (ex.: > 800 caracteres) e sugerir divisão.",
+        "Obrigar ao menos um heading H1 no início de cada Parte.",
+        "Garantir que blocos de code tenham lang consistente (js, ts, bash, json).",
+        "Garantir pagebreak antes do início de checklists e seções finais."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "(3) Snapshot / golden — por quê"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para validar reprodutibilidade, você precisa de um resultado comparável. Em pipelines maduros, isso vira regressão visual; no mínimo, compare o hash do PDF quando a execução for determinística. Quando a renderização inclui metadados voláteis, compare elementos estáveis (número de páginas, presença de seções, tamanhos aproximados, textos-chave)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Checklist de Pré-voo (antes de gerar o PDF)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Documento passa no schema (sem warnings críticos).",
+        "Regras editoriais aprovadas (hierarquia e consistência).",
+        "Identidade visual completa incluída no metadata (sem herança implícita).",
+        "Modo correto: toc para sumário; part para capítulos/partes.",
+        "Conteúdo contém H1 no topo e headings coerentes.",
+        "Blocos de code testados com linhas longas (para evitar overflow).",
+        "Quebras de página planejadas em transições importantes.",
+        "Log de execução com correlation id habilitado.",
+        "Saída direcionada para diretório versionável (artefatos)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Conexão: a Parte 2 aprofundará casos de borda e validações do artefato final, incluindo regressão visual, observabilidade e publicação/versionamento em Produção."
+    }
+  ]
+}

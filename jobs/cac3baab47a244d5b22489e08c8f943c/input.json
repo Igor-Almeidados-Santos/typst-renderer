@@ -1,0 +1,250 @@
+{
+  "metadata": {
+    "book_title": "Teste técnico",
+    "title": "Capítulo 1 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B2A4A",
+    "brand_secondary": "#124E8A",
+    "brand_accent": "#F28C1A",
+    "brand_ink": "#0E1116",
+    "brand_muted": "#6B7A8C",
+    "brand_line": "#D7DEE7",
+    "brand_tint": "#EEF4FB",
+    "brand_paper": "#FFFFFF",
+    "color_body": "#1A2430",
+    "color_heading": "#0B2A4A",
+    "color_heading_muted": "#124E8A",
+    "color_heading_rule": "#D7DEE7",
+    "color_code_bg": "#0F172A",
+    "color_code_text": "#E6EDF6",
+    "color_table_header_bg": "#0B2A4A",
+    "color_table_header_text": "#FFFFFF",
+    "color_table_body_bg": "#FFFFFF",
+    "color_table_body_text": "#1A2430",
+    "font_title": "New Computer Modern Sans",
+    "font_heading": "New Computer Modern Sans",
+    "font_body": "New Computer Modern Sans",
+    "font_mono": "New Computer Modern Mono",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Pipeline mínimo de geração de PDF (JS/Node)",
+    "part_number": 2,
+    "part_title": "Implementação e validação em Produção"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Pipeline mínimo de geração de PDF (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Implementação e validação em Produção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta Parte transforma o contrato definido anteriormente em prática operacional: como estruturar a integração em JS/Node, como testar de forma confiável (snapshot/golden files), como observar warnings/erros e como fechar um checklist de go-live para geração de PDF em Produção."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.8 Integração em JS/Node: organização do payload e versionamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em Produção, o maior risco não é “gerar”, e sim evoluir sem quebrar. A solução é padronizar o payload, versionar o schema e isolar a camada de composição do documento da camada de renderização."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Camada 1 (composer): transforma dados de domínio em blocos editoriais.",
+        "Camada 2 (validator): valida schema e invariantes (ex.: tabela retangular).",
+        "Camada 3 (renderer): chama o template/engine e produz o PDF.",
+        "Camada 4 (delivery): armazena, nomeia e distribui (S3, CDN, etc.)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Padrão de pasta (prático)"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "content": "src/\n  pdf/\n    composer/\n      invoice.composer.ts\n      report.composer.ts\n    schema/\n      document.schema.json\n    validate/\n      validateDocument.ts\n    render/\n      renderPdf.ts\n    fixtures/\n      golden/\n        teste-parte1.json\n        teste-parte2.json\n      output/\n        (artefatos gerados localmente)\n"
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que separar assim: porque você consegue testar o composer e o validator sem precisar renderizar. Render vira etapa final, mais lenta e cara."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.9 Estratégias de teste: snapshot, comparação visual, golden files"
+    },
+    {
+      "type": "paragraph",
+      "text": "Teste de PDF é teste de documento. Você precisa de níveis: rápido (schema), médio (layout indireto) e lento (comparação visual/manual)."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Nível 1: validação de schema e invariantes (rápido)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Validar tipos de blocos e campos obrigatórios.",
+        "Proibir table sem columns, e rows com cardinalidade desigual.",
+        "Limitar tamanho de strings para evitar payloads absurdos.",
+        "Detectar caracteres problemáticos (quando aplicável)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Nível 2: golden payloads (médio)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mantenha payloads canônicos (“golden”) que representam casos críticos. Ao alterar o composer, você compara o JSON resultante com snapshots aprovados."
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "import { composeParte1 } from './composer/report.composer.js';\nimport { validateDocument } from './validate/validateDocument.js';\n\ntest('parte1: composer gera payload estável', () => {\n  const doc = composeParte1({ seed: 123 });\n  validateDocument(doc);\n  expect(doc).toMatchSnapshot();\n});\n"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observação: o composer deve aceitar seeds/inputs estáveis para evitar diffs por datas e ids randômicos."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Nível 3: comparação de PDF (lento, mas necessário)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Comparação visual humana para releases importantes (checklist).",
+        "Comparação automática por imagem (renderiza páginas e compara pixels) quando houver infraestrutura.",
+        "Comparação por texto extraído (quando adequado), sabendo que não captura layout."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.10 Observabilidade: logs, warnings e rastreabilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "O pipeline precisa explicar falhas. Em vez de “PDF falhou”, você quer: qual bloco, qual regra, qual template, qual versão."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Inclua correlationId em logs e no nome do artefato.",
+        "Registre template_id, mode, chapter/part e hash do payload.",
+        "Transforme validações em warnings acionáveis (ex.: “table row 3 tem 5 células; esperado 6”).",
+        "Separe erro (bloqueante) de warning (renderiza, mas sinaliza risco)."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "function warn(code, message, details = {}) {\n  return { level: 'warn', code, message, details };\n}\n\nfunction err(code, message, details = {}) {\n  const e = new Error(message);\n  e.code = code;\n  e.details = details;\n  throw e;\n}\n"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.11 Estudo de caso: execução ponta a ponta (gerar → revisar → aprovar)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Fluxo mínimo confiável:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Composer gera o documento (metadata + content).",
+        "2) Validator roda regras e retorna warnings/erros.",
+        "3) Renderer gera PDF e anexa warnings no resultado.",
+        "4) Reviewer (humano ou automático) valida checklist editorial.",
+        "5) Artefato aprovado vira baseline (golden) para regressão."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O ponto é tornar a revisão repetível. Sem baseline, você revisa “no olho” toda vez e regressões passam."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.12 Erros comuns (e como evitar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tabelas irregulares: rows com número de células diferente de columns → valide antes do render.",
+        "Estilo faltando: confiar que o render ‘herda’ cores/fontes → sempre enviar identidade completa.",
+        "Quebra de página acidental: headings no fim da página sem conteúdo → usar espaçamento e/ou pagebreak quando necessário.",
+        "Código ilegível: linhas longas sem wrap/escape → defina política (wrap, scroll, truncar com aviso).",
+        "Não determinismo: timestamps no conteúdo → injetar datas como parâmetros fixos no teste."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.13 Boas práticas de Produção"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Idempotência: mesma requisição com mesmo input deve gerar a mesma saída.",
+        "Versionamento: versionar schema e templates; mudanças devem ser rastreáveis.",
+        "Fail fast: validar antes de renderizar para reduzir custo e ruído.",
+        "Golden suite: manter um conjunto pequeno e poderoso de payloads críticos.",
+        "Observabilidade: warnings padronizados, métricas de tempo e taxas de falha."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.14 Checklist profissional de go-live"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Existe validação de schema e invariantes antes do render?",
+        "Há pelo menos 5 golden payloads cobrindo casos críticos?",
+        "O pipeline registra template_id, mode e hash do payload?",
+        "Warnings são coletados e monitorados (dashboard/alerta)?",
+        "PDF foi validado em leitores diferentes (desktop/mobile)?",
+        "Há rollback (template anterior) e estratégia de compatibilidade?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1.15 Conclusão e próximos passos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com o contrato (Parte 1) e a operação (Parte 2), você tem um pipeline mínimo, porém profissional, para geração de PDF em Produção. O próximo passo é ampliar a suíte de golden payloads e automatizar comparação visual sempre que o custo justificar."
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Livro finalizado"
+    },
+    {
+      "type": "paragraph",
+      "text": "O sumário aprovado foi integralmente coberto nesta edição de teste (Pré-textuais + Capítulo 1 em 2 Partes)."
+    }
+  ]
+}

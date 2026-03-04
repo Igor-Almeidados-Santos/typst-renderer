@@ -1,0 +1,218 @@
+{
+  "metadata": {
+    "book_title": "Teste",
+    "title": "Capítulo 1 — Geração de PDF em Produção (JS/Node) — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B3D91",
+    "brand_secondary": "#1E66F5",
+    "brand_accent": "#22A2FF",
+    "brand_ink": "#0A1B33",
+    "brand_muted": "#5C7FB8",
+    "brand_line": "#B7C9E8",
+    "brand_tint": "#EAF2FF",
+    "brand_paper": "#F7FAFF",
+    "color_body": "#0A1B33",
+    "color_heading": "#0B3D91",
+    "color_heading_muted": "#2F5EA8",
+    "color_heading_rule": "#B7C9E8",
+    "color_code_bg": "#EAF2FF",
+    "color_code_text": "#0A1B33",
+    "color_table_header_bg": "#0B3D91",
+    "color_table_header_text": "#F7FAFF",
+    "color_table_body_bg": "#F2F7FF",
+    "color_table_body_text": "#0A1B33",
+    "font_title": "Helvetica-Bold",
+    "font_heading": "Helvetica-Bold",
+    "font_body": "New Computer Modern",
+    "font_mono": "Courier",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Geração de PDF em Produção (JS/Node)",
+    "part_number": 2,
+    "part_title": "Implementação, testes e validação final"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Geração de PDF em Produção (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Implementação, testes e validação final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se a Parte 1 definiu o “mapa”, esta parte entrega o “terreno”: decisões de implementação em JS/Node e uma estratégia de validação que aguenta produção. A ambição aqui não é escolher uma biblioteca “melhor”; é tornar o serviço previsível, observável e reprocessável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Exemplo prático comentado (JS/Node)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O exemplo abaixo ilustra um serviço com:\n\n• idempotência por hash de payload normalizado;\n• fila para desacoplar request e render;\n• worker isolado para renderização;\n• timeouts e retry com limites.\n\nA renderização é representada por uma função renderPdf(doc) (substitua pelo seu motor real). O foco é o pipeline."
+    },
+    {
+      "type": "code",
+      "lang": "js",
+      "content": "import crypto from \"node:crypto\";\n\nfunction stableStringify(obj) {\n  // Stringify determinístico (ordena chaves) para hashing confiável.\n  const allKeys = [];\n  JSON.stringify(obj, (k, v) => (allKeys.push(k), v));\n  allKeys.sort();\n  return JSON.stringify(obj, allKeys);\n}\n\nfunction sha256(input) {\n  return crypto.createHash(\"sha256\").update(input).digest(\"hex\");\n}\n\nexport async function createPdfJob(payload, templateVersion) {\n  const normalized = {\n    templateVersion,\n    locale: \"pt-BR\",\n    data: payload,\n  };\n\n  const payloadHash = sha256(stableStringify(normalized));\n  const key = `pdf/${templateVersion}/${payloadHash}.pdf`;\n\n  // 1) Deduplicação: se já existe, retorne referência\n  const existing = await storage.exists(key);\n  if (existing) {\n    return { status: \"ready\", key, payloadHash };\n  }\n\n  // 2) Idempotência do job: enfileire apenas uma vez\n  const jobId = await queue.enqueueOnce({ key, payloadHash, normalized }, payloadHash);\n  return { status: \"queued\", jobId, key, payloadHash };\n}\n\n// Worker\nexport async function workerLoop() {\n  for await (const job of queue.consume()) {\n    const { key, payloadHash, normalized } = job.data;\n\n    const timeoutMs = 30_000;\n    const startedAt = Date.now();\n\n    try {\n      const doc = buildDocumentIR(normalized); // documento canônico\n\n      const pdfBuffer = await withTimeout(renderPdf(doc), timeoutMs);\n\n      await storage.put(key, pdfBuffer, {\n        contentType: \"application/pdf\",\n        metadata: { payloadHash, templateVersion: normalized.templateVersion },\n      });\n\n      metrics.timing(\"pdf.render.ms\", Date.now() - startedAt);\n      metrics.count(\"pdf.render.ok\", 1);\n      logs.info({ payloadHash, key }, \"pdf_render_ok\");\n\n      await job.ack();\n    } catch (err) {\n      metrics.count(\"pdf.render.err\", 1);\n      logs.error({ err, payloadHash, key }, \"pdf_render_failed\");\n\n      // Retry controlado\n      if (job.attempts < 3) await job.retry({ backoffMs: 2_000 });\n      else await job.deadLetter();\n    }\n  }\n}\n\nfunction withTimeout(promise, ms) {\n  return new Promise((resolve, reject) => {\n    const t = setTimeout(() => reject(new Error(\"render_timeout\")), ms);\n    promise.then(\n      (v) => (clearTimeout(t), resolve(v)),\n      (e) => (clearTimeout(t), reject(e))\n    );\n  });\n} "
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que essas decisões importam:\n\n• Hash + storage key determinística: evita gerar o mesmo PDF repetidas vezes.\n• enqueueOnce: evita duplicidade quando há retrys do cliente.\n• worker isolado: um travamento no render não derruba a API.\n• timeout: impede jobs “zumbis” consumirem recursos indefinidamente.\n• retries limitados: aumenta resiliência sem criar tempestade infinita."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Estudo de caso: incidente de produção e correção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cenário típico\nUma campanha dispara milhares de solicitações. Alguns payloads têm nomes longos e listas extensas. O motor de render tenta calcular layout de um bloco gigante, estoura memória e reinicia o processo. Resultado: fila reprocessa os mesmos jobs, multiplicando carga.\n\nCorreção profissional\n1) Limites por job (memória/tempo) + worker isolado.\n2) Payload normalizado com validação de tamanho (ex.: limites de caracteres e itens).\n3) Componentes fragmentáveis: listas/tabelas que quebram página corretamente.\n4) Idempotência por hash: mesmo job não vira N PDFs.\n5) Observabilidade: identificar rapidamente os payloads problemáticos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Observabilidade: logs, métricas e tracing para PDF"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Logs estruturados: payloadHash, templateVersion, jobId, key, duration_ms, attempts.",
+        "Métricas: tempo de render (p50/p95/p99), taxa de erro, tamanho médio do PDF, jobs em fila.",
+        "Tracing: request → enqueue → worker → storage → download (span por etapa).",
+        "Auditoria: registrar versão do template e do motor de renderização usada no job."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Estratégia de testes"
+    },
+    {
+      "type": "paragraph",
+      "text": "PDF é um artefato visual, mas o pipeline é software. Teste em camadas:"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Unit (montagem de payload e IR)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Normalização e validação de payload (limites, encoding, campos obrigatórios).",
+        "Geração de hash determinístico (ordem de chaves estável).",
+        "Construção do documento (IR) com cenários extremos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Integração (render real)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Render de amostras pequenas e grandes.",
+        "Execução em ambiente similar ao de produção (container).",
+        "Validação de tempo máximo e consumo de memória."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Regressão visual (golden files)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A regressão visual compara PDFs de referência (golden) com o resultado atual. O objetivo não é “igualdade absoluta” sempre, mas detectar mudanças inesperadas em layout e tipografia. Quando houver diferença intencional, atualize o golden com revisão humana."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Segurança e compliance (PII, redaction, acesso a arquivos)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Minimize dados sensíveis no payload; prefira referências (IDs) quando possível.",
+        "Redija (mask) PII em logs; nunca logue o payload bruto em produção.",
+        "Controle acesso ao storage (URLs assinadas, expiração, escopo).",
+        "Classifique documentos (público/interno/restrito) e aplique políticas de retenção.",
+        "Sanitize de entrada: evita injeção em HTML/CSS quando aplicável."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Checklist profissional de validação (antes do deploy)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Versões fixadas: motor de render e template versionados e rastreáveis.",
+        "Fontes empacotadas e fallback explícito testado.",
+        "Limites definidos: timeout, memória, concorrência por worker.",
+        "Idempotência: mesma entrada não gera múltiplos artefatos.",
+        "Observabilidade em produção: dashboards e alertas (p95, erro, backlog).",
+        "Testes com casos extremos e regressão visual executados.",
+        "Plano de rollback e feature flag para mudanças de template."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Conexão e encerramento do capítulo"
+    },
+    {
+      "type": "paragraph",
+      "text": "A Parte 1 estabeleceu por que PDFs falham e qual arquitetura reduz esse risco. Esta Parte 2 mostrou como transformar essas ideias em pipeline operacional: idempotente, observável e testável. Mesmo num “teste técnico”, os mesmos princípios se aplicam a sistemas reais — e é isso que diferencia uma solução que “funciona” de um serviço que permanece saudável sob pressão."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Apêndices"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "A. Glossário essencial"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Determinismo: propriedade de produzir o mesmo resultado para a mesma entrada.",
+        "Idempotência: executar a mesma operação mais de uma vez não muda o resultado.",
+        "Golden file: arquivo de referência usado para detectar regressões.",
+        "Worker: processo/rotina dedicada a executar jobs fora do caminho da requisição.",
+        "Backoff: atraso progressivo entre tentativas para reduzir carga em falhas transitórias."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "B. Referências e leituras sugeridas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Documentação do Node.js: streams, buffers, crypto e worker threads.",
+        "Boas práticas de filas e processamento assíncrono (retries, DLQ, idempotência).",
+        "Princípios de observabilidade (logs estruturados, métricas e tracing)."
+      ]
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Livro finalizado"
+    }
+  ]
+}

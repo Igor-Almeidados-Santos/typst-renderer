@@ -1,0 +1,196 @@
+{
+  "metadata": {
+    "book_title": "Teste técnico",
+    "title": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B3D91",
+    "brand_secondary": "#155EEF",
+    "brand_accent": "#22A2FF",
+    "brand_ink": "#08244A",
+    "brand_muted": "#2E5C9A",
+    "brand_line": "#7AA7FF",
+    "brand_tint": "#EAF2FF",
+    "brand_paper": "#F7FAFF",
+    "color_body": "#0B2A4A",
+    "color_heading": "#0B3D91",
+    "color_heading_muted": "#2E5C9A",
+    "color_heading_rule": "#7AA7FF",
+    "color_code_bg": "#EAF2FF",
+    "color_code_text": "#08244A",
+    "color_table_header_bg": "#0B3D91",
+    "color_table_header_text": "#F7FAFF",
+    "color_table_body_bg": "#F1F6FF",
+    "color_table_body_text": "#0B2A4A",
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Geração de PDF em produção (JS/Node)",
+    "part_number": 1,
+    "part_title": "Fundamentos e especificação do teste"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Geração de PDF em produção (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e especificação do teste"
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta Parte é estabelecer um padrão profissional para geração de PDFs em produção: previsível, auditável e estável sob carga. Em ambientes reais, o problema raramente é “gerar um PDF”; o problema é gerar o mesmo PDF, sempre, com a mesma aparência, dentro do mesmo tempo, mesmo quando o sistema está sob pressão."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “PDF que funciona em produção”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando a geração de PDF sai do laboratório e entra em produção, surgem falhas clássicas: fontes diferentes entre máquinas, quebra de página inesperada, conteúdo cortado, símbolos que desaparecem por encoding, variações de layout por versões do motor de renderização, além de travamentos por excesso de memória. Essas falhas não são “bugs aleatórios”; são sintomas de um pipeline mal especificado."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sinais típicos de fragilidade: PDFs diferentes entre ambientes, diffs grandes entre versões, reclamações sobre “corta no fim”, e incidentes que só ocorrem sob carga.",
+        "A causa raiz costuma ser ausência de determinismo: assets e dependências variam, e o documento não tem regras rígidas de paginação.",
+        "PDF é produto: não basta “gerar”; é necessário operar (monitorar, versionar, reprocessar, auditar)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Fundamentação: determinismo, layout e tipografia"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um PDF é o resultado final de um processo de composição. Esse processo precisa de entradas controladas (conteúdo e assets) e de um motor de renderização estável. O determinismo é a propriedade mais importante: dadas as mesmas entradas e o mesmo motor, o resultado deve ser idêntico ou, no mínimo, previsivelmente equivalente (com tolerâncias definidas quando o formato interno variar)."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Determinismo forte: o mesmo arquivo byte a byte (ideal para documentos regulatórios).",
+        "Determinismo funcional: aparência e paginação iguais, aceitando diferenças internas (mais comum).",
+        "Tipografia como dependência: fontes precisam estar incorporadas ou garantidas no runtime; confiar em fontes do SO gera variação.",
+        "Layout como contrato: margens, larguras de coluna, regras de quebra de linha e de página devem ser explícitas."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Modelo mental correto: pipeline de geração"
+    },
+    {
+      "type": "paragraph",
+      "text": "Trate a geração de PDF como um pipeline com fronteiras claras. Esse modelo mental evita decisões perigosas, como renderizar HTML dependente de recursos externos sem controle, ou montar PDFs com lógica de layout implícita demais."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entrada (Input): dados estruturados e conteúdo textual validado.",
+        "Composição (Compose): transformação em blocos (títulos, parágrafos, listas, código), com estilos definidos e hierarquia clara.",
+        "Renderização (Render): motor que pagina e desenha, produzindo o PDF final.",
+        "Entrega (Deliver): armazenamento, cache, download, versionamento e auditoria.",
+        "Operação (Operate): métricas, logs, rastreio, retries e reprocessamento idempotente."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Arquitetura conceitual do documento"
+    },
+    {
+      "type": "paragraph",
+      "text": "A forma mais segura de manter previsibilidade é modelar o documento em blocos. Blocos evitam o “layout acidental” e tornam o conteúdo compatível com validação automatizada. A hierarquia editorial também protege a legibilidade: headings definem estrutura; listas reduzem ambiguidade; código fica isolado com fonte monoespaçada."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use headings para estrutura (capítulo/parte/seções).",
+        "Use parágrafos para narrativa técnica (o porquê das decisões).",
+        "Use listas para critérios, passos, sinais e checklists.",
+        "Use blocos de código para trechos curtos e determinísticos; evite logs gigantes.",
+        "Use pagebreak quando uma mudança de contexto editorial exige pagina dedicada."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Exemplo prático comentado: documento mínimo determinístico"
+    },
+    {
+      "type": "paragraph",
+      "text": "O documento mínimo para validar o pipeline deve ter: um título, um parágrafo com caracteres especiais (acentos), uma lista e um bloco de código. Isso testa, de uma vez, tipografia, encoding, espaçamentos e renderização monoespaçada."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Documento mínimo para teste de geração de PDF (conceitual)\n// A ideia é validar: acentuação, headings, lista e bloco de código.\n\nconst doc = {\n  title: 'Teste técnico',\n  sections: [\n    {\n      heading: 'Validação mínima',\n      paragraph: 'Acentos: ação, informação, geração. Símbolos: R$, €, ©. Emoji: ✅ (opcional).',\n      bullets: ['Heading + parágrafo OK', 'Lista OK', 'Código monoespaçado OK'],\n      code: 'console.log(\"PDF: ok\");'\n    }\n  ]\n};\n\nexport default doc;"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário técnico: se esse documento falhar em produção, o problema não é o conteúdo — é o ambiente (fontes/encoding/motor) ou o contrato de layout. Por isso ele é o primeiro “canário” do pipeline."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Erros comuns e como preveni-los"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Encoding: caracteres acentuados e símbolos quebram quando a fonte não suporta o conjunto necessário. Prevenção: escolha fontes com bom suporte a Unicode e incorpore-as.",
+        "Fontes do sistema: o PDF muda entre máquinas. Prevenção: incorporar fontes e congelar versões.",
+        "Quebra de página inesperada: ocorre por larguras inconsistentes e conteúdos longos sem regras. Prevenção: definir limites, hifenização (se aplicável) e usar pagebreak editorial quando necessário.",
+        "Conteúdo cortado: margens e caixas de texto mal dimensionadas. Prevenção: usar layout com espaçamentos claros e testar com conteúdo extremo (muito curto e muito longo).",
+        "Motor de renderização variando: atualizações mudam kerning e paginação. Prevenção: pin de versão e testes de regressão (golden files)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Boas práticas de especificação (o contrato do PDF)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O erro mais caro é operar sem contrato. O contrato é a especificação que define: o que significa “igual”, quais tolerâncias são aceitas, e quais invariantes devem sempre valer. Em produção, isso reduz discussões subjetivas e transforma qualidade em critério verificável."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Defina o que é sucesso: byte a byte ou equivalência visual/paginação.",
+        "Estabeleça invariantes: margens, fontes, tamanhos, hierarquia e densidade de informação por página.",
+        "Crie casos extremos: textos longos, listas grandes, blocos de código longos (com quebra).",
+        "Versione o template e o “schema” do documento: alterações precisam de changelog e validação.",
+        "Separe conteúdo de apresentação: dados não devem carregar decisões de layout."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Checklist profissional (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "[ ] Documento mínimo renderiza com acentuação e símbolos sem falhas.",
+        "[ ] Fontes são incorporadas ou garantidas com pin de versão.",
+        "[ ] Margens e hierarquia (headings) seguem um padrão fixo.",
+        "[ ] Blocos de código são monoespaçados e não estouram largura sem regra.",
+        "[ ] Existem casos de teste com conteúdo extremo (curto e longo).",
+        "[ ] Está definido o critério de “igualdade” do PDF (byte a byte vs. equivalência)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Conexão: a Parte 2 transforma esta especificação em operação: validação automatizada (golden files), observabilidade e resiliência para manter o determinismo ao longo do tempo."
+    }
+  ]
+}

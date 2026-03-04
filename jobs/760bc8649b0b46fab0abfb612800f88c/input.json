@@ -1,0 +1,913 @@
+{
+  "metadata": {
+    "book_title": "Teste Técnico",
+    "title": "Capítulo 1 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "01",
+    "chapter_title": "Teste técnico: validação de geração de PDF",
+    "part_number": "2",
+    "part_title": "Execução prática e evidências",
+    "brand_primary": [
+      11,
+      59,
+      140
+    ],
+    "brand_secondary": [
+      17,
+      103,
+      177
+    ],
+    "brand_accent": [
+      242,
+      193,
+      78
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      96,
+      112,
+      138
+    ],
+    "brand_line": [
+      215,
+      226,
+      242
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      11,
+      18,
+      32
+    ],
+    "color_heading": [
+      11,
+      59,
+      140
+    ],
+    "color_heading_muted": [
+      17,
+      103,
+      177
+    ],
+    "color_heading_rule": [
+      215,
+      226,
+      242
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      230,
+      237,
+      247
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      26,
+      46
+    ],
+    "color_code_header_text": [
+      185,
+      199,
+      230
+    ],
+    "color_table_header_bg": [
+      11,
+      59,
+      140
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      11,
+      18,
+      32
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Teste técnico: validação de geração de PDF"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Execução prática e evidências"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesta parte, o objetivo é transformar critérios em execução: definir casos de teste, coletar evidências verificáveis e automatizar um smoke test em CI/CD. O ponto não é “testar tudo”, e sim proteger o pipeline contra regressões comuns: mudança de versão da engine, alteração de fonte, variação de paginação e quebra de metadados."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Casos de teste (mínimo viável e casos de borda)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.1 Mínimo viável (deve passar sempre)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Caso A — Documento curto: títulos + parágrafos + listas. Critério: hierarquia e espaçamento consistentes.",
+        "Caso B — Código: blocos com linhas longas e indentação. Critério: não cortar conteúdo, manter monoespaçada e contraste.",
+        "Caso C — Tabela simples: 3–5 colunas, poucas linhas. Critério: cabeçalho legível e alinhamento estável.",
+        "Caso D — Quebras de página: texto suficiente para forçar paginação. Critério: sem sobreposição e sem truncamento."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.2 Casos de borda (proteção contra regressão)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Texto com caracteres especiais: acentos, aspas tipográficas, travessão e símbolos.",
+        "Strings muito longas (URLs, hashes) que não podem estourar layout.",
+        "Listas extensas para observar comportamento de paginação.",
+        "Mistura de conteúdos: parágrafo curto seguido de bloco grande de código.",
+        "Teste negativo: metadados obrigatórios ausentes devem falhar explicitamente."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Evidências: como inspecionar o PDF"
+    },
+    {
+      "type": "paragraph",
+      "text": "Evidência é tudo o que permite reproduzir e explicar o resultado. Guarde sinais no pipeline (logs/versões/hashes) e no PDF (metadados/estrutura). A inspeção manual serve para diagnóstico; a inspeção automatizada serve para prevenção de regressão."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.1 Evidências no PDF"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Metadados: Title, Author, Language e identificação de modo/parte.",
+        "Número de páginas dentro do esperado (valor ou intervalo).",
+        "Presença de seções-chave (títulos do sumário).",
+        "Fontes incorporadas (embedding) ou fallback permitido e documentado.",
+        "Arquivo abre em leitores padrão sem alertas de corrupção."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.2 Evidências no pipeline"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Hash do input (conteúdo + metadados) correlacionado ao artefato.",
+        "Versões da engine/biblioteca e das fontes registradas.",
+        "Tempo de render, consumo de memória e warnings capturados.",
+        "Naming/ID estável do PDF (artefactId) para rastreio."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Exemplo comentado em JS/Node: geração e validação automatizada"
+    },
+    {
+      "type": "paragraph",
+      "text": "O exemplo abaixo é um smoke test pragmático: gerar o PDF, verificar tamanho mínimo e garantir que um parser consegue ler o número de páginas e extrair texto. Em ambientes mais exigentes, complemente com leitura de metadados Info/XMP e validação de fontes incorporadas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// smoke-pdf.js (exemplo)\n// Dependências típicas: pdf-parse\n\nimport fs from 'node:fs/promises';\nimport path from 'node:path';\nimport pdf from 'pdf-parse';\n\nasync function generatePdf({ outFile }) {\n  // Chame aqui o seu pipeline real de geração.\n  // Deve escrever o arquivo em outFile.\n}\n\nfunction invariant(ok, msg) {\n  if (!ok) throw new Error(msg);\n}\n\n(async () => {\n  const outFile = path.resolve('artifacts', 'smoke.pdf');\n  await fs.mkdir(path.dirname(outFile), { recursive: true });\n\n  await generatePdf({ outFile });\n\n  const buf = await fs.readFile(outFile);\n  invariant(buf.byteLength > 10_000, 'PDF pequeno demais (suspeita de falha)');\n\n  const parsed = await pdf(buf);\n  invariant(parsed.numpages >= 1, 'PDF sem páginas válidas');\n  invariant(typeof parsed.text === 'string', 'Falha ao extrair texto');\n  invariant(parsed.text.includes('Teste'), 'Texto-chave não encontrado');\n\n  console.log('OK', { pages: parsed.numpages, bytes: buf.byteLength });\n})();",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// smoke-pdf.js (exemplo)"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Dependências típicas: pdf-parse"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " fs from "
+          },
+          {
+            "kind": "string",
+            "text": "'node:fs/promises'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " path from "
+          },
+          {
+            "kind": "string",
+            "text": "'node:path'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " pdf from "
+          },
+          {
+            "kind": "string",
+            "text": "'pdf-parse'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "generatePdf"
+          },
+          {
+            "kind": "plain",
+            "text": "({ outFile }) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Chame aqui o seu pipeline real de geração."
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Deve escrever o arquivo em outFile."
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "invariant"
+          },
+          {
+            "kind": "plain",
+            "text": "(ok, msg) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "ok) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "(msg);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " outFile "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " path."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'artifacts'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'smoke.pdf'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " fs."
+          },
+          {
+            "kind": "function",
+            "text": "mkdir"
+          },
+          {
+            "kind": "plain",
+            "text": "(path."
+          },
+          {
+            "kind": "function",
+            "text": "dirname"
+          },
+          {
+            "kind": "plain",
+            "text": "(outFile), { recursive"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": " });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "generatePdf"
+          },
+          {
+            "kind": "plain",
+            "text": "({ outFile });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " buf "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " fs."
+          },
+          {
+            "kind": "function",
+            "text": "readFile"
+          },
+          {
+            "kind": "plain",
+            "text": "(outFile);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "invariant"
+          },
+          {
+            "kind": "plain",
+            "text": "(buf.byteLength "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " 10_000, "
+          },
+          {
+            "kind": "string",
+            "text": "'PDF pequeno demais (suspeita de falha)'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " parsed "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "pdf"
+          },
+          {
+            "kind": "plain",
+            "text": "(buf);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "invariant"
+          },
+          {
+            "kind": "plain",
+            "text": "(parsed.numpages "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'PDF sem páginas válidas'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "invariant"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " parsed.text "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'string'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'Falha ao extrair texto'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "invariant"
+          },
+          {
+            "kind": "plain",
+            "text": "(parsed.text."
+          },
+          {
+            "kind": "function",
+            "text": "includes"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Teste'"
+          },
+          {
+            "kind": "plain",
+            "text": "), "
+          },
+          {
+            "kind": "string",
+            "text": "'Texto-chave não encontrado'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'OK'"
+          },
+          {
+            "kind": "plain",
+            "text": ", { pages"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " parsed.numpages, bytes"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " buf.byteLength });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "})();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Erros comuns em produção e como diagnosticar"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fonte não incorporada: PDF muda entre máquinas. Diagnóstico: inspecionar embedding; registrar fontes no build.",
+        "Strings longas estouram margens: URLs/hashes. Mitigação: regras de quebra, truncamento controlado.",
+        "Paginação instável após update: mudança de hifenização/kerning. Mitigação: pin de versão + testes por invariantes.",
+        "Metadados ausentes: falha em auditoria/busca. Mitigação: validar esquema antes do render.",
+        "PDF pesado: fontes/imagens sem subset/compressão. Mitigação: subset de fontes, compressão e limites."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Checklist profissional final (pronto para CI/CD)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entrada validada por esquema (campos obrigatórios, limites, encoding).",
+        "Versões (engine/fontes) pinadas e registradas no log do build.",
+        "Smoke test automatizado: gera, abre, conta páginas, extrai texto-chave e valida tamanho mínimo.",
+        "Limites operacionais: tempo máximo, memória máxima e tamanho máximo do PDF.",
+        "Observabilidade: requestId/artefactId + hash do input + warnings persistidos.",
+        "Política de falha: erro explícito e rastreável (nunca PDF vazio silencioso)."
+      ]
+    },
+    {
+      "type": "pagebreak"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Livro finalizado"
+    },
+    {
+      "type": "paragraph",
+      "text": "O sumário aprovado foi integralmente coberto nas Partes 1 e 2 do Capítulo 1, incluindo critérios, execução prática, exemplo em JS/Node e checklists para validação do PDF em produção."
+    }
+  ]
+}

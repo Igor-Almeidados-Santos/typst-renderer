@@ -1,7 +1,9 @@
 import os
 import re
+import time
 from pathlib import Path
 from datetime import datetime
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
@@ -39,15 +41,24 @@ def health():
 
 
 def _public_base() -> str:
-    return os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
+    return os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1:8000").strip().rstrip("/")
 
 
 def _public_file_url(file_name: str) -> str:
-    return f"{_public_base()}/files/{file_name}"
+    return f"{_public_base()}/files/{quote(file_name)}"
 
 
 def _public_asset_url(filename: str) -> str:
     return f"{_public_base()}/assets/{filename}"
+
+
+def _external_fetch_headers(**extra: str) -> dict[str, str]:
+    headers = {
+        "User-Agent": "typst-renderer/1.0",
+        "ngrok-skip-browser-warning": "1",
+    }
+    headers.update(extra)
+    return headers
 
 
 def _safe_name(name: str) -> str:
@@ -107,12 +118,7 @@ def _store_cover_bytes(content: bytes, original_name: str, content_type: str | N
 @app.get("/templates", response_model=TemplatesResponse)
 def get_templates():
     templates = list_templates()
-    if "livro_tecnico_v2" in templates:
-        default = "livro_tecnico_v2"
-    elif "livro_tecnico_v1" in templates:
-        default = "livro_tecnico_v1"
-    else:
-        default = templates[0] if templates else ""
+    default = "livro_tecnico_v2" if "livro_tecnico_v2" in templates else ""
     return TemplatesResponse(templates=templates, default=default)
 
 
@@ -166,7 +172,7 @@ async def upload_cover_openai(req: UploadCoverOpenAIRequest):
             raise HTTPException(status_code=400, detail="Nenhuma imagem válida em openaiFileIdRefs.")
 
         remote_name = image_ref.name or "cover"
-        req_remote = Request(image_ref.download_link, headers={"User-Agent": "typst-renderer/1.0"})
+        req_remote = Request(image_ref.download_link, headers=_external_fetch_headers())
         with urlopen(req_remote, timeout=25) as resp:
             content = resp.read()
             content_type = resp.headers.get("Content-Type") or image_ref.mime_type
@@ -218,10 +224,18 @@ def render_pdf(payload: RenderRequest):
 @app.post("/render-pdf-wrapped", response_model=RenderResponse)
 def render_pdf_wrapped(req: RenderRequestWrapped):
     try:
+        metadata = req.payload.document.get("metadata", {}) if isinstance(req.payload.document, dict) else {}
+        mode = metadata.get("mode", "unknown") if isinstance(metadata, dict) else "unknown"
+        started = time.perf_counter()
+        print(f"[render-pdf-wrapped] start template_id={req.template_id} mode={mode}")
         pdf_standard = req.payload.options.pdf_standard if req.payload.options else None
         file_name, warnings = render_typst(req.template_id, req.payload.document, pdf_standard)
+        elapsed = time.perf_counter() - started
+        print(f"[render-pdf-wrapped] done template_id={req.template_id} mode={mode} elapsed={elapsed:.2f}s")
         return RenderResponse(success=True, file_url=_public_file_url(file_name), warnings=warnings)
     except FileNotFoundError as e:
+        print(f"[render-pdf-wrapped] fail template_id={req.template_id} error={e}")
         raise HTTPException(status_code=400, detail=str(e))
     except RuntimeError as e:
+        print(f"[render-pdf-wrapped] fail template_id={req.template_id} error={e}")
         raise HTTPException(status_code=500, detail=str(e))

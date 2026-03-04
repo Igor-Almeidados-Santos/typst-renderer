@@ -1,0 +1,311 @@
+{
+  "metadata": {
+    "book_title": "Teste técnico",
+    "title": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "brand_primary": "#0B2A4A",
+    "brand_secondary": "#124E8A",
+    "brand_accent": "#F28C1A",
+    "brand_ink": "#0E1116",
+    "brand_muted": "#6B7A8C",
+    "brand_line": "#D7DEE7",
+    "brand_tint": "#EEF4FB",
+    "brand_paper": "#FFFFFF",
+    "color_body": "#1A2430",
+    "color_heading": "#0B2A4A",
+    "color_heading_muted": "#124E8A",
+    "color_heading_rule": "#D7DEE7",
+    "color_code_bg": "#0F172A",
+    "color_code_text": "#E6EDF6",
+    "color_table_header_bg": "#0B2A4A",
+    "color_table_header_text": "#FFFFFF",
+    "color_table_body_bg": "#FFFFFF",
+    "color_table_body_text": "#1A2430",
+    "font_title": "Libertinus Sans",
+    "font_heading": "Libertinus Sans",
+    "font_body": "Libertinus Sans",
+    "font_mono": "DejaVu Sans Mono",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Pipeline mínimo de geração de PDF (JS/Node)",
+    "part_number": 1,
+    "part_title": "Fundamentos e contrato de saída"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Pipeline mínimo de geração de PDF (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e contrato de saída"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta Parte estabelece o contrato profissional do que significa “gerar um PDF” em Produção. O objetivo não é apenas “renderizar páginas”, e sim produzir um artefato determinístico, legível, auditável e estável ao longo do tempo — mesmo quando templates evoluem, fontes mudam ou o volume de conteúdo cresce."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao final, você terá critérios de aceite objetivos e uma estrutura mental que evita erros clássicos: PDFs que variam a cada execução, quebras de página imprevisíveis, tabelas quebradas, código ilegível e metadados incompletos."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.1 Propósito do teste e critérios de aceite"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um teste técnico de geração de PDF precisa isolar o que realmente importa em Produção: confiabilidade do pipeline e consistência do resultado. Por isso, o critério de aceite deve ser mensurável e verificável, evitando termos vagos como “ficou bom”."
+    },
+    {
+      "type": "list",
+      "items": [
+        "O PDF abre sem erros em leitores populares e ferramentas de validação.",
+        "A hierarquia tipográfica é consistente: H1/H2/H3 e corpo são visualmente distintos.",
+        "Os blocos não excedem margens; não há conteúdo cortado (overflow).",
+        "Quebras de página não truncam blocos (especialmente listas e código).",
+        "Metadados obrigatórios estão presentes e coerentes (título, autor, idioma, modo, capítulo/parte).",
+        "A saída é determinística: mesma entrada gera o mesmo PDF (ou diferenças explicáveis e rastreáveis)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O ponto-chave é determinismo. Se o pipeline não é determinístico, testes automatizados e auditoria viram adivinhação."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.2 Requisitos funcionais do PDF (layout, tipografia, blocos, paginação)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Requisitos funcionais descrevem o comportamento visível do documento. Em PDF, isso se traduz em regras de layout e leitura. Como o PDF é um formato “final”, a chance de correção posterior costuma ser cara: o correto é validar antes de publicar."
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Layout e margens"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Margens coerentes em todas as páginas; cabeçalhos não colidem com o corpo.",
+        "Regras e separadores (linhas) são discretos e consistentes.",
+        "Espaçamentos verticais previsíveis entre títulos, parágrafos, listas e código."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Tipografia e hierarquia"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Títulos com pesos e tamanhos progressivos por nível.",
+        "Cor do texto do corpo (color_body) com contraste suficiente no brand_paper.",
+        "Destaques (brand_accent) usados com parcimônia para não “poluir” a leitura."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Blocos permitidos e comportamento esperado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao modelar conteúdo como blocos, você formaliza o que a engine precisa suportar. Isso reduz ambiguidades e torna a validação automática possível."
+    },
+    {
+      "type": "list",
+      "items": [
+        "heading: níveis bem definidos; evita “títulos falsos” feitos com negrito.",
+        "paragraph: fluxo de leitura contínuo; sem quebras arbitrárias dentro da frase.",
+        "list: bullets consistentes; recuo apropriado; itens longos quebram linha corretamente.",
+        "code: fonte mono; fundo escuro; quebras em linhas longas sem perder legibilidade.",
+        "table: cabeçalho distinto; todas as linhas respeitam o mesmo número de colunas.",
+        "pagebreak: usado explicitamente quando o corte automático não é aceitável."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Paginação"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Numeração de páginas (se aplicável no template) não invade conteúdo.",
+        "Quebras automáticas preservam integridade dos blocos.",
+        "Grandes blocos de código não “explodem” o layout; devem quebrar de forma segura."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.3 Requisitos não funcionais (determinismo, reprodutibilidade, performance)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Requisitos não funcionais definem se o pipeline aguenta a vida real. Em Produção, PDFs são gerados em lote, sob carga, e precisam ser repetíveis para auditoria e debugging."
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Determinismo e reprodutibilidade"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Mesma entrada → mesma saída (idealmente byte a byte; no mínimo visualmente idêntica).",
+        "Versões de template e fontes são rastreáveis no log do job.",
+        "Dependências externas (como datas/hora) são controladas ou explicitadas."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Performance e estabilidade"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tempo de geração dentro do SLO (ex.: p95) definido para o produto.",
+        "Consumo de memória previsível; sem vazamentos em execuções repetidas.",
+        "Falhas são tratadas com mensagens claras e warnings úteis (não “silenciosas”)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.4 Modelo mental: documento como AST de blocos"
+    },
+    {
+      "type": "paragraph",
+      "text": "O modelo mental correto evita o erro mais comum: tratar PDF como “print do HTML” ou como “imagem grande”. Em um pipeline profissional, o documento é uma árvore (AST) de blocos com semântica clara."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que AST? Porque você separa conteúdo de apresentação e ganha: validação, composição, testes e previsibilidade. Cada bloco tem regras de renderização e de quebra, e a engine tem um contrato formal para cumprir."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Conteúdo (texto) vive nos blocos.",
+        "Apresentação (cores/fontes/margens) vive na identidade visual e no template.",
+        "Paginação é um algoritmo controlado — não um efeito colateral."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "json",
+      "content": "[\n  {\"type\":\"heading\",\"level\":1,\"text\":\"Título\"},\n  {\"type\":\"paragraph\",\"text\":\"Um parágrafo com uma ideia completa.\"},\n  {\"type\":\"list\",\"items\":[\"Item 1\",\"Item 2\"]},\n  {\"type\":\"code\",\"lang\":\"js\",\"content\":\"console.log('ok')\"}\n]"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse formato é deliberado: ele impede improvisos e facilita detectar entradas inválidas antes de renderizar."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.5 Estrutura de metadados (identidade visual, mode, título, capítulo/parte)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Metadados são parte do contrato. Eles determinam como o template renderiza o documento e permitem rastrear a origem do PDF. Em Produção, metadados incompletos se tornam débito técnico: ninguém sabe qual versão gerou qual arquivo."
+    },
+    {
+      "type": "list",
+      "items": [
+        "book_title, title, author, language: identidade editorial do artefato.",
+        "mode: define o tipo de documento (toc vs part).",
+        "chapter_number/chapter_title e part_number/part_title: indexação interna do livro.",
+        "Paleta e fontes: identidade visual completa deve acompanhar toda renderização (nada de “herdar” estado)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que reenviar a identidade visual sempre? Porque pipelines distribuídos não devem depender de estado implícito; cada job precisa ser autocontido."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.6 Casos de borda: quebras de página, listas longas, código extenso, tabelas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Casos de borda são o verdadeiro teste. Um pipeline “funciona” com conteúdo curto; ele “sobrevive” com conteúdo real."
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Quebras de página"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Títulos no fim da página (viúvas): preferir empurrar o título junto do primeiro parágrafo.",
+        "Listas não devem ter o bullet sozinho na página; manter pelo menos 2 itens juntos quando possível.",
+        "Blocos de código: evitar quebrar no meio de tokens críticos; quebrar por linha."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Listas longas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Itens longos devem quebrar linha com recuo correto.",
+        "Evitar listas com itens excessivamente verbosos; preferir 1 ideia por item."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Código extenso"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Linhas muito longas: permitir quebra suave; evitar overflow horizontal.",
+        "Manter contraste alto e espaçamento de linha confortável."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 4,
+      "text": "Tabelas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Tabela é o bloco mais frágil: exige colunas explícitas e todas as linhas com o mesmo número de células. Se você não consegue garantir isso, transforme em lista — é melhor um texto legível do que uma tabela quebrada."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.7 Checklist de validação da Parte 1"
+    },
+    {
+      "type": "list",
+      "items": [
+        "(Entrada) Todo conteúdo está representado apenas por blocos permitidos.",
+        "(Entrada) Não há tabela sem columns; todas as rows batem o número de colunas.",
+        "(Estilo) Identidade visual completa enviada na renderização (cores + fontes).",
+        "(Render) Não há overflow: nada cortado nas margens.",
+        "(Render) Código está legível: fonte mono, fundo, quebras seguras.",
+        "(Paginação) Títulos não ficam “soltos” no fim da página; listas não truncam.",
+        "(Metadados) title/book_title/author/language/mode e capítulo/parte presentes.",
+        "(Determinismo) Reexecutar com mesma entrada produz saída idêntica ou explicável."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Fechamos a Parte 1 com o contrato de saída. Na Parte 2, o foco muda: como integrar isso em JS/Node de forma versionável, testável e observável em Produção."
+    }
+  ]
+}

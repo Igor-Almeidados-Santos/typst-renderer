@@ -1,0 +1,273 @@
+{
+  "metadata": {
+    "mode": "part",
+    "book_title": "Teste técnico",
+    "title": "Capítulo 1 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "chapter_number": "1",
+    "chapter_title": "Validação da geração de PDF em Produção (JS/Node)",
+    "part_number": "1",
+    "part_title": "Fundamentos e pipeline de geração",
+    "brand_primary": "#0B4F8A",
+    "brand_secondary": "#1667B1",
+    "brand_accent": "#2E90D1",
+    "brand_ink": "#0A1B2B",
+    "brand_muted": "#5E86A6",
+    "brand_line": "#C7D8E8",
+    "brand_tint": "#EAF3FB",
+    "brand_paper": "#F6FAFE",
+    "color_body": "#10263A",
+    "color_heading": "#0B4F8A",
+    "color_heading_muted": "#2D6FA3",
+    "color_heading_rule": "#B7CDE1",
+    "color_code_bg": "#0B1F33",
+    "color_code_text": "#E8F2FF",
+    "color_code_border": "#1E4E73",
+    "color_code_header_bg": "#123A5A",
+    "color_code_header_text": "#D6EBFF",
+    "color_table_header_bg": "#0F3F66",
+    "color_table_header_text": "#F2F8FF",
+    "color_table_body_bg": "#F0F7FF",
+    "color_table_body_text": "#10263A",
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Validação da geração de PDF em Produção (JS/Node)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Fundamentos e pipeline de geração"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um “teste técnico” de geração de PDF, quando feito para produção, não é um exercício estético. Ele existe para reduzir risco operacional. PDF é um formato aparentemente simples, mas que expõe o sistema a problemas de determinismo, compatibilidade de fontes, consumo de recursos e variações entre ambientes. Esta parte estabelece o que validar e por quê, além de desenhar um pipeline mínimo que se sustente sob carga e auditoria."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.1 O que exatamente será validado neste teste técnico"
+    },
+    {
+      "type": "paragraph",
+      "text": "O escopo é validar a geração de um PDF com qualidade editorial suficiente para ser considerado “entregável” em produção: hierarquia tipográfica, paginação previsível, elementos de estrutura (títulos, listas, tabelas, blocos de código), além de rastreabilidade do processo. A validação não é apenas visual. Ela inclui critérios que permitem automatização (hashes, snapshots, diffs) e observabilidade (logs e métricas)."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Formato e metadados: tamanho A4, margens consistentes, numeração de páginas quando aplicável.",
+        "Tipografia: títulos, subtítulos, corpo, espaçamentos e contraste adequados.",
+        "Paginação: quebras de página coerentes, evitando títulos “soltos” (viúvas/órfãs).",
+        "Blocos ricos: tabelas e código renderizados sem overflow e com leitura confortável.",
+        "Determinismo: a mesma entrada deve produzir a mesma saída na mesma versão de template.",
+        "Operação: o job precisa ser rastreável, reprocessável e diagnosticável."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.2 Critérios de aceite: layout, tipografia, quebras, tabelas, código, sumário"
+    },
+    {
+      "type": "paragraph",
+      "text": "Critérios de aceite evitam a armadilha do “parece bom”. Em produção, o que importa é repetibilidade. O aceite deve ser mensurável e, na medida do possível, automatizável."
+    },
+    {
+      "type": "table",
+      "caption": "Critérios de aceite (mínimo viável)",
+      "columns": [
+        "Categoria",
+        "Critério",
+        "Como validar"
+      ],
+      "rows": [
+        [
+          "Layout",
+          "Margens e alinhamentos consistentes em todas as páginas",
+          "Inspeção visual + teste de regressão por imagem (diff)"
+        ],
+        [
+          "Tipografia",
+          "Hierarquia consistente (H1/H2/H3, corpo, listas)",
+          "Checklist editorial + extração de texto para verificar presença/ordem"
+        ],
+        [
+          "Quebras",
+          "Títulos não ficam isolados no rodapé; tabelas e código não “cortam” de forma ilegível",
+          "Teste com conteúdos longos e diffs visuais"
+        ],
+        [
+          "Código",
+          "Monoespaçado, contraste alto, sem ultrapassar a largura; quebra de linha controlada",
+          "Teste com linhas longas e caracteres especiais"
+        ],
+        [
+          "Tabelas",
+          "Cabeçalho destacado; colunas não estouram; quebra de linhas preserva leitura",
+          "Teste com células longas e muitas linhas"
+        ],
+        [
+          "Determinismo",
+          "Mesma entrada → PDF idêntico (ou diffs aceitáveis documentados)",
+          "Hash do binário + golden files"
+        ],
+        [
+          "Operação",
+          "Falhas registradas com contexto e ID de job; reprocessamento possível",
+          "Logs estruturados + correlação"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.3 Estrutura mínima de um gerador de PDF em produção (responsabilidades e limites)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um gerador de PDF “de verdade” costuma ser um subsistema. Separar responsabilidades reduz o acoplamento e facilita diagnóstico. A arquitetura mínima pode ser pensada como quatro camadas: contrato de entrada, normalização, renderização e entrega do artefato."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Contrato de entrada: valida esquema (JSON), define defaults, rejeita entradas inválidas cedo.",
+        "Normalização: resolve datas, localidade, ordenação, sanitização e limites (ex.: tamanho máximo de string).",
+        "Renderização: aplica template (tipografia, paleta, componentes) e produz o PDF.",
+        "Entrega do artefato: persiste, versiona, publica e registra metadados (ID, checksum, timestamps)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.4 Modelo mental do pipeline (entrada → transformação → render → artefato)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O modelo mental que evita problemas é tratar o PDF como resultado de uma compilação. Você “compila” um documento a partir de uma fonte estruturada. Compilação tem características: é determinística, tem versão de compilador (template), gera artefato e possui logs de build."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "content": "Entrada (JSON/DTO)\n  ↓ validação + defaults\nDocumento normalizado (modelo interno)\n  ↓ composição (componentes: heading/list/table/code)\nÁrvore de render (layout)\n  ↓ motor de PDF (template vX.Y)\nArtefato (PDF) + metadados (checksum, versão, job_id)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.5 Por que “determinismo” importa (mesma entrada, mesmo PDF)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sem determinismo, você perde a capacidade de fazer regressão confiável. O pipeline vira um “gerador de variações”: um mesmo pedido do usuário pode produzir PDFs com paginação diferente entre deploys ou entre nós de um cluster, tornando diffs e auditorias inúteis."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Determinismo permite golden files: um PDF de referência que deve permanecer estável.",
+        "Facilita auditoria: você consegue explicar por que um artefato mudou (template, fonte, entrada).",
+        "Reduz incidentes: pequenas mudanças de ambiente não deveriam mudar layout.",
+        "Ajuda a escalar: mais instâncias renderizando não introduzem divergência."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.6 Estratégia de versionamento de templates e compatibilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Templates devem ter versão explícita e política de compatibilidade. Mudança visual que altera paginação é uma mudança de comportamento. Em ambientes críticos, trate como “breaking change” se afetar diffs ou assinaturas."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Versão do template no metadado do job (ex.: template=v1.3.0).",
+        "Changelog de layout: o que mudou e por quê.",
+        "Política de atualização de golden files: quem aprova e quando atualizar.",
+        "Rollback rápido: capacidade de renderizar com template anterior para reprocessar incidentes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.7 Observabilidade: logs, métricas e rastreabilidade por job"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em produção, falhar “bonito” não adianta; você precisa falhar “explicável”. Rastreabilidade por job é o que conecta a solicitação, a entrada normalizada, o template, o ambiente e o artefato final."
+    },
+    {
+      "type": "table",
+      "caption": "Observabilidade recomendada",
+      "columns": [
+        "Sinal",
+        "Exemplos",
+        "Motivo"
+      ],
+      "rows": [
+        [
+          "Logs estruturados",
+          "job_id, template_version, input_size, duration_ms, memory_peak_mb",
+          "Diagnóstico reprodutível"
+        ],
+        [
+          "Métricas",
+          "taxa de sucesso, latência p95/p99, fila, retries",
+          "Operação sob carga"
+        ],
+        [
+          "Tracing",
+          "spans do pipeline (validate/normalize/render/store)",
+          "Isolar gargalos"
+        ],
+        [
+          "Artefatos de debug",
+          "PDF parcial, snapshot de layout, entrada normalizada (com redaction)",
+          "Reduz tempo de investigação"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.8 Falhas comuns em produção (fontes, encoding, imagens, paginação, memória)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A maior parte dos problemas acontece por diferenças entre ambientes e por conteúdos fora do “normal”. O teste precisa forçar essas bordas."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fontes ausentes no container: substituições silenciosas mudam largura de texto e paginação.",
+        "Encoding e caracteres especiais: acentos, símbolos e emojis podem quebrar renderizadores.",
+        "Strings longas: URLs e tokens geram overflow em colunas e blocos de código.",
+        "Tabelas grandes: muitas linhas podem estourar memória ou quebrar cabeçalhos.",
+        "Imagens (quando houver): dimensões e formatos variam; fallback precisa ser definido.",
+        "Concorrência: múltiplos renders simultâneos podem expor leaks e limites de CPU."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "1.9 Checklist de validação da Parte 1"
+    },
+    {
+      "type": "list",
+      "items": [
+        "( ) O PDF abre corretamente em leitores diferentes (browser, desktop, mobile).",
+        "( ) Tipografia e hierarquia são consistentes (títulos, corpo, listas).",
+        "( ) Tabelas e blocos de código não estouram a largura da página.",
+        "( ) Quebras de página não deixam títulos isolados; a leitura é contínua.",
+        "( ) O pipeline registra job_id, versão do template e checksum do artefato.",
+        "( ) Reprocessamento do mesmo input gera saída idêntica (ou diffs documentados)."
+      ]
+    }
+  ]
+}
