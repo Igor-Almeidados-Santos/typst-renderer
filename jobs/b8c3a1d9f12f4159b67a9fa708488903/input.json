@@ -1,0 +1,664 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 1 — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Começando do Zero: o que é JavaScript e como ele roda",
+    "part_number": 6,
+    "part_title": "Depuração de verdade: breakpoints, step-by-step e leitura de stack trace",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Começando do Zero"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Depuração de verdade: breakpoints, step-by-step e leitura de stack trace"
+    },
+    {
+      "type": "paragraph",
+      "text": "Até aqui você usou console.log como lanterna. Agora você vai aprender a usar o “raio-X”: o debugger do navegador. Um júnior eficiente não adivinha; ele observa o estado do programa enquanto ele executa. Nesta parte, você vai dominar o básico de breakpoints, execução passo a passo e interpretação de stack trace."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Eu coloquei console.log e ainda não entendi”"
+    },
+    {
+      "type": "paragraph",
+      "text": "console.log é ótimo, mas tem limites: você escolhe onde imprimir e pode perder o momento em que algo muda. Em bugs mais chatos, o que importa é a transição: quando um valor virou null? quando o contador deixou de atualizar? O debugger permite parar o mundo e olhar tudo com calma."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é um breakpoint (e por que ele é poderoso)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um breakpoint é uma marca em uma linha do seu código que diz ao navegador: “pare aqui quando chegar”. Ao parar, você consegue: ver variáveis, inspecionar chamadas, entender a ordem das operações e executar linha por linha."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Você pausa exatamente no ponto do problema.",
+        "Você vê o estado real do programa (valores das variáveis).",
+        "Você entende a ordem de execução sem ‘chutar’."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Preparando o mini-projeto para depurar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Use o mini-projeto do contador (Parte 5). Vamos introduzir um bug proposital e depurar."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.1 Inserindo um bug proposital (apenas para treino)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Dentro do handler do +1, troque por isto temporariamente:\nbtnMais.addEventListener('click', () => {\n  valor = valor + '1'; // BUG: agora vira string e bagunça o contador\n  render();\n});",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Dentro do handler do +1, troque por isto temporariamente:"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "btnMais."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  valor "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " valor "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'1'"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// BUG: agora vira string e bagunça o contador"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Sintoma: você clica e o valor vai para 01, 011, 0111… Isso é bug lógico com coerção de tipos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Abrindo o debugger (Sources)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Abra DevTools → aba Sources.",
+        "Encontre app.js na árvore de arquivos à esquerda.",
+        "Clique no número da linha do handler do botão +1 para criar um breakpoint.",
+        "Clique no botão +1 na página para disparar o evento e pausar no breakpoint."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando pausar, você verá a linha destacada e um painel com variáveis (Scope/Watch) e a pilha de chamadas (Call Stack)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Executando passo a passo (o mínimo que você precisa)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Resume (F8): continua até o próximo breakpoint.",
+        "Step over (F10): executa a linha atual e vai para a próxima (sem entrar em funções).",
+        "Step into (F11): entra dentro da função chamada naquela linha.",
+        "Step out (Shift+F11): sai da função atual e volta para quem chamou."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "No nosso caso, você quer observar a linha valor = valor + '1'. Use Step over e veja como valor muda."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Inspecionando variáveis e tipos no momento exato"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com o código pausado, olhe para o painel Scope. Você deve ver valor. Confirme também o tipo (string/number) usando o Console enquanto está pausado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// No Console, com o código pausado:\nvalor\ntypeof valor",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// No Console, com o código pausado:"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "valor"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " valor"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Você verá que valor virou string após a concatenação. Esse é o diagnóstico: a operação + com string faz concatenação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Corrigindo o bug (e o porquê)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A correção é usar número do começo ao fim. Neste caso, basta voltar para valor = valor + 1. Mas o aprendizado é mais profundo: em JavaScript, o operador + é ambíguo: soma números ou concatena strings. O tipo dos operandos manda."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "btnMais.addEventListener('click', () => {\n  valor = valor + 1; // correto: ambos number\n  render();\n});",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "btnMais."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  valor "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " valor "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// correto: ambos number"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Lendo stack trace (quando dá erro em vermelho)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um erro acontece, o Console mostra: tipo do erro, mensagem e uma lista de “onde passou” (stack trace). Você precisa saber ler os dois primeiros itens da pilha: geralmente apontam para a linha exata do problema e para quem chamou."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "8.1 Exemplo clássico: TypeError por null"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const btn = document.querySelector('#nao-existe');\nbtn.addEventListener('click', () => {}); // TypeError",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btn "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#nao-existe'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "btn."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {}); "
+          },
+          {
+            "kind": "comment",
+            "text": "// TypeError"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O stack trace te leva à linha do addEventListener. O diagnóstico é: btn é null. A causa real pode ser seletor errado ou ordem (DOM ainda não pronto). Você já sabe resolver ambos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Breakpoints programáticos (debugger)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Além de clicar na linha, você pode escrever a palavra debugger; no código. Quando a execução chegar ali, o navegador pausa automaticamente. Use isso com responsabilidade e remova antes de entregar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function render() {\n  debugger; // pausa aqui\n  elValor.textContent = String(valor);\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "debugger"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// pausa aqui"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  elValor.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(valor);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Boas práticas de depuração (nível júnior)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Reproduza o bug sempre do mesmo jeito (passos claros).",
+        "Isole a hipótese: qual variável deveria ter qual valor?",
+        "Pause no ponto mais próximo do sintoma e volte na Call Stack.",
+        "Use Watch para acompanhar uma variável em várias pausas.",
+        "Remova logs e debugger antes de considerar ‘pronto’."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Checklist profissional (Parte 6)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei criar um breakpoint em Sources e disparar um evento para pausar.",
+        "Eu sei usar F8/F10/F11 para navegar pela execução.",
+        "Eu sei inspecionar valores e tipos com o código pausado.",
+        "Eu sei ler stack trace e apontar a linha do problema.",
+        "Eu sei quando usar console.log e quando usar debugger."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 7, você vai consolidar o Capítulo 1 com um conjunto de exercícios graduais e um roteiro de revisão — para você fechar o capítulo com confiança antes de seguir para sintaxe e variáveis no Capítulo 2 e 3."
+    }
+  ]
+}

@@ -1,0 +1,276 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 4 — Controle de fluxo e expressividade — Parte 7",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 4,
+    "chapter_title": "Controle de fluxo e expressividade",
+    "part_number": 7,
+    "part_title": "Erros comuns e boas práticas: fluxo legível, previsível e testável",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Controle de fluxo e expressividade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 7 — Erros comuns e boas práticas: fluxo legível, previsível e testável"
+    },
+    {
+      "type": "paragraph",
+      "text": "Controle de fluxo vira problema quando ele cresce sem disciplina. A maioria das equipes não sofre por não saber 'if' ou 'for'; sofre por fluxos que escondem invariantes, retornos inconsistentes e operadores usados como atalhos que mudam o significado do contrato. Nesta parte, você consolida os erros mais comuns e fixa boas práticas como critérios de revisão — para você escrever e refatorar fluxo com padrão de pleno."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.1 Erro comum: aninhamento profundo como padrão"
+    },
+    {
+      "type": "paragraph",
+      "text": "Aninhamento profundo quase sempre significa que você está misturando responsabilidades (validar, decidir, executar, tratar erro) no mesmo bloco. Isso aumenta carga cognitiva e cria caminhos esquecidos."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Correção: use guard clauses para declarar invariantes cedo e reduzir níveis.",
+        "Extraia funções para separar etapas (validate → decide → execute).",
+        "Prefira funções pequenas com um único propósito e retorno previsível."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.2 Erro comum: retornos inconsistentes (tipo muda por caminho)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma função que retorna às vezes string, às vezes objeto, às vezes null, força o chamador a se defender com ifs, espalhando fluxo e duplicação. Isso é design frágil."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Correção: defina um contrato de retorno único por função.",
+        "Se pode falhar, escolha: lançar (throw) ou retornar Result (ok/value/error).",
+        "Não misture estilos no mesmo módulo sem uma razão clara."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.3 Erro comum: usar || para defaults onde 0 e '' são válidos"
+    },
+    {
+      "type": "paragraph",
+      "text": "|| trata qualquer falsy como ausência. Se 0 e '' são valores válidos no domínio, || muda o contrato e cria bugs silenciosos."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Correção: use ?? quando ausência é null/undefined.",
+        "Use defaults explícitos com guard clauses quando a regra for complexa.",
+        "Se usar ||, documente que 0/''/false não são válidos (contrato)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.4 Erro comum: optional chaining como muleta no miolo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Optional chaining evita exceptions em dados incertos. O risco é usar no miolo para esconder quebra de contrato. Isso troca uma falha explícita por um undefined silencioso que viaja até explodir em outro lugar."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Correção: use ?. na fronteira (inputs/JSON).",
+        "No miolo, valide invariantes e falhe cedo.",
+        "Se um campo é obrigatório, não use ?. para acessá-lo sem checar presença."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.5 Erro comum: duplicar validação e mensagens em vários ramos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Duplicação cria inconsistência. Quando a mesma validação aparece em 3 lugares, uma mudança de regra exige 3 edições, e uma delas será esquecida."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Correção: centralize validação (funções de guarda, normalização).",
+        "Centralize mensagens e padrões de erro no boundary (pipeline).",
+        "Use predicados nomeados para reduzir repetição e aumentar legibilidade."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.6 Boas práticas: fluxos com invariantes explícitas (padrão pleno)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Comece a função declarando invariantes com guard clauses.",
+        "Mantenha o caminho feliz como sequência linear de passos (ler → transformar → devolver).",
+        "Escolha uma estratégia de erro por módulo: throw no core, Result no boundary (ou vice-versa).",
+        "Use switch/dispatch quando o problema for roteamento por chave; use if para predicados.",
+        "Nomeie predicados e extraia funções para reduzir complexidade acidental.",
+        "Mantenha efeitos colaterais (DOM/IO/log) em adaptadores; preserve core puro quando possível."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.7 Checklist de revisão de PR (controle de fluxo)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Há mais de 2–3 níveis de aninhamento? Dá para reescrever com guard clauses?",
+        "A função retorna sempre o mesmo tipo? Se não, qual é o contrato real?",
+        "Há uso de || onde 0/'' podem ser válidos? Deve ser ??",
+        "Há optional chaining no miolo escondendo ausência de campo obrigatório?",
+        "Há duplicação de validações e mensagens em ramos diferentes? Dá para centralizar?",
+        "O fluxo mistura validação, decisão e execução no mesmo bloco? Dá para separar em etapas?",
+        "Há efeitos colaterais misturados com transformação (difícil de testar)?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 7"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu reconheço aninhamento profundo como sinal de contrato escondido e sei refatorar com guard clauses.",
+        "Eu mantenho retornos consistentes e escolho uma estratégia de erro por módulo (throw ou Result).",
+        "Eu uso ?? para defaults quando 0/'' são válidos e evito || como atalho perigoso.",
+        "Eu uso optional chaining na fronteira e não para mascarar bugs no miolo.",
+        "Eu reduzo duplicação centralizando validação e predicados nomeados.",
+        "Eu consigo revisar um fluxo e apontar onde invariantes deveriam ser explicitadas."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 8, você fecha o capítulo com um checklist final e uma ponte para o Capítulo 5 (Strings em profundidade). A conexão é prática: parsing, validação e fluxo aparecem o tempo todo ao trabalhar com strings, inputs e protocolos. Você vai aplicar guard clauses e contratos diretamente em operações com texto."
+    }
+  ]
+}

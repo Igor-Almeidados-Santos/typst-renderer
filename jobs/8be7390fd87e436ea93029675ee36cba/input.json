@@ -1,0 +1,805 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 2 — Valores, tipos e coerção — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 2,
+    "chapter_title": "Valores, tipos e coerção",
+    "part_number": 3,
+    "part_title": "Modelo mental correto: coerção, ToPrimitive e controle explícito",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 2 — Valores, tipos e coerção"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Modelo mental correto: coerção, ToPrimitive e controle explícito"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que você entende tipos e a diferença entre primitivos e objetos, você está pronto para coerção. Coerção é o processo pelo qual o JavaScript converte valores entre tipos para executar uma operação. Ela segue regras; o que confunde é que muitas regras são implícitas e acontecem em operadores e condicionais."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é te dar um modelo mental que permita prever coerção e um conjunto de práticas para controlá-la. Você não precisa decorar uma tabela infinita; você precisa dominar mecanismos centrais: ToPrimitive, ToNumber, ToString, truthiness e as operações que disparam conversão."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.14 Coerção implícita vs coerção explícita"
+    },
+    {
+      "type": "paragraph",
+      "text": "Coerção implícita acontece quando a linguagem ajusta tipos automaticamente (por exemplo, em +, ==, comparações e condicionais). Coerção explícita acontece quando você decide converter (Number(x), String(x), Boolean(x)) ou quando valida invariantes e falha cedo. Em código profissional, coerção implícita deve ser exceção consciente; coerção explícita deve ser o padrão nas fronteiras do sistema."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Implícita: compacta, mas surpreendente.",
+        "Explícita: mais verbosa, porém previsível.",
+        "Boa engenharia prefere previsibilidade a “mágica”."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.15 ToPrimitive: o passo que explica objetos em operações"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um objeto aparece em um contexto que exige primitivo (como +, comparações ou template literals), o runtime tenta convertê-lo para um primitivo. Esse processo é conhecido como ToPrimitive. Em termos práticos: o objeto precisa virar string, number ou bigint para a operação continuar."
+    },
+    {
+      "type": "paragraph",
+      "text": "O detalhe que interessa para o pleno: objetos podem influenciar essa conversão via valueOf e toString e, em casos avançados, via Symbol.toPrimitive. É por isso que certas operações com Date ou objetos personalizados parecem peculiares."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const d = new Date('2026-01-01T00:00:00Z');\n\nconsole.log(String(d)); // usa toString (representacao humana)\nconsole.log(Number(d)); // usa valueOf (timestamp)\n\nconsole.log(d + ''); // contexto string\nconsole.log(+d);     // unario + pede numero",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " d "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Date"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'2026-01-01T00:00:00Z'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(d)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// usa toString (representacao humana)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(d)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// usa valueOf (timestamp)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(d "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// contexto string"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": "d);     "
+          },
+          {
+            "kind": "comment",
+            "text": "// unario + pede numero"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.16 ToNumber e ToString: onde as conversões mais te pegam"
+    },
+    {
+      "type": "paragraph",
+      "text": "Algumas operações pedem numero; outras pedem string. O operador unario + tenta converter para number. Template literals e concatenacao com string convertem para string. Comparacoes (<, >) normalmente convertem para number, com algumas excecoes envolvendo string."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "console.log(+'10');        // 10\nconsole.log(+true);        // 1\nconsole.log(+false);       // 0\nconsole.log(+null);        // 0\nconsole.log(+undefined);   // NaN\n\nconsole.log(String(10));   // '10'\nconsole.log(String(null)); // 'null'\n\nconsole.log('10' + 5);     // '105' (string vence no +)\nconsole.log('10' - 5);     // 5    (- sempre numerico)",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "string",
+            "text": "'10'"
+          },
+          {
+            "kind": "plain",
+            "text": ");        "
+          },
+          {
+            "kind": "comment",
+            "text": "// 10"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ");        "
+          },
+          {
+            "kind": "comment",
+            "text": "// 1"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ");       "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ");        "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": "undefined);   "
+          },
+          {
+            "kind": "comment",
+            "text": "// NaN"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "));   "
+          },
+          {
+            "kind": "comment",
+            "text": "// '10'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'null'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'10'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// '105' (string vence no +)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'10'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 5    (- sempre numerico)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.17 Truthiness: Boolean(x) e condicionais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Condicionais (if, while, operador ternario) aplicam uma conversao para boolean. Isso nao significa que o valor vira boolean permanentemente; significa que ele e avaliado por regras de truthy/falsy."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Falsy: false, 0, -0, 0n, '', null, undefined, NaN.",
+        "Todo o resto e truthy (inclui '0', 'false', [], {} e functions)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "A regra profissional e simples: use truthiness para controle de fluxo quando o contrato permitir. Para validar dados, prefira checagens que expressem o contrato (por exemplo, v == null para ausencia, typeof para tipo, Array.isArray para array)."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.18 Controle explícito: conversões na fronteira, não no meio"
+    },
+    {
+      "type": "paragraph",
+      "text": "O lugar correto para conversões é a fronteira do sistema: entrada de formulario, query param, JSON, storage, env vars. Se você converte no meio do fluxo, você cria pontos espalhados de coerção e aumenta a chance de inconsistência."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Converta cedo (parse) e valide cedo (invariantes).",
+        "No miolo, assuma tipos estáveis e mantenha o código simples.",
+        "Em caso de erro, falhe cedo com mensagem que cite o contrato."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo explicar o que e coerção e distinguir implícita de explícita.",
+        "Eu sei que objetos passam por ToPrimitive em contextos que exigem primitivo.",
+        "Eu sei quais operações disparam ToNumber/ToString (unario +, + com string, -, comparacoes).",
+        "Eu sei a lista prática de falsy e por que if(valor) não é validação universal.",
+        "Eu aplico conversões na fronteira do sistema e mantenho o miolo com contratos estáveis."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 4, você vai usar esse modelo para resolver o tema mais sensível: igualdade (== vs ===) e as regras especiais (null/undefined, NaN, -0). Você vai aprender um padrão consistente de comparação para código profissional."
+    }
+  ]
+}

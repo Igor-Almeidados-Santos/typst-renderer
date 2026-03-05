@@ -1,0 +1,1480 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 2 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 2,
+    "chapter_title": "Sintaxe essencial e “forma” do código",
+    "part_number": 5,
+    "part_title": "Oficina de estilo: reescrevendo o contador com forma profissional",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 2 — Sintaxe essencial e “forma” do código"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Oficina de estilo: reescrevendo o contador com forma profissional"
+    },
+    {
+      "type": "paragraph",
+      "text": "Até aqui, você aprendeu regras e convenções: blocos, separação de instruções, ASI, nomes e comentários. Agora você vai transformar isso em hábito. Nesta oficina, você vai reescrever o mini-projeto do contador (Capítulo 1) com forma profissional: estilo consistente, validação mínima, comentários úteis e organização por seções. O objetivo não é “fazer mais features”, e sim produzir um arquivo que um colega consiga ler em 30 segundos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Meu código funciona, mas parece bagunçado”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Na prática, a forma do código determina manutenção. Um código “feio” custa tempo: o time gasta energia decodificando o que você quis dizer. Um código com forma consistente custa menos: a pessoa vê padrões, encontra responsabilidades e altera com segurança. Este é o salto de iniciante para júnior."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Critérios de qualidade (o que você vai aplicar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Indentação consistente (2 espaços ou 4 — escolha um).",
+        "Ponto e vírgula ao final das instruções (padrão deste livro).",
+        "Nomes com intenção (camelCase, booleanos com is/has/can).",
+        "Arquitetura simples por seções: Estado, DOM, Regras, Render, Eventos.",
+        "Validação mínima para evitar TypeError (seletor null).",
+        "Comentários leves: intenção e regras, não o óbvio."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Antes e depois: o que muda na prática"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você vai perceber três mudanças principais: (1) o arquivo fica navegável (seções), (2) erros deixam de ser silenciosos (falha cedo), (3) a lógica fica centralizada (uma função de atualização do estado). Isso reduz bugs e torna evolução mais fácil."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Implementação recomendada (copie e compare com a sua)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A seguir está um app.js completo. Ele não é “mais avançado”; ele é mais claro. Leia com atenção os nomes e as seções."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "/*\n  Contador Vanilla — versão “forma profissional”\n  Objetivo: praticar sintaxe, nomes, comentários e organização.\n*/\n\n'use strict';\n\n// ============================\n// DOM (seletores)\n// ============================\nfunction assertEl(selector) {\n  const el = document.querySelector(selector);\n  if (el === null) {\n    console.error(`[contador] elemento não encontrado: ${selector}`);\n  }\n  return el;\n}\n\nconst elValor = assertEl('#valor');\nconst btnMenos = assertEl('#menos');\nconst btnMais = assertEl('#mais');\nconst btnZerar = assertEl('#zerar');\n\n// Se algo essencial não existir, pare cedo.\nconst hasDom = Boolean(elValor && btnMenos && btnMais && btnZerar);\nif (!hasDom) {\n  console.warn('[contador] inicialização abortada por DOM incompleto.');\n}\n\n// ============================\n// Estado\n// ============================\nlet valor = 0;\nconst MIN_VALOR = 0;\n\n// ============================\n// Regras de negócio\n// ============================\nfunction clampValor(n) {\n  if (typeof n !== 'number') return MIN_VALOR;\n  if (Number.isNaN(n)) return MIN_VALOR;\n  return (n < MIN_VALOR) ? MIN_VALOR : n;\n}\n\nfunction setValor(novoValor) {\n  valor = clampValor(novoValor);\n  render();\n}\n\n// ============================\n// Renderização (UI)\n// ============================\nfunction render() {\n  if (!hasDom) return;\n  elValor.textContent = String(valor);\n}\n\n// ============================\n// Eventos (interação)\n// ============================\nfunction wireEvents() {\n  if (!hasDom) return;\n\n  btnMenos.addEventListener('click', () => {\n    setValor(valor - 1);\n  });\n\n  btnMais.addEventListener('click', () => {\n    setValor(valor + 1);\n  });\n\n  btnZerar.addEventListener('click', () => {\n    setValor(0);\n  });\n}\n\n// ============================\n// Bootstrap\n// ============================\nwireEvents();\nrender();\n\nconsole.log('[contador] pronto');\n",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "/*"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  Contador Vanilla — versão “forma profissional”"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  Objetivo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " praticar sintaxe, nomes, comentários e organização."
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "*/"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// DOM (seletores)"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "(selector) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " el "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "(selector);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (el "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`[contador] elemento não encontrado: ${selector}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " el;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " elValor "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#valor'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btnMenos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#menos'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btnMais "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#mais'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btnZerar "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#zerar'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Se algo essencial não existir, pare cedo."
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " hasDom "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "(elValor "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " btnMenos "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " btnMais "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " btnZerar);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "hasDom) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "warn"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'[contador] inicialização abortada por DOM incompleto.'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Estado"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " valor "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " MIN_VALOR "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Regras de negócio"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "clampValor"
+          },
+          {
+            "kind": "plain",
+            "text": "(n) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'number'"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " MIN_VALOR;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (Number."
+          },
+          {
+            "kind": "function",
+            "text": "isNaN"
+          },
+          {
+            "kind": "plain",
+            "text": "(n)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " MIN_VALOR;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " (n "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " MIN_VALOR) "
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": " MIN_VALOR "
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " n;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setValor"
+          },
+          {
+            "kind": "plain",
+            "text": "(novoValor) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  valor "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "clampValor"
+          },
+          {
+            "kind": "plain",
+            "text": "(novoValor);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Renderização (UI)"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "hasDom) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  elValor.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(valor);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Eventos (interação)"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "wireEvents"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "hasDom) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  btnMenos."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "setValor"
+          },
+          {
+            "kind": "plain",
+            "text": "(valor "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  btnMais."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "setValor"
+          },
+          {
+            "kind": "plain",
+            "text": "(valor "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  btnZerar."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "setValor"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Bootstrap"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ============================"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "wireEvents"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'[contador] pronto'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que estas decisões são boas para o iniciante? Porque elas criam disciplina: um lugar para estado, um lugar para renderização, um lugar para eventos. Isso é transferível para qualquer aplicação que você construir depois."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Leitura comentada (o porquê das escolhas)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "'use strict': aumenta rigor e ajuda a pegar erros cedo (especialmente nomes não declarados).",
+        "assertEl: transforma “nada acontece” em mensagem concreta (qual seletor falhou).",
+        "hasDom: evita TypeError em cascata; se o DOM está incompleto, o app não tenta rodar.",
+        "MIN_VALOR/clampValor: regra de domínio centralizada (não espalhar if pelo código).",
+        "setValor: ponto único de atualização do estado; sempre chama render().",
+        "wireEvents separado: facilita localizar interações e testar mentalmente o fluxo.",
+        "Bootstrap no fim: leitura natural (define tudo, depois liga)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Exercício guiado: refatoração passo a passo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se você já tem um contador funcionando, faça a refatoração em etapas. A regra é: em cada etapa, rode e confirme no Console que continua funcionando."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Etapa 1) Padronize indentação, uma instrução por linha e adicione ;.",
+        "Etapa 2) Renomeie variáveis para nomes com intenção (elValor, btnMais, valor).",
+        "Etapa 3) Separe o arquivo em seções (Estado, DOM, Render, Eventos).",
+        "Etapa 4) Crie assertEl e substitua querySelector direto.",
+        "Etapa 5) Centralize atualização em setValor e remova atualizações espalhadas.",
+        "Etapa 6) Crie clampValor (ou outra regra) e aplique em um único lugar.",
+        "Etapa 7) Remova comentários óbvios e mantenha só intenção/regras."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Exercícios de variação (fixação)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Adicione um botão “+5” seguindo o padrão (novo seletor, evento, setValor).",
+        "2) Adicione um limite máximo (ex.: MAX_VALOR = 20) e ajuste clampValor.",
+        "3) Mostre “Par/Ímpar” em um elemento extra, sem duplicar lógica (faça no render).",
+        "4) Escreva JSDoc mínimo para clampValor e setValor.",
+        "5) Provoque um erro: mude o id do botão no HTML. O app deve avisar e não quebrar."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Checklist profissional (Parte 5)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Meu arquivo tem forma consistente (indentação, ;, nomes).",
+        "Eu consigo localizar rapidamente Estado, DOM, Render e Eventos.",
+        "Eu sei explicar por que assertEl e hasDom evitam TypeError.",
+        "Eu centralizo regras em funções (clampValor/setValor) em vez de espalhar if.",
+        "Eu consigo evoluir o código (novo botão) sem desorganizar a estrutura."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 6, você vai aprender a última peça da “forma”: whitespace, quebras de linha e como escrever código que o motor entende e humanos leem — especialmente em expressões longas. Isso fecha o Capítulo 2 com um padrão de escrita pronto para o Capítulo 3 (variáveis e tipos)."
+    }
+  ]
+}

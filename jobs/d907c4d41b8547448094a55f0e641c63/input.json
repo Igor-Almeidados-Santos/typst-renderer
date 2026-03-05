@@ -1,0 +1,2085 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 1 — O que é JavaScript de verdade — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "O que é JavaScript de verdade",
+    "part_number": 6,
+    "part_title": "Estudo de caso: um script vanilla que falha em camadas diferentes",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — O que é JavaScript de verdade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Estudo de caso: um script vanilla que falha em camadas diferentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora você vai praticar diagnóstico com um caso propositalmente “quebrado”. O objetivo não é decorar erros; é treinar o raciocínio por camadas (linguagem → runtime → plataforma) e aplicar o roteiro de investigação. Você vai ver que a mesma intenção (“carregar dados e mostrar”) pode falhar por motivos totalmente diferentes — e cada motivo exige uma correção diferente."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.1 O cenário: carregar usuários e renderizar uma lista"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vamos supor um objetivo simples: buscar uma lista de usuários e renderizar no DOM. Abaixo está um script “apressado”, com três problemas típicos. Ele pode falhar com erros diferentes dependendo do ambiente e do momento em que roda."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// script-apressado.js (browser)\n\nasync function main() {\n  // Problema A (plataforma): CORS / origem / endpoint inexistente\n  const res = await fetch(\"https://api.exemplo.invalid/users\");\n\n  // Problema B (contrato): supor que sempre vem JSON válido\n  const users = await res.json();\n\n  // Problema C (runtime/ordem): supor que o DOM já está pronto\n  const ul = document.querySelector(\"#users\");\n\n  // Problema D (linguagem): supor forma do dado sem validar\n  ul.innerHTML = users.map(u => `<li>${u.id} - ${u.name.toUpperCase()}</li>`).join(\"\");\n}\n\nmain();",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// script-apressado.js (browser)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "main"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Problema A (plataforma): CORS / origem / endpoint inexistente"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " res "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "fetch"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"https://api.exemplo.invalid/users\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Problema B (contrato): supor que sempre vem JSON válido"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " users "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " res."
+          },
+          {
+            "kind": "function",
+            "text": "json"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Problema C (runtime/ordem): supor que o DOM já está pronto"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ul "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"#users\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Problema D (linguagem): supor forma do dado sem validar"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ul.innerHTML "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " users."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "(u "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`<li>${u.id} - ${u.name.toUpperCase()}</li>`"
+          },
+          {
+            "kind": "plain",
+            "text": ")."
+          },
+          {
+            "kind": "function",
+            "text": "join"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "main"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse script concentra riscos: mistura rede, parsing, DOM e transformação sem contratos explícitos. Vamos diagnosticar por camadas."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.2 Falha de plataforma: rede e política (CORS, DNS, origem)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se o endpoint é inválido, ou se a plataforma bloqueia a requisição por política (como CORS), o erro não é “do JavaScript”. É uma falha na camada de plataforma/rede. Sintomas típicos:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "TypeError: Failed to fetch (browser)",
+        "CORS error no console (browser)",
+        "ENOTFOUND / ECONNREFUSED (Node)"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Correção profissional: tratar falhas de rede como primeira classe e tornar o erro observável com contexto."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "async function obterJson(url) {\n  try {\n    const res = await fetch(url);\n    if (!res.ok) throw new Error(`HTTP ${res.status}`);\n    return await res.json();\n  } catch (err) {\n    // Contexto é essencial: qual URL? em qual ação?\n    throw new Error(`Falha ao obter JSON de ${url}: ${err.message}`);\n  }\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "obterJson"
+          },
+          {
+            "kind": "plain",
+            "text": "(url) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " res "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "fetch"
+          },
+          {
+            "kind": "plain",
+            "text": "(url);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "res.ok) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`HTTP ${res.status}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " res."
+          },
+          {
+            "kind": "function",
+            "text": "json"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  } "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (err) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "comment",
+            "text": "// Contexto é essencial: qual URL? em qual ação?"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`Falha ao obter JSON de ${url}: ${err.message}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.3 Falha de runtime: DOM não pronto (ordem/tempo)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se o script roda antes do elemento existir, document.querySelector retorna null. Então ul.innerHTML estoura: “Cannot set properties of null”. Isso é um bug de fluxo/tempo na camada de runtime (integração com carregamento da página). Correções típicas:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Mover o script para o fim do body.",
+        "Usar atributo defer no script.",
+        "Esperar DOMContentLoaded."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Correção: orquestrar com DOMContentLoaded\nwindow.addEventListener(\"DOMContentLoaded\", () => {\n  main().catch(err => console.error(err));\n});\n\n// Alternativa: <script src=\"...\" defer></script> (recomendado)",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Correção: orquestrar com DOMContentLoaded"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "window."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"DOMContentLoaded\""
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "main"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "(err "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "error"
+          },
+          {
+            "kind": "plain",
+            "text": "(err));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Alternativa: <script src=\"...\" defer></script> (recomendado)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.4 Falha de contrato: resposta não é JSON (ou não é o JSON esperado)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo quando a rede funciona, a resposta pode não ser JSON válido, ou pode ser JSON com forma diferente. Aqui entra o contrato: res.json() assume JSON parseável. A forma users.map(...) assume que users é um array. u.name.toUpperCase() assume que name é string. Cada suposição é um ponto de falha."
+    },
+    {
+      "type": "paragraph",
+      "text": "Correção profissional: validar invariantes no limite do sistema. Em vanilla, isso pode ser simples e explícito."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function assertArray(value, msg = \"Esperado array\") {\n  if (!Array.isArray(value)) throw new TypeError(msg);\n}\n\nfunction assertString(value, msg = \"Esperado string\") {\n  if (typeof value !== \"string\") throw new TypeError(msg);\n}\n\nfunction normalizarUsuarios(users) {\n  assertArray(users, \"Resposta de usuários deve ser um array\");\n  return users.map(u => {\n    if (u == null || typeof u !== \"object\") throw new TypeError(\"Usuário inválido\");\n    const { id, name } = u;\n    assertString(name, \"name deve ser string\");\n    return { id, name };\n  });\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertArray"
+          },
+          {
+            "kind": "plain",
+            "text": "(value, msg "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Esperado array\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Array."
+          },
+          {
+            "kind": "function",
+            "text": "isArray"
+          },
+          {
+            "kind": "plain",
+            "text": "(value)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "(msg);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertString"
+          },
+          {
+            "kind": "plain",
+            "text": "(value, msg "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Esperado string\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " value "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"string\""
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "(msg);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizarUsuarios"
+          },
+          {
+            "kind": "plain",
+            "text": "(users) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "assertArray"
+          },
+          {
+            "kind": "plain",
+            "text": "(users, "
+          },
+          {
+            "kind": "string",
+            "text": "\"Resposta de usuários deve ser um array\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " users."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "(u "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (u "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " u "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"object\""
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Usuário inválido\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " { id, name } "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " u;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "assertString"
+          },
+          {
+            "kind": "plain",
+            "text": "(name, "
+          },
+          {
+            "kind": "string",
+            "text": "\"name deve ser string\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { id, name };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.5 Reescrevendo o caso com separação de responsabilidades"
+    },
+    {
+      "type": "paragraph",
+      "text": "A correção completa junta os aprendizados: separar camadas, tratar falhas explicitamente e manter transformação pura. O código abaixo é pequeno, mas já tem “maturidade de pleno” em vanilla."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "async function obterUsuarios(url) {\n  const users = await obterJson(url);\n  return normalizarUsuarios(users);\n}\n\nfunction paraItens(users) {\n  return users.map(u => `${u.id} - ${u.name.toUpperCase()}`);\n}\n\nfunction renderizarLista(selector, itens) {\n  const ul = document.querySelector(selector);\n  if (!ul) throw new Error(`Elemento não encontrado: ${selector}`);\n  ul.innerHTML = itens.map(t => `<li>${t}</li>`).join(\"\");\n}\n\nasync function main() {\n  const users = await obterUsuarios(\"/api/users\");\n  const itens = paraItens(users);\n  renderizarLista(\"#users\", itens);\n}\n\nwindow.addEventListener(\"DOMContentLoaded\", () => {\n  main().catch(err => console.error(err));\n});",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "obterUsuarios"
+          },
+          {
+            "kind": "plain",
+            "text": "(url) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " users "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "obterJson"
+          },
+          {
+            "kind": "plain",
+            "text": "(url);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizarUsuarios"
+          },
+          {
+            "kind": "plain",
+            "text": "(users);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "paraItens"
+          },
+          {
+            "kind": "plain",
+            "text": "(users) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " users."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "(u "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`${u.id} - ${u.name.toUpperCase()}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderizarLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(selector, itens) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ul "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "(selector);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "ul) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`Elemento não encontrado: ${selector}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ul.innerHTML "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " itens."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "(t "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`<li>${t}</li>`"
+          },
+          {
+            "kind": "plain",
+            "text": ")."
+          },
+          {
+            "kind": "function",
+            "text": "join"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "main"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " users "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "obterUsuarios"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"/api/users\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " itens "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "paraItens"
+          },
+          {
+            "kind": "plain",
+            "text": "(users);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "renderizarLista"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"#users\""
+          },
+          {
+            "kind": "plain",
+            "text": ", itens);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "window."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"DOMContentLoaded\""
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "main"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "(err "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "error"
+          },
+          {
+            "kind": "plain",
+            "text": "(err));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O ganho aqui não é “mais linhas”. É menos ambiguidade: cada função tem um contrato e uma responsabilidade. Isso reduz a superfície de bugs e deixa o erro mais próximo da causa."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.6 Erros comuns ao fazer a correção"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Engolir erros (catch vazio) e perder observabilidade.",
+        "Tratar qualquer falha como 'erro de JSON' quando a causa era rede/política.",
+        "Validar tarde demais (depois de já ter usado o dado).",
+        "Misturar DOM e transformação, tornando tudo difícil de testar."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 6"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo classificar falhas: plataforma (rede/política), runtime (ordem/tempo) e contrato (forma/tipo).",
+        "Eu não uso res.json() sem checar res.ok e sem tratar erros com contexto.",
+        "Eu não uso querySelector sem lidar com null e sem considerar timing (DOMContentLoaded/defer).",
+        "Eu valido invariantes no limite do sistema e mantenho transformação como função pura quando possível."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 7, você vai consolidar os erros comuns do capítulo e aprender padrões de boas práticas que serão usados repetidamente no livro. A ideia é “fixar” hábitos — porque a evolução para pleno é, sobretudo, consistência."
+    }
+  ]
+}

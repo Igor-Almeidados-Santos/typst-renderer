@@ -1,0 +1,2556 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 3 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, valores e tipos (o coração da linguagem)",
+    "part_number": 4,
+    "part_title": "Coerção e conversões: Number/String/Boolean, == vs === e armadilhas",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, valores e tipos (o coração da linguagem)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Coerção e conversões: Number/String/Boolean, == vs === e armadilhas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Coerção é um dos motivos de JavaScript ser poderoso — e também um dos motivos de iniciantes se frustrarem. A linguagem frequentemente tenta “ajudar” convertendo tipos automaticamente. Às vezes isso é conveniente. Muitas vezes, isso vira bug silencioso. Nesta parte, você vai aprender a diferença entre coerção (implícita) e conversão (explícita), e vai dominar as ferramentas para controlar tipos: Number, String, Boolean, além de comparações seguras com ===."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Por que 1 + '1' vira '11'?”"
+    },
+    {
+      "type": "paragraph",
+      "text": "O operador + tem dois papéis: soma numérica e concatenação de string. Quando um dos lados é string, a linguagem tende a converter o outro lado para string e concatenar. Para o iniciante, isso parece magia. Para o júnior, isso é regra: sempre pergunte “qual é o tipo de cada operando?”."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(1 + 1);     // 2\nconsole.log('1' + '1'); // '11'\nconsole.log(1 + '1');   // '11' (number virou string)\nconsole.log('1' + 1);   // '11' (mesma regra)\n\nconsole.log(1 - '1');   // 0 (string virou number)\nconsole.log(1 * '2');   // 2\nconsole.log(1 / '2');   // 0.5",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'1'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'1'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// '11'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'1'"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// '11' (number virou string)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'1'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// '11' (mesma regra)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'1'"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0 (string virou number)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'2'"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'2'"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0.5"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Repare: -, * e / forçam conversão para número com muito mais frequência. O + é o “especial” porque também constrói strings."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Coerção vs conversão (modelo mental)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Coerção (implícita): o JavaScript converte por você em operações/condições/comparações.",
+        "Conversão (explícita): você converte conscientemente (Number(x), String(x), Boolean(x)).",
+        "Regra editorial: prefira conversão explícita ao escrever código que será mantido."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Conversão para número: Number, parseInt, parseFloat"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você recebe entrada (por exemplo, de formulário), ela vem como string. Se você quer fazer contas, você deve converter explicitamente. Existem três ferramentas principais: Number (conversão completa), parseInt (inteiro), parseFloat (decimal). Cada uma tem comportamento diferente."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(Number('42'));     // 42\nconsole.log(Number('42.5'));   // 42.5\nconsole.log(Number(''));       // 0 (pegadinha)\nconsole.log(Number('abc'));    // NaN\n\nconsole.log(parseInt('42', 10));     // 42\nconsole.log(parseInt('42px', 10));   // 42 (para no primeiro não-dígito)\nconsole.log(parseInt('08', 10));     // 8 (radix explícito)\n\nconsole.log(parseFloat('3.14'));     // 3.14\nconsole.log(parseFloat('3.14ms'));   // 3.14",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'42'"
+          },
+          {
+            "kind": "plain",
+            "text": "));     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 42"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'42.5'"
+          },
+          {
+            "kind": "plain",
+            "text": "));   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 42.5"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": "));       "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0 (pegadinha)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'abc'"
+          },
+          {
+            "kind": "plain",
+            "text": "));    "
+          },
+          {
+            "kind": "comment",
+            "text": "// NaN"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "parseInt"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'42'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "));     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 42"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "parseInt"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'42px'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "));   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 42 (para no primeiro não-dígito)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "parseInt"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'08'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "));     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 8 (radix explícito)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "parseFloat"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'3.14'"
+          },
+          {
+            "kind": "plain",
+            "text": "));     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 3.14"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "parseFloat"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'3.14ms'"
+          },
+          {
+            "kind": "plain",
+            "text": "));   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 3.14"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Decisão prática: para entrada “de usuário” que deveria ser apenas número, prefira Number e valide NaN. parseInt/parseFloat são úteis quando você precisa extrair números de strings com unidades (ex.: '42px')."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Conversão para string: String e template literals"
+    },
+    {
+      "type": "paragraph",
+      "text": "Transformar valores em texto é comum para UI e logs. String(x) é explícito e previsível. Template literals também convertem para string de forma natural."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const n = 10;\nconsole.log(String(n));   // '10'\nconsole.log(`${n}`);      // '10'\n\nconst ok = true;\nconsole.log(String(ok));  // 'true'\n\nconsole.log(String(null));      // 'null'\nconsole.log(String(undefined)); // 'undefined'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(n));   "
+          },
+          {
+            "kind": "comment",
+            "text": "// '10'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${n}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");      "
+          },
+          {
+            "kind": "comment",
+            "text": "// '10'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ok "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(ok));  "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'true'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": "));      "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'null'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(undefined)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'undefined'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Conversão para boolean: Boolean e truthy/falsy"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em condições (if, while, operador &&/||), JavaScript converte valores para boolean automaticamente. Valores “falsy” viram false; o resto vira true. Isso é útil, mas precisa ser conhecido para não confundir '0' com 0, por exemplo."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Falsy (os principais)\nconsole.log(Boolean(false));     // false\nconsole.log(Boolean(0));         // false\nconsole.log(Boolean(-0));        // false\nconsole.log(Boolean(0n));        // false\nconsole.log(Boolean(''));        // false\nconsole.log(Boolean(null));      // false\nconsole.log(Boolean(undefined)); // false\nconsole.log(Boolean(NaN));       // false\n\n// Quase tudo o resto é truthy\nconsole.log(Boolean('0'));   // true (string não vazia)\nconsole.log(Boolean([]));    // true (array vazio)\nconsole.log(Boolean({}));    // true (objeto vazio)",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Falsy (os principais)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": "));     "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "));         "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "));        "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "(0n));        "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": "));        "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": "));      "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "(undefined)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "(NaN));       "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Quase tudo o resto é truthy"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'0'"
+          },
+          {
+            "kind": "plain",
+            "text": "));   "
+          },
+          {
+            "kind": "comment",
+            "text": "// true (string não vazia)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "([]));    "
+          },
+          {
+            "kind": "comment",
+            "text": "// true (array vazio)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "({}));    "
+          },
+          {
+            "kind": "comment",
+            "text": "// true (objeto vazio)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Regra de júnior: '0' (string) é true, mas 0 (number) é false. Esse tipo de detalhe explica bugs de validação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Igualdade: == vs === (o ponto mais importante desta parte)"
+    },
+    {
+      "type": "paragraph",
+      "text": "=== (igualdade estrita) compara tipo e valor. == (igualdade solta) permite coerção automática para tentar igualar tipos. Isso produz comparações surpreendentes. A recomendação prática é: use === e !== por padrão. Use == apenas quando você realmente quer a regra específica (raro em código de iniciante/júnior)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(0 == false);     // true  (coerção)\nconsole.log(0 === false);    // false (tipos diferentes)\n\nconsole.log('' == false);    // true\nconsole.log('' === false);   // false\n\nconsole.log('0' == 0);       // true\nconsole.log('0' === 0);      // false\n\nconsole.log(null == undefined);  // true (regra especial do ==)\nconsole.log(null === undefined); // false\n\nconsole.log(' \n\t' == 0);   // true (string com espaços vira 0)\nconsole.log(' \n\t' === 0);  // false",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// true  (coerção)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ");    "
+          },
+          {
+            "kind": "comment",
+            "text": "// false (tipos diferentes)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ");    "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'0'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");       "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'0'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");      "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " undefined);  "
+          },
+          {
+            "kind": "comment",
+            "text": "// true (regra especial do ==)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " undefined); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(' "
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "\t' "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// true (string com espaços vira 0)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(' "
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "\t' "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");  "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Você não precisa memorizar todas as regras do == agora. O que você precisa é decidir: não vou depender de coerção implícita em comparações. Isso elimina uma classe enorme de bugs."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Operadores lógicos como ferramenta de coerção (&&, ||, ??)"
+    },
+    {
+      "type": "paragraph",
+      "text": "&& e || não retornam necessariamente boolean. Eles retornam um dos operandos, usando coerção para decidir. Isso é muito usado em JavaScript e pode ser confuso no início. O operador ?? (nullish coalescing) é mais recente e evita um erro comum: tratar 0 e '' como “ausente”."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// || escolhe o primeiro truthy\nconsole.log('' || 'padrão');     // 'padrão'\nconsole.log(0 || 99);           // 99 (pegadinha: 0 é falsy)\n\n// ?? escolhe o primeiro que não seja null/undefined\nconsole.log(0 ?? 99);           // 0 (bom)\nconsole.log('' ?? 'padrão');    // '' (bom)\nconsole.log(null ?? 'padrão');  // 'padrão'\nconsole.log(undefined ?? 'padrão'); // 'padrão'\n\n// && escolhe o segundo se o primeiro for truthy\nconsole.log(true && 'ok');      // 'ok'\nconsole.log(false && 'ok');     // false",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// || escolhe o primeiro truthy"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'padrão'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");           "
+          },
+          {
+            "kind": "comment",
+            "text": "// 99 (pegadinha: 0 é falsy)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// ?? escolhe o primeiro que não seja null/undefined"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");           "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0 (bom)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": ");    "
+          },
+          {
+            "kind": "comment",
+            "text": "// '' (bom)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": ");  "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'padrão'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(undefined "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'padrão'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// && escolhe o segundo se o primeiro for truthy"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": ");      "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'ok'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Regra prática: use ?? quando o que você quer é “valor padrão apenas se for null/undefined”. Use || quando você quer “valor padrão se for qualquer coisa falsy” (inclui 0 e '')."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: input numérico (a causa do bug e a correção)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Formulários sempre entregam string. Se você soma diretamente, concatena. O jeito certo é converter e validar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Imagine dois inputs com valores '2' e '3'\nconst a = '2';\nconst b = '3';\n\nconsole.log(a + b); // '23' (concatenação)\n\nconst na = Number(a);\nconst nb = Number(b);\n\nif (Number.isNaN(na) || Number.isNaN(nb)) {\n  console.error('Entrada inválida');\n} else {\n  console.log(na + nb); // 5\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Imagine dois inputs com valores '2' e '3'"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'2'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'3'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b); "
+          },
+          {
+            "kind": "comment",
+            "text": "// '23' (concatenação)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " na "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(a);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nb "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(b);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (Number."
+          },
+          {
+            "kind": "function",
+            "text": "isNaN"
+          },
+          {
+            "kind": "plain",
+            "text": "(na) "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " Number."
+          },
+          {
+            "kind": "function",
+            "text": "isNaN"
+          },
+          {
+            "kind": "plain",
+            "text": "(nb)) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Entrada inválida'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(na "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " nb); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 5"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Erros comuns (e como evitar hoje)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Usar + com string sem perceber → vira concatenação. Converta para number primeiro.",
+        "Usar == em validação → aceita coisas inesperadas. Use ===.",
+        "Usar || para default e derrubar 0/'' → use ?? quando 0/'' são valores válidos.",
+        "Converter com Number('') e achar que falhou → retorna 0. Valide entrada antes (string vazia).",
+        "Confiar em parseInt sem radix → sempre passe 10 para evitar ambiguidades."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Checklist profissional (Parte 4)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei a diferença entre coerção (implícita) e conversão (explícita).",
+        "Eu sei converter para number com Number e validar com Number.isNaN.",
+        "Eu sei quando usar parseInt/parseFloat e por quê.",
+        "Eu sei que === é o padrão seguro e evito == por padrão.",
+        "Eu entendo truthy/falsy e sei que '0' é truthy e 0 é falsy.",
+        "Eu sei escolher entre || e ?? para valores padrão."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 5, você vai aprofundar igualdade e comparação de valores em situações reais: NaN, -0, Object.is, e padrões para comparar objetos/arrays sem cair em armadilhas."
+    }
+  ]
+}

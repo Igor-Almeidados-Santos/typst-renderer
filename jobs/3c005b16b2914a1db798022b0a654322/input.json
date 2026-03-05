@@ -1,0 +1,895 @@
+{
+  "metadata": {
+    "book_title": "Teste de Conexão",
+    "title": "Capítulo 01 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "01",
+    "chapter_title": "Teste de Conexão da API (Produção)",
+    "part_number": "2",
+    "part_title": "Robustez, Segurança e Operação Contínua",
+    "brand_primary": [
+      31,
+      75,
+      153
+    ],
+    "brand_secondary": [
+      15,
+      42,
+      82
+    ],
+    "brand_accent": [
+      255,
+      176,
+      32
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      238,
+      242,
+      255
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      15,
+      42,
+      82
+    ],
+    "color_heading_muted": [
+      31,
+      75,
+      153
+    ],
+    "color_heading_rule": [
+      229,
+      231,
+      235
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      147,
+      197,
+      253
+    ],
+    "color_table_header_bg": [
+      15,
+      42,
+      82
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 01 — Teste de Conexão da API (Produção)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Robustez, Segurança e Operação Contínua"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de provar conectividade, autenticação e contrato mínimo, o próximo passo é garantir que a integração continue saudável sob carga, falhas parciais e mudanças operacionais. Esta parte define mecanismos de resiliência, segurança de segredos e testes contínuos, com foco em reduzir impacto e MTTR."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Retentativas com backoff: quando ajudam e quando pioram"
+    },
+    {
+      "type": "paragraph",
+      "text": "Retentativa é ferramenta cirúrgica. Ela ajuda em falhas transitórias (timeouts curtos, 502/503, resets), mas piora falhas determinísticas (401/403/404/422) e pode amplificar incidentes (thundering herd). A regra: só retente o que é idempotente (ou garantidamente seguro) e sempre com limites."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Retentar: timeouts transitórios, 502/503/504, erros de conexão intermitentes.",
+        "Não retentar: 400/401/403/404/409/422 (falha lógica/contratual).",
+        "Idempotência: GET/HEAD geralmente ok; POST só se houver idempotency-key ou design idempotente.",
+        "Limites: máximo de tentativas e janela total; jitter para evitar sincronismo."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Retentativa simples com backoff exponencial + jitter (conceitual)\nconst sleep = (ms) => new Promise((r) => setTimeout(r, ms));\n\nasync function fetchWithRetry(url, opts, { attempts = 3, baseDelayMs = 200 } = {}) {\n  let lastErr;\n  for (let i = 0; i < attempts; i++) {\n    try {\n      const res = await fetch(url, opts);\n      if ([502, 503, 504].includes(res.status)) throw new Error(`transient ${res.status}`);\n      return res;\n    } catch (err) {\n      lastErr = err;\n      const backoff = baseDelayMs * 2 ** i;\n      const jitter = Math.floor(Math.random() * 100);\n      await sleep(backoff + jitter);\n    }\n  }\n  throw lastErr;\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Retentativa simples com backoff exponencial + jitter (conceitual)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " sleep "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " (ms) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Promise"
+          },
+          {
+            "kind": "plain",
+            "text": "((r) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(r, ms));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "fetchWithRetry"
+          },
+          {
+            "kind": "plain",
+            "text": "(url, opts, { attempts "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ", baseDelayMs "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": " } "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {}) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " lastErr;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " attempts; i"
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " res "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "fetch"
+          },
+          {
+            "kind": "plain",
+            "text": "(url, opts);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (["
+          },
+          {
+            "kind": "number",
+            "text": "502"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "503"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "504"
+          },
+          {
+            "kind": "plain",
+            "text": "]."
+          },
+          {
+            "kind": "function",
+            "text": "includes"
+          },
+          {
+            "kind": "plain",
+            "text": "(res.status)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`transient ${res.status}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " res;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    } "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (err) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      lastErr "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " err;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " backoff "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " baseDelayMs "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "**"
+          },
+          {
+            "kind": "plain",
+            "text": " i;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " jitter "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Math."
+          },
+          {
+            "kind": "function",
+            "text": "floor"
+          },
+          {
+            "kind": "plain",
+            "text": "(Math."
+          },
+          {
+            "kind": "function",
+            "text": "random"
+          },
+          {
+            "kind": "plain",
+            "text": "() "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "sleep"
+          },
+          {
+            "kind": "plain",
+            "text": "(backoff "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " jitter);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " lastErr;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Timeouts corretos: connect, read e total"
+    },
+    {
+      "type": "paragraph",
+      "text": "Timeout é um contrato operacional. Separar connect/read/total evita diagnósticos confusos e protege recursos. Connect timeout curto detecta bloqueios de rede rapidamente. Read timeout impede esperas indefinidas por respostas lentas. Total timeout dá previsibilidade à fila e ao SLO do chamador."
+    },
+    {
+      "type": "table",
+      "columns": [
+        "Tipo",
+        "O que protege",
+        "Valor inicial típico (ajuste por contexto)"
+      ],
+      "rows": [
+        [
+          "Connect timeout",
+          "Rota/egress/TCP handshake",
+          "0,5s–3s"
+        ],
+        [
+          "Read timeout",
+          "Serviço lento/stream parado",
+          "2s–30s"
+        ],
+        [
+          "Total timeout",
+          "Orçamento do chamador (SLO)",
+          "5s–60s"
+        ]
+      ],
+      "caption": "Timeouts: comece conservador e ajuste por dados reais (latências p95/p99)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Rate limiting e circuit breaker: evitar cascata"
+    },
+    {
+      "type": "paragraph",
+      "text": "Rate limiting protege o provedor e o consumidor; circuit breaker protege o sistema contra falhas persistentes, evitando saturar threads, conexões e filas. Em produção, o objetivo é degradar com controle, não cair em cascata."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Rate limiting no cliente: controlar concorrência, filas e bursts.",
+        "Circuit breaker: abre após falhas; half-open para sondar recuperação; fecha com sucesso sustentado.",
+        "Fallbacks: respostas degradadas, cache, feature flag, ou fila assíncrona."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Segurança operacional: segredos, escopo mínimo e rotação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Testar conexão não pode comprometer segurança. Segredos devem ficar fora do repositório e de logs. A credencial deve ter escopo mínimo (least privilege) e rotação planejada. Auditoria exige trilha: quem acessou, quando, com qual finalidade."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Armazenar segredos em vault/secret manager; injetar via runtime/CI masked.",
+        "Mascarar tokens em logs e traces; limitar amostras de payload.",
+        "Escopo mínimo (roles/claims); separar credenciais por ambiente e serviço.",
+        "Rotação: suportar chaves simultâneas (old/new) e rollback seguro."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Testes automatizados: smoke, canary e monitor sintético"
+    },
+    {
+      "type": "paragraph",
+      "text": "O teste manual prova hoje; o monitor sintético reduz surpresa amanhã. Em produção, prefira testes baratos, frequentes e com baixa superfície de risco. Defina alertas acionáveis e playbooks."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Smoke test: roda a cada deploy; valida /health e /ping com credencial de serviço.",
+        "Canary: porcentagem pequena do tráfego para nova versão; rollback automático por métricas.",
+        "Monitor sintético: execução periódica fora do cluster; detecta falhas de DNS/egress/provedor.",
+        "SLIs: taxa de sucesso, latência p95/p99, erros por classe (4xx/5xx), timeouts.",
+        "Alertas: por orçamento de erro; evitar ‘alert fatigue’ com deduplicação e severidades."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Evidências para auditoria e pós-incidente"
+    },
+    {
+      "type": "paragraph",
+      "text": "Registre evidências mínimas, repetíveis e seguras. O objetivo é responder: o que foi chamado, quando, com qual correlation-id, qual resultado, e qual impacto. Em incidentes, isso acelera triagem, comunicação e correção."
+    },
+    {
+      "type": "table",
+      "columns": [
+        "Evidência",
+        "Conteúdo mínimo",
+        "Cuidados"
+      ],
+      "rows": [
+        [
+          "Log do cliente",
+          "timestamp, endpoint, status, latência, corrId",
+          "mascarar segredos; amostrar payload"
+        ],
+        [
+          "Log do gateway",
+          "request-id, auth result, policy, upstream status",
+          "não registrar credenciais"
+        ],
+        [
+          "Tracing",
+          "span de chamada externa; corrId/traceparent",
+          "limitar atributos sensíveis"
+        ],
+        [
+          "Métricas",
+          "sucesso, erro por classe, timeout, latências",
+          "agregar por endpoint e cliente"
+        ]
+      ],
+      "caption": "Evidências úteis sem violar segurança/privacidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Estudo de caso: falha intermitente por timeout + retentativa sem limite"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cenário: picos ocasionais elevam p99 do provedor. O cliente usa read timeout muito baixo e retentativas sem limite por worker. Resultado: explosão de requisições, saturação de conexões e degradação generalizada. Correção: aumentar read timeout baseado em p95/p99, limitar tentativas, adicionar jitter, reduzir concorrência e aplicar circuit breaker com half-open."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Retentar 401/403/404 e gerar ruído sem resolver a causa.",
+        "Retentar POST sem idempotency-key e criar duplicidades.",
+        "Timeout total alto demais (fila cresce) ou baixo demais (falsos negativos).",
+        "Alertar por contagem bruta sem considerar taxa (erros por minuto vs porcentagem).",
+        "Monitores que executam operações caras (impactam produção)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Aplicar orçamentos de tempo (timeout total) alinhados ao SLO do chamador.",
+        "Limitar concorrência e retentativas; sempre jitter.",
+        "Adotar circuit breaker e fallback onde a experiência permitir.",
+        "Separar credenciais e escopos por serviço; rotacionar com plano de rollback.",
+        "Monitor sintético barato e frequente com playbook claro."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional (Parte 2)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "[ ] Retentativas apenas para falhas transitórias; com limites e jitter.",
+        "[ ] Timeouts definidos (connect/read/total) e revisados por métricas p95/p99.",
+        "[ ] Controle de concorrência e rate limiting no cliente.",
+        "[ ] Circuit breaker implementado e testado (open/half-open/close).",
+        "[ ] Segredos em secret manager; logs mascarados; rotação planejada.",
+        "[ ] Smoke/canary/monitor sintético ativos com alertas acionáveis.",
+        "[ ] Evidências (logs/traces/métricas) suficientes para auditoria e pós-incidente."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Livro finalizado"
+    },
+    {
+      "type": "paragraph",
+      "text": "O sumário aprovado foi integralmente coberto: pré-textuais e sumário em PDF, Capítulo 01 em duas partes (Parte 1 e Parte 2) e encerramento. Este material está pronto para publicação e uso operacional em produção."
+    }
+  ]
+}

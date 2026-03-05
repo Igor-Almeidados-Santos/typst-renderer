@@ -1,0 +1,1594 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 5 — Strings em profundidade — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 5,
+    "chapter_title": "Strings em profundidade",
+    "part_number": 5,
+    "part_title": "Exemplos práticos comentados: normalização, validação pragmática e parsing de URL",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Strings em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Exemplos práticos comentados: normalização, validação pragmática e parsing de URL"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesta parte, você vai aplicar o capítulo em exemplos práticos do dia a dia: normalização de nome e chave, validação pragmática de e-mail (sem prometer “regex perfeita”), parsing de query string com URL/URLSearchParams e geração segura de output (HTML/URL). O objetivo é transformar teoria em rotinas reutilizáveis."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.20 Normalização de nome (domínio humano) vs normalização de chave (domínio técnico)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nomes de pessoas têm regras de apresentação; chaves de comparação têm regras de canonicidade. Misturar as duas coisas causa bugs. Padrão: mantenha duas funções distintas: uma para apresentação (limpa espaços) e outra para chave (normaliza + casing)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "export function normalizarNome(raw) {\n  const s = String(raw).trim().normalize('NFC');\n  // compacta espaços internos: 'João   da   Silva' -> 'João da Silva'\n  return s.replace(/\\s+/g, ' ');\n}\n\nexport function chaveNome(raw) {\n  // chave para deduplicação/busca case-insensitive\n  return normalizarNome(raw).toLowerCase();\n}\n\nconsole.log(normalizarNome('  João   da  Silva  '));\nconsole.log(chaveNome('joão da silva')); // pode vir com combining",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizarNome"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "function",
+            "text": "normalize"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'NFC'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// compacta espaços internos: 'João   da   Silva' -> 'João da Silva'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " s."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "' '"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "chaveNome"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// chave para deduplicação/busca case-insensitive"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizarNome"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "toLowerCase"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "normalizarNome"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'  João   da  Silva  '"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "chaveNome"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'joão da silva'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// pode vir com combining"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O ponto é: a chave é um contrato técnico. A apresentação é um contrato humano. Não tente usar a mesma string para ambos."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.21 Validação pragmática de e-mail (o contrato é: tem forma plausível)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Validar e-mail “perfeitamente” com regex é um mito. O contrato profissional comum é: aceitar formatos plausíveis e deixar validação definitiva para o canal (envio/confirmacão) quando necessário. Em UI, um verificador simples é suficiente. O objetivo é rejeitar erros óbvios, não implementar a RFC inteira."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Regex pragmática: não perfeita, mas útil.\nconst RE_EMAIL = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n\nexport function emailPlausivel(raw) {\n  const s = String(raw).trim();\n  return RE_EMAIL.test(s);\n}\n\nconsole.log(emailPlausivel('ana@exemplo.com')); // true\nconsole.log(emailPlausivel('ana@exemplo'));     // false\nconsole.log(emailPlausivel(' ana@x.com '));     // true",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Regex pragmática: não perfeita, mas útil."
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " RE_EMAIL "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/^"
+          },
+          {
+            "kind": "plain",
+            "text": "["
+          },
+          {
+            "kind": "operator",
+            "text": "^"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s@]"
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": "@["
+          },
+          {
+            "kind": "operator",
+            "text": "^"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s@]"
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": "\\.["
+          },
+          {
+            "kind": "operator",
+            "text": "^"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s@]"
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": "$"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "emailPlausivel"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " RE_EMAIL."
+          },
+          {
+            "kind": "function",
+            "text": "test"
+          },
+          {
+            "kind": "plain",
+            "text": "(s);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "emailPlausivel"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ana@exemplo.com'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "emailPlausivel"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ana@exemplo'"
+          },
+          {
+            "kind": "plain",
+            "text": "));     "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "emailPlausivel"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "' ana@x.com '"
+          },
+          {
+            "kind": "plain",
+            "text": "));     "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.22 Parsing de URL e query string com URL/URLSearchParams"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em vez de parsear URL com split, use as APIs do ambiente: URL e URLSearchParams. Elas lidam com encoding, ordem e casos de borda com mais segurança."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const u = new URL('https://exemplo.com/produtos?q=joao%20silva&page=0&tag=a&tag=b');\n\nconsole.log(u.pathname); // '/produtos'\nconsole.log(u.searchParams.get('q'));    // 'joao silva'\nconsole.log(u.searchParams.get('page')); // '0'\nconsole.log(u.searchParams.getAll('tag')); // ['a','b']\n\n// Construindo query com encoding correto\nconst params = new URLSearchParams();\nparams.set('q', 'a&b=c');\nparams.set('page', '1');\nconsole.log(params.toString()); // 'q=a%26b%3Dc&page=1'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " u "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "URL"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'https://exemplo.com/produtos?q=joao%20silva&page=0&tag=a&tag=b'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(u.pathname); "
+          },
+          {
+            "kind": "comment",
+            "text": "// '/produtos'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(u.searchParams."
+          },
+          {
+            "kind": "function",
+            "text": "get"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'q'"
+          },
+          {
+            "kind": "plain",
+            "text": "));    "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'joao silva'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(u.searchParams."
+          },
+          {
+            "kind": "function",
+            "text": "get"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'page'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// '0'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(u.searchParams."
+          },
+          {
+            "kind": "function",
+            "text": "getAll"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'tag'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// ['a','b']"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Construindo query com encoding correto"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " params "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "URLSearchParams"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "params."
+          },
+          {
+            "kind": "function",
+            "text": "set"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'q'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'a&b=c'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "params."
+          },
+          {
+            "kind": "function",
+            "text": "set"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'page'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'1'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(params."
+          },
+          {
+            "kind": "function",
+            "text": "toString"
+          },
+          {
+            "kind": "plain",
+            "text": "()); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'q=a%26b%3Dc&page=1'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.23 Montagem segura de URL com valores dinâmicos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você monta URLs com valores dinâmicos, encodeURIComponent é o mínimo. Se você usa URL/URLSearchParams, o encoding ocorre automaticamente para query. Para path, encode manualmente o segmento."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function buildUserUrl(base, userId) {\n  const u = new URL(base);\n  // encode segmento do path\n  u.pathname = `/users/${encodeURIComponent(String(userId))}`;\n  return u.toString();\n}\n\nconsole.log(buildUserUrl('https://api.exemplo.com', 'a/b')); // .../users/a%2Fb",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buildUserUrl"
+          },
+          {
+            "kind": "plain",
+            "text": "(base, userId) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " u "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "URL"
+          },
+          {
+            "kind": "plain",
+            "text": "(base);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// encode segmento do path"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  u.pathname "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`/users/${encodeURIComponent(String(userId))}`"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " u."
+          },
+          {
+            "kind": "function",
+            "text": "toString"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "buildUserUrl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'https://api.exemplo.com'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'a/b'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// .../users/a%2Fb"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.24 Saída segura em HTML: prefira textContent"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se o objetivo é mostrar texto, prefira textContent. Isso evita interpretação de HTML e reduz risco de XSS. Use innerHTML apenas quando você controla a string e/ou fez escaping."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function renderMensagem(el, msg) {\n  el.textContent = String(msg);\n}\n\nfunction renderMensagemHtml(el, msg) {\n  el.innerHTML = `<strong>${escapeHtml(msg)}</strong>`;\n}\n\n// Onde escapeHtml é o helper da Parte 4.",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderMensagem"
+          },
+          {
+            "kind": "plain",
+            "text": "(el, msg) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  el.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(msg);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderMensagemHtml"
+          },
+          {
+            "kind": "plain",
+            "text": "(el, msg) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  el.innerHTML "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`<strong>${escapeHtml(msg)}</strong>`"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Onde escapeHtml é o helper da Parte 4."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu separo normalização para apresentação (nome) de normalização para chave (deduplicação/busca).",
+        "Eu uso validação de e-mail de forma pragmática e não tento implementar 'regex perfeita'.",
+        "Eu parseio URLs com URL/URLSearchParams em vez de split manual.",
+        "Eu monto query strings com encoding correto e codifico segmentos de path quando dinâmicos.",
+        "Eu prefiro textContent para output de texto e uso innerHTML apenas com escaping/controle."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 6, você fará um estudo de caso completo: um mini-formulário vanilla que recebe texto, normaliza, valida, cria slug, monta URL de busca e renderiza resultados com segurança — aplicando contratos de string e fluxo."
+    }
+  ]
+}

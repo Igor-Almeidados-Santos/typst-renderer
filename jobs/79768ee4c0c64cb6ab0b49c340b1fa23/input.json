@@ -1,0 +1,2676 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 2 — Valores, tipos e coerção — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 2,
+    "chapter_title": "Valores, tipos e coerção",
+    "part_number": 5,
+    "part_title": "Exemplos práticos comentados: validação, parsing e comparações seguras",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 2 — Valores, tipos e coerção"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Exemplos práticos comentados: validação, parsing e comparações seguras"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesta parte, você vai transformar o mapa (tipos → coerção → igualdade) em rotinas de código que evitam bugs. O foco é vanilla aplicável: parsing de entradas, validação por contrato, comparação consistente e tratamento de casos de borda. Você não vai decorar regras; você vai adotar padrões que tornam o sistema previsível."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.1 Padrão 1: normalizar na fronteira (parsing + invariantes)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sempre que um dado vem de fora (input, URL, JSON, storage), trate como string/unknown e normalize. Esse padrão cria uma fronteira clara: antes da fronteira, dados são incertos; depois, contratos são estáveis."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function parseNumero(raw, nome = \"valor\") {\n  // Aceita string/number, devolve number finito.\n  const n = typeof raw === \"number\" ? raw : Number(String(raw).trim());\n  if (!Number.isFinite(n)) {\n    throw new TypeError(`${nome} deve ser número finito (recebido: ${raw})`);\n  }\n  return n;\n}\n\nconsole.log(parseNumero(\" 10 \", \"idade\")); // 10\n// parseNumero(\"abc\") -> TypeError",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseNumero"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw, nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"valor\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Aceita string/number, devolve number finito."
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " raw "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"number\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": " raw "
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isFinite"
+          },
+          {
+            "kind": "plain",
+            "text": "(n)) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${nome} deve ser número finito (recebido: ${raw})`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " n;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "parseNumero"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\" 10 \""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"idade\""
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 10"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// parseNumero(\"abc\") -> TypeError"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Note que o contrato é explícito: entrada flexível, saída estável. Isso permite que o resto do sistema use === e operações numéricas sem medo."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.2 Padrão 2: ausência com intenção (null/undefined) sem punir 0 e ''"
+    },
+    {
+      "type": "paragraph",
+      "text": "A ausência é um caso de domínio. Se um campo é opcional, você deve representar essa opcionalidade com clareza. Em validação, a regra prática mais segura é: checar ausência com v == null e checar conteúdo com regras específicas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function exigeString(v, nome = \"valor\") {\n  if (v == null) throw new Error(`${nome} é obrigatório`);\n  if (typeof v !== \"string\") throw new TypeError(`${nome} deve ser string`);\n  return v;\n}\n\nfunction stringNaoVazia(v, nome = \"valor\") {\n  const s = exigeString(v, nome).trim();\n  if (s === \"\") throw new Error(`${nome} não pode ser vazio`);\n  return s;\n}\n\nconsole.log(stringNaoVazia(\"  André  \", \"nome\"));\n// stringNaoVazia(\" \") -> erro\n// stringNaoVazia(null) -> erro",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exigeString"
+          },
+          {
+            "kind": "plain",
+            "text": "(v, nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"valor\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (v "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${nome} é obrigatório`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " v "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"string\""
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${nome} deve ser string`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " v;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "stringNaoVazia"
+          },
+          {
+            "kind": "plain",
+            "text": "(v, nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"valor\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exigeString"
+          },
+          {
+            "kind": "plain",
+            "text": "(v, nome)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (s "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"\""
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${nome} não pode ser vazio`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " s;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "stringNaoVazia"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"  André  \""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"nome\""
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// stringNaoVazia(\" \") -> erro"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// stringNaoVazia(null) -> erro"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Repare: não existe if(v) genérico. Cada validação expressa o contrato do campo."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.3 Padrão 3: comparar por identidade vs comparar por equivalência"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você compara primitivos, geralmente quer valor. Quando compara objetos, geralmente quer identidade (mesma referência) ou equivalência por um critério do domínio (por exemplo, mesmo id). O erro comum é tentar usar === para comparar conteúdo."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Identidade (mesma referência)\nconst a = { id: 1 };\nconst b = a;\nconsole.log(a === b); // true\n\n// Conteúdo parecido, mas objetos diferentes\nconst c = { id: 1 };\nconsole.log(a === c); // false\n\n// Equivalência por domínio (id)\nfunction mesmoId(u1, u2) {\n  return u1 != null && u2 != null && u1.id === u2.id;\n}\n\nconsole.log(mesmoId(a, c)); // true",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Identidade (mesma referência)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " a;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " b); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Conteúdo parecido, mas objetos diferentes"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " c "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " c); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Equivalência por domínio (id)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "mesmoId"
+          },
+          {
+            "kind": "plain",
+            "text": "(u1, u2) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " u1 "
+          },
+          {
+            "kind": "operator",
+            "text": "!="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " u2 "
+          },
+          {
+            "kind": "operator",
+            "text": "!="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " u1.id "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " u2.id;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "mesmoId"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, c)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.4 Padrão 4: JSON de API como unknown (parse e valida)"
+    },
+    {
+      "type": "paragraph",
+      "text": "JSON não é tipado. Em JavaScript vanilla, o mínimo profissional é tratar o resultado de res.json() como unknown e validar a forma que você realmente usa. Não precisa ser uma biblioteca; pode ser uma normalização explícita."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function normalizarUser(raw) {\n  if (raw == null || typeof raw !== \"object\") throw new TypeError(\"user inválido\");\n  const { id, name } = raw;\n  // id pode vir number ou string numérica\n  const nid = parseNumero(id, \"id\");\n  const nname = stringNaoVazia(name, \"name\");\n  return { id: nid, name: nname };\n}\n\nfunction normalizarUsers(raw) {\n  if (!Array.isArray(raw)) throw new TypeError(\"users deve ser array\");\n  return raw.map(normalizarUser);\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizarUser"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " raw "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"object\""
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"user inválido\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " { id, name } "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " raw;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// id pode vir number ou string numérica"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nid "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseNumero"
+          },
+          {
+            "kind": "plain",
+            "text": "(id, "
+          },
+          {
+            "kind": "string",
+            "text": "\"id\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nname "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "stringNaoVazia"
+          },
+          {
+            "kind": "plain",
+            "text": "(name, "
+          },
+          {
+            "kind": "string",
+            "text": "\"name\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " nid, name"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " nname };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizarUsers"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Array."
+          },
+          {
+            "kind": "function",
+            "text": "isArray"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"users deve ser array\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " raw."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "(normalizarUser);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Isso reduz bugs em cascata. Se o dado muda, você falha cedo com mensagem clara e stack trace curto."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.5 Casos de borda: NaN e comparações numéricas"
+    },
+    {
+      "type": "paragraph",
+      "text": "NaN é perigoso porque ele é contagioso: operações com NaN resultam em NaN, e comparações com NaN são sempre false (exceto Number.isNaN / Object.is). O padrão profissional é: nunca aceite NaN como número válido; valide com Number.isFinite."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const n = Number(\"abc\");\nconsole.log(n);               // NaN\nconsole.log(n === NaN);       // false\nconsole.log(Number.isNaN(n)); // true\n\nfunction exigeNumeroFinito(x) {\n  if (!Number.isFinite(x)) throw new TypeError(\"número inválido\");\n  return x;\n}\n\n// exigeNumeroFinito(n) -> erro",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"abc\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(n);               "
+          },
+          {
+            "kind": "comment",
+            "text": "// NaN"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(n "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " NaN);       "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(Number."
+          },
+          {
+            "kind": "function",
+            "text": "isNaN"
+          },
+          {
+            "kind": "plain",
+            "text": "(n)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exigeNumeroFinito"
+          },
+          {
+            "kind": "plain",
+            "text": "(x) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isFinite"
+          },
+          {
+            "kind": "plain",
+            "text": "(x)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"número inválido\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " x;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// exigeNumeroFinito(n) -> erro"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.6 Um mini-kit de guard clauses (vocabulário de contrato)"
+    },
+    {
+      "type": "paragraph",
+      "text": "A seguir, um conjunto pequeno de funções de guarda (guard clauses). Elas servem como vocabulário: você para de espalhar validações inconsistentes e passa a expressar contratos de forma uniforme."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "export function assert(cond, msg = \"assertion failed\") {\n  if (!cond) throw new Error(msg);\n}\n\nexport function assertDefined(v, nome = \"valor\") {\n  if (v === undefined) throw new Error(`${nome} não pode ser undefined`);\n  return v;\n}\n\nexport function assertNotNull(v, nome = \"valor\") {\n  if (v === null) throw new Error(`${nome} não pode ser null`);\n  return v;\n}\n\nexport function assertPresent(v, nome = \"valor\") {\n  if (v == null) throw new Error(`${nome} é obrigatório`); // null ou undefined\n  return v;\n}\n\nexport function assertArray(v, nome = \"valor\") {\n  if (!Array.isArray(v)) throw new TypeError(`${nome} deve ser array`);\n  return v;\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assert"
+          },
+          {
+            "kind": "plain",
+            "text": "(cond, msg "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"assertion failed\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "cond) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "(msg);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertDefined"
+          },
+          {
+            "kind": "plain",
+            "text": "(v, nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"valor\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (v "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " undefined) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${nome} não pode ser undefined`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " v;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertNotNull"
+          },
+          {
+            "kind": "plain",
+            "text": "(v, nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"valor\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (v "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${nome} não pode ser null`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " v;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertPresent"
+          },
+          {
+            "kind": "plain",
+            "text": "(v, nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"valor\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (v "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${nome} é obrigatório`"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// null ou undefined"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " v;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertArray"
+          },
+          {
+            "kind": "plain",
+            "text": "(v, nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"valor\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Array."
+          },
+          {
+            "kind": "function",
+            "text": "isArray"
+          },
+          {
+            "kind": "plain",
+            "text": "(v)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${nome} deve ser array`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " v;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu normalizo dados na fronteira e mantenho contratos estáveis no miolo.",
+        "Eu valido ausência com intenção (null/undefined) e não confundo com falsy.",
+        "Eu sei quando comparar por identidade (===) e quando comparar por critério de domínio (ex.: id).",
+        "Eu trato JSON como unknown e valido forma antes de usar.",
+        "Eu bloqueio NaN e números inválidos com Number.isFinite.",
+        "Eu uso guard clauses como vocabulário consistente de contrato."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 6, você fará um estudo de caso completo: um fluxo de cadastro (browser) que recebe input como string, valida, normaliza, armazena e renderiza — com erros típicos inseridos de propósito para praticar diagnóstico e correção."
+    }
+  ]
+}

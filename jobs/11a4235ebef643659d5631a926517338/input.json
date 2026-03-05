@@ -1,0 +1,930 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, escopo e o modelo mental do runtime",
+    "part_number": 3,
+    "part_title": "Modelo mental correto: hoisting, TDZ e criação de bindings",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Modelo mental correto: hoisting, TDZ e criação de bindings"
+    },
+    {
+      "type": "paragraph",
+      "text": "Hoisting é um dos assuntos mais mal explicados em JavaScript. A explicação errada diz que “o JavaScript move o código para cima”. Ele não move. O que acontece é mais preciso: antes de executar o corpo do código, a engine cria os bindings (ligações de nomes) no escopo. A diferença entre var, let/const e function está em como esses bindings são criados e inicializados."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é unificar o modelo mental: por que var dá undefined, por que let/const dão ReferenceError (TDZ) e por que function declarations parecem existir antes da linha onde aparecem."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.9 Dois momentos: criação do escopo e execução"
+    },
+    {
+      "type": "paragraph",
+      "text": "Pense em dois momentos distintos:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Momento A — Criação (instanciação do escopo): a engine registra quais nomes existem naquele escopo (bindings).",
+        "Momento B — Execução: o código roda linha a linha e inicializa/atribui valores conforme encontra declarações e atribuições."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Hoisting descreve o Momento A. TDZ é o intervalo entre o Momento A e o ponto em que o binding recebe seu valor inicial (no Momento B)."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.10 var: binding criado e inicializado com undefined"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com var, no Momento A, o binding é criado e já recebe undefined. Por isso, ler antes da linha de atribuição não dá erro; dá undefined. Isso parece conveniente, mas é perigoso porque esconde o uso antes de atribuir."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function demoVar() {\n  console.log(x); // undefined\n  var x = 10;\n  console.log(x); // 10\n}\n\n// Modelo mental:\n// Momento A: cria binding x e inicializa com undefined\n// Momento B: x recebe 10 na linha da atribuição",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "demoVar"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x); "
+          },
+          {
+            "kind": "comment",
+            "text": "// undefined"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 10"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Modelo mental:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Momento A: cria binding x e inicializa com undefined"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Momento B: x recebe 10 na linha da atribuição"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.11 let/const: binding criado, mas não inicializado (TDZ)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com let e const, o binding é criado no Momento A, mas não é inicializado automaticamente. Até a linha de declaração, o binding está em TDZ; qualquer acesso resulta em ReferenceError. Isso força correção: você não lê antes de declarar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function demoLet() {\n  // console.log(a); // ReferenceError (TDZ)\n  let a = 1;\n  return a;\n}\n\nfunction demoConst() {\n  // console.log(b); // ReferenceError (TDZ)\n  const b = 2;\n  return b;\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "demoLet"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// console.log(a); // ReferenceError (TDZ)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "demoConst"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// console.log(b); // ReferenceError (TDZ)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.12 Function declarations: binding e valor disponíveis cedo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Declarações de função (function declarations) criam um binding cujo valor (a própria função) já está disponível no Momento A. Por isso, você pode chamar antes da linha textual. Isso é útil para organização top-down, mas exige disciplina para evitar dependências circulares e leitura confusa."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "console.log(somar(2, 3)); // 5\n\nfunction somar(a, b) {\n  return a + b;\n}\n\n// Binding e valor (função) existem desde o Momento A.",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 5"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Binding e valor (função) existem desde o Momento A."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.13 Function expressions e arrows: seguem as regras do binding (let/const/var)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Expressões de função e arrow functions não têm o mesmo comportamento de hoisting de function declarations. Elas dependem do binding que as guarda. Se o binding é const/let, há TDZ; se é var, há undefined antes da atribuição."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// console.log(mult(2, 3)); // ReferenceError (TDZ)\nconst mult = (a, b) => a * b;\n\nfunction demo() {\n  console.log(f); // undefined (var)\n  var f = function () { return 1; };\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// console.log(mult(2, 3)); // ReferenceError (TDZ)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mult "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " (a, b) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "demo"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(f); "
+          },
+          {
+            "kind": "comment",
+            "text": "// undefined (var)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " f "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () { "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "; };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.14 Regra prática: declare antes de usar (e prefira const)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Prefira const e declare o mais perto possível do uso, sem sacrificar clareza.",
+        "Evite depender de hoisting para 'fazer funcionar'. Use hoisting apenas quando melhorar legibilidade (top-down).",
+        "Evite var em código novo; em legado, trate undefined antes de atribuição como cheiro de bug."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu entendo hoisting como criação de bindings no início do escopo, não como 'mover código'.",
+        "Eu sei por que var retorna undefined antes da atribuição e por que isso é perigoso.",
+        "Eu sei por que let/const geram TDZ e por que isso melhora correção.",
+        "Eu sei que function declarations disponibilizam a função cedo e que expressions/arrows dependem do binding.",
+        "Eu consigo prever o comportamento de um trecho apenas olhando o tipo de declaração."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 4, você vai organizar essas regras em um mapa de escopos: global, módulo, função e bloco, e vai entender como isso aparece no debugger. O objetivo é enxergar a scope chain em tempo real."
+    }
+  ]
+}

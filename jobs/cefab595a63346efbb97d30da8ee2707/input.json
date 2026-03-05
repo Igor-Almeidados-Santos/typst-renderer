@@ -1,0 +1,899 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 1 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Começando do Zero: o que é JavaScript e como ele roda",
+    "part_number": 2,
+    "part_title": "Seu laboratório: DevTools, arquivos e inclusão de scripts",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Começando do Zero"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Seu laboratório: DevTools, arquivos e inclusão de scripts"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se você quer aprender JavaScript de forma consistente, precisa de um “laboratório” confiável: um lugar onde você escreve, executa, observa o resultado e consegue depurar. Nesta parte, você vai montar o ambiente mínimo (sem frameworks) e entender a forma correta de incluir JavaScript em uma página — inclusive por que a ordem importa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “No Console funciona, no arquivo não”"
+    },
+    {
+      "type": "paragraph",
+      "text": "No Console do navegador, você executa código em um ambiente já carregado: o DOM normalmente já existe e você está no “meio” da aplicação. Em arquivo, seu código pode rodar cedo demais (antes do HTML), pode não estar sendo carregado, ou pode estar sendo bloqueado por erros. A solução é dominar três fundamentos: (1) estrutura de arquivos, (2) como o browser carrega scripts, (3) como verificar carregamento e erros no DevTools."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. DevTools: as três abas que você vai usar o tempo todo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Console: imprimir valores, testar expressões, ler erros (stack trace).",
+        "Sources: ver arquivos carregados, colocar breakpoints, depurar passo a passo.",
+        "Network: confirmar se arquivos (HTML/CSS/JS) foram baixados e sem erro (status 200/404)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Modelo mental: quando “nada acontece”, quase sempre é (a) seu script não carregou, (b) carregou mas falhou com erro, ou (c) rodou, mas não fez o que você esperava (erro lógico). DevTools te mostra qual dos três é."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Projeto mínimo (sem build, sem bundler)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Crie uma pasta e comece com três arquivos. Esse formato simples é perfeito para aprender JavaScript vanilla porque elimina complexidade desnecessária."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "content": "meu-projeto/\n  index.html\n  styles.css\n  app.js",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "meu"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "projeto"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  index.html"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  styles.css"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  app.js"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.1 index.html (estrutura mínima)"
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<!doctype html>\n<html lang=\"pt-BR\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Meu Laboratório JS</title>\n    <link rel=\"stylesheet\" href=\"styles.css\" />\n  </head>\n  <body>\n    <h1>Olá, JavaScript!</h1>\n\n    <!-- O script entra aqui (vamos discutir o porquê) -->\n    <script src=\"app.js\"></script>\n  </body>\n</html>",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<!"
+          },
+          {
+            "kind": "plain",
+            "text": "doctype html"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "html lang"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"pt-BR\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "meta charset"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"utf-8\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/>"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "meta name"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"viewport\""
+          },
+          {
+            "kind": "plain",
+            "text": " content"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"width=device-width, initial-scale=1\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/>"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "title"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": "Meu Laboratório JS"
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "title"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "link rel"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"stylesheet\""
+          },
+          {
+            "kind": "plain",
+            "text": " href"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"styles.css\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/>"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "h1"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": "Olá, JavaScript"
+          },
+          {
+            "kind": "operator",
+            "text": "!</"
+          },
+          {
+            "kind": "plain",
+            "text": "h1"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<!--"
+          },
+          {
+            "kind": "plain",
+            "text": " O script entra "
+          },
+          {
+            "kind": "function",
+            "text": "aqui"
+          },
+          {
+            "kind": "plain",
+            "text": " (vamos discutir o porquê) "
+          },
+          {
+            "kind": "operator",
+            "text": "-->"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"app.js\""
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "html"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.2 app.js (seu primeiro arquivo)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log('app.js carregou!');\n\nconst titulo = document.querySelector('h1');\nconsole.log('Título encontrado:', titulo?.textContent);",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'app.js carregou!'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " titulo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'h1'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Título encontrado:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", titulo"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".textContent);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Abra o index.html no navegador e veja o Console. Se aparecer “app.js carregou!”, o arquivo foi carregado e executado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. A regra da ordem: por que colocar o <script> no fim funciona"
+    },
+    {
+      "type": "paragraph",
+      "text": "O navegador lê o HTML de cima para baixo. Se você coloca o <script> no <head> sem cuidado, o código pode rodar antes de o <h1> existir no DOM. Resultado: seletores retornam null, e você acha que “JavaScript não funciona”. Ao colocar o <script> no final do <body>, você garante que o HTML já foi interpretado antes do JavaScript rodar."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<script> no fim do <body>: simples e funciona bem para aprender.",
+        "<script defer> no <head>: carrega em paralelo e executa depois do HTML (bom padrão).",
+        "<script type=\"module\">: habilita módulos e também é adiado por padrão (deferred)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. O padrão moderno recomendado: defer"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para projetos reais, é comum colocar scripts no <head> com defer. Assim o navegador baixa o arquivo sem bloquear a renderização e executa no momento certo."
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<head>\n  ...\n  <script src=\"app.js\" defer></script>\n</head>",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ..."
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"app.js\""
+          },
+          {
+            "kind": "plain",
+            "text": " defer"
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que isso é uma boa decisão? Porque separa organização (scripts no head) de comportamento (executar depois do HTML) sem depender da posição no body."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Verificação rápida: “meu arquivo carregou mesmo?”"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Console: apareceu o console.log inicial?",
+        "Network: o app.js está com status 200? (não 404)",
+        "Sources: o app.js aparece na árvore de arquivos?",
+        "Console: há erros em vermelho? Clique para ver linha e stack trace."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Seu primeiro erro controlado (para aprender a ler mensagens)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Provocar um erro de propósito é uma técnica profissional. Você aprende a reconhecer o padrão e perde o medo do Console."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Provoque um erro de propósito:\nconsole.log(variavelQueNaoExiste);\n\n// O Console vai mostrar ReferenceError e a linha do arquivo.",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Provoque um erro de propósito:"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(variavelQueNaoExiste);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// O Console vai mostrar ReferenceError e a linha do arquivo."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora apague a linha e confirme que o erro sumiu. Esse ciclo (provocar → ler → corrigir) é parte do treino de júnior."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Checklist profissional (Parte 2)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei montar um projeto mínimo com index.html + app.js.",
+        "Eu sei 3 maneiras corretas de incluir scripts (fim do body, defer, module).",
+        "Eu sei verificar carregamento em Console, Network e Sources.",
+        "Eu consigo provocar e interpretar um ReferenceError básico."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 3, você vai aprender como o JavaScript “vê” valores (tipos), como imprimir e inspecionar dados, e como evitar confusões iniciais com null/undefined."
+    }
+  ]
+}

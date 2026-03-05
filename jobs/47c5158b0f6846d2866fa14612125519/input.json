@@ -1,0 +1,777 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 5 — Strings em profundidade — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 5,
+    "chapter_title": "Strings em profundidade",
+    "part_number": 2,
+    "part_title": "Fundamentação teórica: Unicode, code units, code points e normalização",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Strings em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Fundamentação teórica: Unicode, code units, code points e normalização"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de falar de regex, parsing e validação robusta, você precisa de uma base que explica bugs estranhos envolvendo texto: Unicode. Em JavaScript, strings são sequências de unidades de código (code units) em UTF-16. Isso significa que o que você percebe como \"um caractere\" pode ser representado por uma ou duas unidades de código. Em muitos emojis e símbolos fora do BMP, o valor ocupa duas posições (surrogate pair). Além disso, o mesmo texto pode ter representações diferentes por causa de normalização (por exemplo, caracteres compostos)."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você não precisa virar especialista em Unicode. Para ser pleno, você precisa entender o suficiente para não cometer erros comuns: length nem sempre mede a quantidade de caracteres visíveis; slice pode cortar no meio de um surrogate pair; comparação pode falhar por normalização diferente; e parsing por índices pode quebrar com emojis."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.6 UTF-16 em JavaScript: por que length engana"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em JavaScript, string.length conta unidades de código UTF-16, não \"caracteres\" (grapheme clusters). Para letras comuns no BMP, length costuma coincidir com o número de caracteres. Para símbolos fora do BMP, length pode ser 2 para o que parece 1."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const a = \"A\";\nconst emoji = \"😀\";\n\nconsole.log(a.length);     // 1\nconsole.log(emoji.length); // 2 (surrogate pair)\n\n// Iteracao por code points (melhor que indexar por []):\nfor (const ch of emoji) {\n  console.log(ch); // '😀'\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"A\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " emoji "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"😀\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a.length);     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 1"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(emoji.length); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2 (surrogate pair)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Iteracao por code points (melhor que indexar por []):"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ch of emoji) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(ch); "
+          },
+          {
+            "kind": "comment",
+            "text": "// '😀'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.7 Code points vs code units: iterar com segurança"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você usa for...of em uma string, você itera por code points (no sentido prático), o que evita quebrar surrogate pairs. Já o acesso por indice (s[0], s[1]) opera por code units. Em strings com emojis, isso pode separar metades do caractere."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const s = \"😀\";\nconsole.log(s[0]); // metade do surrogate\nconsole.log(s[1]); // outra metade\n\nconsole.log([...s]); // ['😀'] (expande por iteracao)",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"😀\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s["
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "]); "
+          },
+          {
+            "kind": "comment",
+            "text": "// metade do surrogate"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "]); "
+          },
+          {
+            "kind": "comment",
+            "text": "// outra metade"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "([...s]); "
+          },
+          {
+            "kind": "comment",
+            "text": "// ['😀'] (expande por iteracao)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.8 Normalização (NFC/NFD): textos iguais que não são iguais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Alguns caracteres podem ser representados como um ponto de código único (forma composta) ou como base + marca diacrítica (forma decomposta). Visualmente, é o mesmo. Binariamente, pode ser diferente. Por isso, comparações e deduplicação podem falhar se você não normalizar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const a1 = \"é\";           // pode ser 1 code point\nconst a2 = \"e\\u0301\";      // 'e' + acento (combining)\n\nconsole.log(a1 === a2); // false (pode acontecer)\n\nconst n1 = a1.normalize(\"NFC\");\nconst n2 = a2.normalize(\"NFC\");\nconsole.log(n1 === n2); // true",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"é\""
+          },
+          {
+            "kind": "plain",
+            "text": ";           "
+          },
+          {
+            "kind": "comment",
+            "text": "// pode ser 1 code point"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"e\\u0301\""
+          },
+          {
+            "kind": "plain",
+            "text": ";      "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'e' + acento (combining)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a1 "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " a2); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false (pode acontecer)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " a1."
+          },
+          {
+            "kind": "function",
+            "text": "normalize"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"NFC\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " a2."
+          },
+          {
+            "kind": "function",
+            "text": "normalize"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"NFC\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(n1 "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " n2); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.9 Comparação e casing: cuidado com locale"
+    },
+    {
+      "type": "paragraph",
+      "text": "toLowerCase/toUpperCase seguem regras gerais, mas algumas línguas têm particularidades. Para comparação de chaves e deduplicação, prefira normalizar de forma consistente (trim + NFC + casing) e, quando houver requisitos de locale, use Intl.Collator para ordenação/comparação de apresentação."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei que strings em JS são UTF-16 e que length conta code units, não caracteres visíveis.",
+        "Eu sei que emojis podem ocupar length 2 e que indexar por [i] pode quebrar surrogate pairs.",
+        "Eu uso for...of ou spread para iterar por unidades mais seguras em presença de emojis.",
+        "Eu sei que textos visualmente iguais podem ser diferentes sem normalização e uso .normalize quando necessário.",
+        "Eu entendo que casing e comparação podem ter particularidades de locale e escolho estratégia por contrato."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 3, você vai aplicar esse fundamento em operações do dia a dia: trim, replace, search, templates e construção eficiente. Você vai aprender a normalizar strings na fronteira e a desenhar contratos de parsing e formatação."
+    }
+  ]
+}

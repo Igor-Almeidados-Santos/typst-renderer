@@ -1,0 +1,242 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 5 — Strings em profundidade — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 5,
+    "chapter_title": "Strings em profundidade",
+    "part_number": 1,
+    "part_title": "Problema real: texto é dado de fronteira — e a fronteira quebra sistemas",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Strings em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Problema real: texto é dado de fronteira — e a fronteira quebra sistemas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Strings são o tipo de dado mais comum em qualquer sistema — e também o mais subestimado. Quase tudo que entra e sai de um programa passa por texto: input de usuário, URL, headers, JSON, logs, templates, mensagens de erro, nomes, identificadores, conteúdos. Por isso, strings são fronteira. E, como você aprendeu, fronteira exige contrato: normalização, validação, parsing e formatação."
+    },
+    {
+      "type": "paragraph",
+      "text": "O problema é que “texto” não é uma coisa simples. Ele envolve Unicode, normalização, espaços invisíveis, caracteres compostos, diferenças de caixa (case), locale, regras de comparação e, muitas vezes, segurança (injeção em HTML, URLs, SQL, etc.). Um desenvolvedor pleno não trata string como “um array de chars”; ele trata como dado com semântica e riscos."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.1 Sintoma 1: validação que passa, mas o dado está “quebrado”"
+    },
+    {
+      "type": "paragraph",
+      "text": "É comum validar apenas se a string não está vazia, mas ignorar detalhes como espaços, caracteres invisíveis, normalização e formato. O resultado é dado “sujo” que quebra busca, deduplicação e comparação."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Usuários digitam \" João\" e \"João\" e o sistema trata como diferentes.",
+        "Um e-mail com espaço no fim passa na UI e falha no backend.",
+        "Textos com caracteres invisíveis passam por validação simples e quebram regras.",
+        "Comparações por === falham porque os textos são visualmente iguais, mas binariamente diferentes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.2 Sintoma 2: parsing frágil (split/substring sem contrato)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro bug recorrente: parsing por suposição. Você usa split('-') esperando sempre 3 partes, usa substring com índices fixos, ou assume que o formato nunca muda. Isso gera bugs que aparecem em produção quando chega um caso de borda."
+    },
+    {
+      "type": "list",
+      "items": [
+        "URL com query string inesperada.",
+        "Nome com hífen, espaço duplo ou acento.",
+        "CSV com campo entre aspas e vírgula dentro.",
+        "Data em formato diferente por locale."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.3 Sintoma 3: performance e concatenação em loops"
+    },
+    {
+      "type": "paragraph",
+      "text": "Strings são imutáveis. Concatenação repetida em loops pode criar custos desnecessários em hot paths. Em JavaScript moderno, engines otimizam bastante, mas o padrão profissional é: quando concatenação cresce, use arrays e join, ou templates bem definidos."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.4 O contrato do Capítulo 5"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao final deste capítulo, você deve ser capaz de:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Explicar Unicode no nível necessário e por que \"caractere\" nem sempre é 1 unidade de comprimento.",
+        "Normalizar e validar strings na fronteira (trim, casing, tamanho, charset e formato).",
+        "Usar template literals e concatenação com critério, mantendo legibilidade e performance.",
+        "Aplicar busca/substituição com segurança e previsibilidade.",
+        "Usar regex como ferramenta controlada: legível, testada e limitada ao necessário.",
+        "Fazer parsing robusto com contratos explícitos e lidar com casos de borda.",
+        "Entender riscos de injeção e escaping básico em contextos comuns (HTML/URL)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.5 Mini diagnóstico: onde strings já te derrubaram?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Você já teve bug por espaço no início/fim (trim) ou múltiplos espaços internos?",
+        "Você já comparou duas strings 'iguais' que não eram iguais por causa de Unicode/acentos?",
+        "Você já fez parsing com split e quebrou quando o formato mudou?",
+        "Você já montou HTML com concatenação e teve problemas de escaping?",
+        "Você já viu regex virar 'magia' e ninguém conseguia manter?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 1"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu entendo string como dado de fronteira e sei que fronteira exige normalização/validação.",
+        "Eu reconheço que espaços e caracteres invisíveis podem quebrar contrato mesmo quando a string 'parece' ok.",
+        "Eu reconheço parsing por suposição como anti-pattern e sei que preciso de contratos de formato.",
+        "Eu entendo que strings são imutáveis e que concatenação em loops pode ser custo em hot paths.",
+        "Eu sei que string envolve segurança em contextos de output (HTML/URL) e exige escaping."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 2, você vai construir a base teórica: Unicode, code units, code points, normalização (NFC/NFD) e por que length nem sempre significa 'quantidade de caracteres'. Esse fundamento explica bugs surpreendentes e te dá critérios para manipular texto com segurança."
+    }
+  ]
+}

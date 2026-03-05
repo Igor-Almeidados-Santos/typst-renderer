@@ -1,0 +1,985 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 4 — Controle de fluxo e expressividade — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 4,
+    "chapter_title": "Controle de fluxo e expressividade",
+    "part_number": 5,
+    "part_title": "Exemplos práticos comentados: refatorando fluxos para guard clauses e clareza",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Controle de fluxo e expressividade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Exemplos práticos comentados: refatorando fluxos para guard clauses e clareza"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesta parte, você vai praticar a habilidade mais valiosa de controle de fluxo: refatorar. A ideia é pegar fluxos reais (aninhados, com retornos inconsistentes e validações fracas) e reescrever em um fluxo linear, com invariantes explícitas e caminhos previsíveis. O objetivo não é ficar mais curto; é ficar mais claro."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.1 Caso 1: validação aninhada → guard clauses"
+    },
+    {
+      "type": "paragraph",
+      "text": "Começamos com um padrão comum: validação em cascata com vários níveis de if. Isso esconde o contrato e espalha mensagens. Veja o antes."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Antes (anti-pattern): aninhamento\nfunction criarUsuario(raw) {\n  if (raw) {\n    if (raw.name) {\n      if (raw.age) {\n        return { ok: true, user: { name: raw.name, age: raw.age } };\n      } else {\n        return { ok: false, error: \"age obrigatória\" };\n      }\n    } else {\n      return { ok: false, error: \"name obrigatório\" };\n    }\n  }\n  return { ok: false, error: \"input ausente\" };\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Antes (anti-pattern): aninhamento"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw.name) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw.age) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", user"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " { name"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " raw.name, age"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " raw.age } };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      } "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", error"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"age obrigatória\""
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    } "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", error"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"name obrigatório\""
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", error"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"input ausente\""
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse código tem três problemas: (1) aninhamento, (2) validação fraca (raw.name e raw.age punem valores válidos como 0), e (3) contrato duplicado em vários retornos. Agora veja o depois: invariantes no topo, retorno consistente e mensagens centralizadas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Depois: guard clauses + contrato explícito\nfunction criarUsuario2(raw) {\n  if (raw == null) return { ok: false, error: \"input ausente\" };\n  if (typeof raw.name !== \"string\" || raw.name.trim() === \"\") {\n    return { ok: false, error: \"name obrigatório\" };\n  }\n\n  // idade pode ser 0? Se não, ajuste o contrato.\n  const age = Number(String(raw.age).trim());\n  if (!Number.isFinite(age)) return { ok: false, error: \"age inválida\" };\n\n  return {\n    ok: true,\n    user: { name: raw.name.trim(), age },\n  };\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Depois: guard clauses + contrato explícito"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarUsuario2"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", error"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"input ausente\""
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " raw.name "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"string\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " raw.name."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "() "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", error"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"name obrigatório\""
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// idade pode ser 0? Se não, ajuste o contrato."
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " age "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw.age)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isFinite"
+          },
+          {
+            "kind": "plain",
+            "text": "(age)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", error"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"age inválida\""
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    user"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " { name"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " raw.name."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "(), age },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1599 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 4 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 4,
+    "chapter_title": "Operadores e expressões",
+    "part_number": 3,
+    "part_title": "Operadores lógicos e curto-circuito: &&, ||, ! e o que eles realmente retornam",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Operadores e expressões"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Operadores lógicos e curto-circuito: &&, ||, ! e o que eles realmente retornam"
+    },
+    {
+      "type": "paragraph",
+      "text": "Operadores lógicos são a base de validação e decisões em JavaScript. Mas existe uma diferença importante entre “lógica” em matemática e “lógica” em JavaScript: os operadores && e || não retornam necessariamente true/false. Eles retornam um dos operandos, usando coerção apenas para decidir. Isso é extremamente útil — e uma fonte comum de bugs quando o iniciante assume que sempre volta boolean. Nesta parte, você vai dominar curto-circuito (short-circuit), entender o que cada operador retorna e aprender padrões seguros de validação e valores padrão."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: default com || derruba valores válidos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um bug comum: você quer um valor padrão apenas se o valor estiver ausente, mas usa || e acaba substituindo valores válidos que são falsy (como 0 e ''). A solução começa por entender truthy/falsy e o que || realmente faz."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Truthy e falsy (revisão aplicada)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Falsy principais: false, 0, -0, 0n, '', null, undefined, NaN.",
+        "Truthy: qualquer outro valor (inclui '0', [], {}, function(){})."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(Boolean(0));   // false\nconsole.log(Boolean('0')); // true\nconsole.log(Boolean([]));  // true\nconsole.log(Boolean({}));  // true\nconsole.log(Boolean(''));  // false",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "));   "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'0'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "([]));  "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "({}));  "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": "));  "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Operador NOT: ! e !! (normalização para boolean)"
+    },
+    {
+      "type": "paragraph",
+      "text": "! converte o operando para boolean e inverte. !! (dupla negação) é um padrão para converter explicitamente qualquer valor para boolean. Use quando isso melhorar a legibilidade (por exemplo, em variáveis is/has/can)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(!true);  // false\nconsole.log(!0);     // true\nconsole.log(!'');    // true\nconsole.log(!'abc'); // false\n\nconsole.log(!!'abc'); // true\nconsole.log(!!0);     // false\nconsole.log(!![]);    // true",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ");  "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ");    "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "string",
+            "text": "'abc'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "!!"
+          },
+          {
+            "kind": "string",
+            "text": "'abc'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "!!"
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "!!"
+          },
+          {
+            "kind": "plain",
+            "text": "[]);    "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Operador AND: && (retorna um dos operandos)"
+    },
+    {
+      "type": "paragraph",
+      "text": "a && b funciona assim: (1) converte a para boolean, (2) se a for falsy, retorna a imediatamente, (3) caso contrário, retorna b. O curto-circuito significa que, se a for falsy, b nem é avaliado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(true && 'ok');   // 'ok'\nconsole.log(false && 'ok');  // false\nconsole.log(0 && 99);        // 0\nconsole.log('' && 99);       // ''\nconsole.log('abc' && 99);    // 99",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'ok'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": ");  "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");        "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");       "
+          },
+          {
+            "kind": "comment",
+            "text": "// ''"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'abc'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");    "
+          },
+          {
+            "kind": "comment",
+            "text": "// 99"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.1 Padrão útil: checar existência antes de usar"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const user = null;\nconst nome = user && user.nome;\nconsole.log(nome); // null\n\nconst user2 = { nome: 'Ana' };\nconsole.log(user2 && user2.nome); // 'Ana'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " user "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " user "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " user.nome;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome); "
+          },
+          {
+            "kind": "comment",
+            "text": "// null"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " user2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Ana'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(user2 "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " user2.nome); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'Ana'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse padrão ajuda, mas hoje existe uma opção mais segura e expressiva: optional chaining (?.), que você verá em parte posterior do capítulo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Operador OR: || (retorna o primeiro truthy)"
+    },
+    {
+      "type": "paragraph",
+      "text": "a || b funciona assim: (1) converte a para boolean, (2) se a for truthy, retorna a, (3) caso contrário, retorna b. Também há curto-circuito: se a for truthy, b nem é avaliado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log('' || 'padrão'); // 'padrão'\nconsole.log(0 || 99);        // 99 (pegadinha: 0 é falsy)\nconsole.log('ok' || 99);     // 'ok'",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'padrão'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");        "
+          },
+          {
+            "kind": "comment",
+            "text": "// 99 (pegadinha: 0 é falsy)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'ok'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.1 Padrão clássico (e a pegadinha) de valor padrão"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function saudacao(nome) {\n  const n = nome || 'visitante';\n  return `Olá, ${n}`;\n}\n\nconsole.log(saudacao('Ana')); // Olá, Ana\nconsole.log(saudacao(''));    // Olá, visitante (talvez indesejado)",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " nome "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'visitante'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`Olá, ${n}`"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Ana'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// Olá, Ana"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": "));    "
+          },
+          {
+            "kind": "comment",
+            "text": "// Olá, visitante (talvez indesejado)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. O operador certo para “ausência”: ?? (nullish coalescing)"
+    },
+    {
+      "type": "paragraph",
+      "text": "?? resolve o bug do ||: ele só usa o valor padrão quando o lado esquerdo é null ou undefined. 0 e '' continuam sendo valores válidos e não são substituídos."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(0 ?? 99);        // 0\nconsole.log('' ?? 'padrão'); // ''\nconsole.log(null ?? 99);     // 99\nconsole.log(undefined ?? 99); // 99",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");        "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// ''"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 99"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(undefined "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 99"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Curto-circuito como ferramenta (e risco)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Curto-circuito é útil para evitar erros e para executar ações condicionalmente. Mas pode virar código obscuro se você usar && e || como se fossem if. Prefira clareza quando houver efeitos colaterais."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const isAdmin = true;\n\n// Funciona, mas pode ficar obscuro se abusar:\nisAdmin && console.log('admin');\n\n// Mais claro quando há “ações”:\nif (isAdmin) {\n  console.log('admin');\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " isAdmin "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Funciona, mas pode ficar obscuro se abusar:"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "isAdmin "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'admin'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Mais claro quando há “ações”:"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (isAdmin) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'admin'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Boas práticas (nível júnior)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use ! para negação e !! para normalização quando fizer sentido.",
+        "Lembre: && e || retornam operandos, não necessariamente boolean.",
+        "Use || para default apenas quando qualquer falsy deve virar padrão.",
+        "Use ?? para default quando 0 e '' são valores válidos.",
+        "Evite usar &&/|| para executar efeitos colaterais em excesso; prefira if para clareza.",
+        "Quando estiver em dúvida, inspecione com typeof e console.log a expressão inteira."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Exercícios rápidos"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Teste 0 || 10 e 0 ?? 10 e explique a diferença.",
+        "2) Crie uma função que recebe desconto e usa ?? para default 0.",
+        "3) Faça três exemplos de && retornando valores diferentes (falsy e truthy).",
+        "4) Use !! para transformar valores em boolean e imprima o resultado.",
+        "5) Reescreva um uso de && com efeito colateral para um if mais claro."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Checklist profissional (Parte 3)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei listar os valores falsy principais.",
+        "Eu sei que ! converte para boolean e inverte; e que !! normaliza para boolean.",
+        "Eu sei que && retorna o primeiro falsy ou o último operando.",
+        "Eu sei que || retorna o primeiro truthy (e pode derrubar 0/'').",
+        "Eu sei quando usar ?? para valores padrão baseados em null/undefined.",
+        "Eu consigo explicar curto-circuito e por que o segundo operando pode nem executar."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 4, você vai aprender precedência e agrupamento: como o JavaScript decide a ordem entre operadores (aritméticos, comparações e lógicos), e como usar parênteses para clareza e segurança."
+    }
+  ]
+}

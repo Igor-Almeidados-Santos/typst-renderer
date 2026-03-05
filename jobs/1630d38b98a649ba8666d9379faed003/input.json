@@ -1,0 +1,788 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 4 — Controle de fluxo e expressividade — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 4,
+    "chapter_title": "Controle de fluxo e expressividade",
+    "part_number": 1,
+    "part_title": "Problema real: quando o fluxo vira um labirinto (e o bug nasce no aninhamento)",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Controle de fluxo e expressividade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Problema real: quando o fluxo vira um labirinto (e o bug nasce no aninhamento)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Controle de fluxo é onde código “funcionando” começa a ficar caro. Quando você soma condicionais, loops e tratamentos de erro sem disciplina, o resultado é um labirinto: aninhamento profundo, caminhos implícitos e variáveis com valores diferentes dependendo da rota. Isso gera bugs que não parecem bugs de fluxo — parecem bugs de tipo, de escopo ou de “estado estranho”. Na verdade, o problema é simples: o contrato do fluxo não está claro."
+    },
+    {
+      "type": "paragraph",
+      "text": "Este capítulo é sobre escrever fluxo como engenharia: tornar caminhos explícitos, reduzir aninhamento, escolher estruturas adequadas (if/switch/loops) e usar operadores modernos (short-circuit, nullish, optional chaining) com intenção. O objetivo prático é que você consiga ler um bloco de código e responder: quais são os caminhos possíveis e em quais condições cada caminho ocorre."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.1 Sintoma 1: aninhamento que cresce sem controle"
+    },
+    {
+      "type": "paragraph",
+      "text": "O sinal clássico de fluxo mal desenhado é o “if dentro do if dentro do if”. Isso acontece quando você tenta tratar tudo dentro da mesma função: validação, autorização, transformação, persistência, UI, logging. Cada novo requisito adiciona mais um nível. O resultado é difícil de testar, difícil de depurar e propenso a caminhos esquecidos."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Exemplo de fluxo labiríntico (anti-pattern)\nfunction salvarPedido(raw) {\n  if (raw) {\n    if (raw.items && raw.items.length > 0) {\n      if (raw.user && raw.user.id) {\n        if (raw.total) {\n          // ... faz mil coisas\n          return \"ok\";\n        } else {\n          return \"total obrigatório\";\n        }\n      } else {\n        return \"usuário inválido\";\n      }\n    } else {\n      return \"sem itens\";\n    }\n  } else {\n    return \"pedido ausente\";\n  }\n}\n\n// O problema não é 'if'. O problema é o contrato escondido no aninhamento.",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Exemplo de fluxo labiríntico (anti-pattern)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "salvarPedido"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw.items "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " raw.items.length "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw.user "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " raw.user.id) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw.total) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          "
+          },
+          {
+            "kind": "comment",
+            "text": "// ... faz mil coisas"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"ok\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        } "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"total obrigatório\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      } "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"usuário inválido\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    } "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"sem itens\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  } "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"pedido ausente\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// O problema não é 'if'. O problema é o contrato escondido no aninhamento."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estilo torna o contrato ilegível: quais invariantes realmente importam? quais erros são possíveis? em que ordem as validações devem acontecer? Um pleno não aceita esse tipo de crescimento: ele redesenha o fluxo para que as regras fiquem evidentes."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.2 Sintoma 2: validações fracas e mensagens inconsistentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Fluxo mal desenhado costuma vir acompanhado de validações fracas: if(v) para tudo, mensagens diferentes para o mesmo erro, e retornos que mudam de tipo dependendo do caminho (ora string, ora objeto, ora null). Isso amplia bugs: consumidores não sabem o que esperar."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Uma função que às vezes retorna string e às vezes retorna objeto está sem contrato.",
+        "Validação por truthiness costuma punir 0 e ''.",
+        "Mensagens inconsistentes reduzem observabilidade e dificultam depuração."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.3 Sintoma 3: estado intermediário que vaza entre caminhos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro bug típico: variáveis que são atribuídas dentro de um if e usadas depois, mas nem todos os caminhos garantem a atribuição. Em JavaScript moderno, isso aparece como valores undefined entrando no fluxo — ou como “só quebra em produção” quando um caminho raro é tomado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function prepararEnv(config) {\n  let url;\n  if (config && config.baseUrl) {\n    url = config.baseUrl;\n  }\n  // Se config.baseUrl não existir, url fica undefined\n  return url.trim(); // TypeError em caminhos raros\n}\n\n// O bug é de fluxo: nem todos os caminhos garantem a invariável \"url é string\".",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "prepararEnv"
+          },
+          {
+            "kind": "plain",
+            "text": "(config) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " url;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (config "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " config.baseUrl) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    url "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " config.baseUrl;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Se config.baseUrl não existir, url fica undefined"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " url."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "(); "
+          },
+          {
+            "kind": "comment",
+            "text": "// TypeError em caminhos raros"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// O bug é de fluxo: nem todos os caminhos garantem a invariável \"url é string\"."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "A correção não é “colocar mais if”. A correção é explicitar invariantes: ou você falha cedo quando a invariável não é atendida, ou você define um valor padrão de forma clara."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.4 O contrato do Capítulo 4"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao final deste capítulo, você deve ser capaz de:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Reescrever fluxos aninhados em guard clauses (early returns) com contrato claro.",
+        "Escolher entre if/else e switch com base em legibilidade e manutenção.",
+        "Usar operadores de curto-circuito, nullish coalescing e optional chaining com intenção (sem esconder bugs).",
+        "Projetar loops previsíveis, evitando estado acidental e efeitos colaterais ocultos.",
+        "Tratar erros como parte do fluxo: mensagens consistentes e propagação controlada.",
+        "Aplicar padrões de expressividade: nomes, invariantes, caminhos explícitos e refatoração orientada a leitura."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.5 Mini diagnóstico: onde seu código mais sofre?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Seu código tem muitos níveis de if aninhado?",
+        "Você usa if(valor) como validação universal? Já perdeu 0 ou '' por isso?",
+        "Você tem funções que retornam tipos diferentes dependendo do caminho?",
+        "Você já encontrou bug porque uma variável foi usada sem inicializar em todos os caminhos?",
+        "Você sente que 'try/catch' está espalhado sem estratégia?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 1"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu reconheço aninhamento profundo como sinal de contrato escondido.",
+        "Eu sei que fluxo frágil gera retornos inconsistentes e variáveis undefined em caminhos raros.",
+        "Eu entendo que o objetivo de fluxo é tornar caminhos e invariantes explícitos.",
+        "Eu sei que correção profissional é redesenhar fluxo (guard clauses, contratos), não só adicionar mais if."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 2, você vai construir a base teórica do controle de fluxo: decisões (if/switch), iteração (for/while), curto-circuito, ternário e operadores modernos. O foco é sempre o mesmo: por que escolher uma estrutura em vez de outra."
+    }
+  ]
+}

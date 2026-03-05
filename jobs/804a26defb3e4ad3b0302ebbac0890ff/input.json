@@ -1,0 +1,1391 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 2 — Valores, tipos e coerção — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 2,
+    "chapter_title": "Valores, tipos e coerção",
+    "part_number": 1,
+    "part_title": "Problema real: bugs que nascem de suposições sobre tipo",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 2 — Valores, tipos e coerção"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Problema real: bugs que nascem de suposições sobre tipo"
+    },
+    {
+      "type": "paragraph",
+      "text": "A maior parte dos bugs de JavaScript no dia a dia não vem de sintaxe errada. Vem de suposições. Você assume que um valor é número, mas ele é string. Você assume que algo existe, mas é null. Você assume que duas coisas iguais são iguais, mas a igualdade está comparando referência. Como JavaScript é dinâmico, o runtime aceita muitos desses cenários — até que, em algum ponto, o sistema quebra longe da causa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Este capítulo tem uma ambição simples e profunda: fazer você parar de programar por suposição e começar a programar por contrato. Para isso, você precisa dominar três blocos: (1) valores e tipos, (2) coerção e truthiness, e (3) igualdade e identidade."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 O sintoma: funciona às vezes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o mesmo código funciona em alguns casos e falha em outros, quase sempre existe variação silenciosa nos dados de entrada. Em JavaScript, essa variação é comum porque dados vêm de fora: DOM, inputs, URL, localStorage, JSON de API, query params, headers, environment variables e arquivos."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Campos de formulário chegam como string, mesmo quando representam números.",
+        "JSON pode omitir campos, usar null ou mudar forma sem aviso.",
+        "Parâmetros de URL são strings; conversão é sua responsabilidade.",
+        "Flags de ambiente em Node chegam como string (process.env)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O erro do iniciante é remendar onde quebra. O caminho do pleno é identificar a fronteira onde o dado entra e normalizar ali, antes que ele se espalhe pelo sistema."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Caso real 1: soma que vira concatenação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse bug parece mágica: 10 + 5 vira 105. Não é magia; é coerção. Se um dos operandos é string, o operador + pode virar concatenação. O problema não é o operador; é o contrato implícito: você esperava números, recebeu string."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Entrada típica: form/input/query param\nconst a = \"10\";\nconst b = 5;\n\nconsole.log(a + b);         // '105' (concatenação)\nconsole.log(Number(a) + b); // 15    (soma)\n\n// Contrato explícito é a solução:\nfunction somaNumeros(x, y) {\n  const nx = Number(x);\n  const ny = Number(y);\n  if (!Number.isFinite(nx) || !Number.isFinite(ny)) {\n    throw new TypeError(\"somaNumeros exige valores numéricos finitos\");\n  }\n  return nx + ny;\n}\n\nconsole.log(somaNumeros(\"10\", 5)); // 15",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Entrada típica: form/input/query param"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"10\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b);         "
+          },
+          {
+            "kind": "comment",
+            "text": "// '105' (concatenação)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(a) "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 15    (soma)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Contrato explícito é a solução:"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somaNumeros"
+          },
+          {
+            "kind": "plain",
+            "text": "(x, y) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nx "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(x);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ny "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(y);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isFinite"
+          },
+          {
+            "kind": "plain",
+            "text": "(nx) "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isFinite"
+          },
+          {
+            "kind": "plain",
+            "text": "(ny)) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"somaNumeros exige valores numéricos finitos\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " nx "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " ny;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "somaNumeros"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"10\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 15"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O detalhe importante: você não está convertendo por hábito. Você está explicitando contrato na fronteira e mantendo o resto do código simples."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.3 Caso real 2: validação frágil com truthy/falsy"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro bug recorrente: usar if(valor) como validação universal. Em JavaScript, vários valores legítimos são falsy: 0, \"\" e false. Se você usa truthiness sem critério, você rejeita entradas válidas e cria bugs difíceis de rastrear."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function aplicarDesconto(percentual) {\n  // Bug: 0% é válido, mas é falsy\n  if (!percentual) throw new Error(\"percentual obrigatório\");\n  return `Desconto: ${percentual}%`;\n}\n\n// aplicarDesconto(0) -> erro, mas 0 é entrada válida\n\nfunction aplicarDescontoSeguro(percentual) {\n  // Contrato explícito: null/undefined são ausência; 0 é válido\n  if (percentual == null) throw new Error(\"percentual obrigatório\");\n  if (typeof percentual !== \"number\") throw new TypeError(\"percentual deve ser number\");\n  return `Desconto: ${percentual}%`;\n}\n\nconsole.log(aplicarDescontoSeguro(0));",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "aplicarDesconto"
+          },
+          {
+            "kind": "plain",
+            "text": "(percentual) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Bug: 0% é válido, mas é falsy"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "percentual) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"percentual obrigatório\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`Desconto: ${percentual}%`"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// aplicarDesconto(0) -> erro, mas 0 é entrada válida"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "aplicarDescontoSeguro"
+          },
+          {
+            "kind": "plain",
+            "text": "(percentual) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Contrato explícito: null/undefined são ausência; 0 é válido"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (percentual "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"percentual obrigatório\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " percentual "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"number\""
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"percentual deve ser number\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`Desconto: ${percentual}%`"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "aplicarDescontoSeguro"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O ponto não é evitar if. É escolher a validação certa para o contrato certo. Truthiness é ferramenta; não é verificador universal."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.4 Caso real 3: igualdade que surpreende"
+    },
+    {
+      "type": "paragraph",
+      "text": "JavaScript tem duas famílias de igualdade: abstrata (==) e estrita (===). A abstrata permite coerção; a estrita não. Quando você usa == sem entender coerção, você cria comparações surpreendentes. Quando você usa === sem entender referência, você se frustra ao comparar objetos."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "console.log(0 == \"0\");    // true  (coerção)\nconsole.log(0 === \"0\");   // false (tipos diferentes)\n\nconsole.log(null == undefined);   // true  (regra especial)\nconsole.log(null === undefined);  // false\n\nconst x = { n: 1 };\nconst y = { n: 1 };\nconsole.log(x === y); // false (referências diferentes)",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"0\""
+          },
+          {
+            "kind": "plain",
+            "text": ");    "
+          },
+          {
+            "kind": "comment",
+            "text": "// true  (coerção)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"0\""
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// false (tipos diferentes)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " undefined);   "
+          },
+          {
+            "kind": "comment",
+            "text": "// true  (regra especial)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " undefined);  "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { n"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " y "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { n"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " y); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false (referências diferentes)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste capítulo, você vai aprender o porquê dessas regras e, principalmente, como escolher um padrão consistente de comparação."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.5 O contrato do Capítulo 2"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao final do capítulo, você deve ser capaz de:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Listar tipos primitivos e explicar a diferença prática entre primitivo e objeto.",
+        "Entender, prever e controlar coerção (especialmente em +, comparações e condicionais).",
+        "Aplicar validações corretas para ausência (null/undefined) sem punir valores válidos (0, \"\").",
+        "Escolher conscientemente entre == e === e justificar a decisão por contrato.",
+        "Lidar com casos de borda: NaN, Infinity, -0, BigInt e Symbol (no nível necessário)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.6 Mini diagnóstico: onde você tropeça hoje?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Você já teve um bug de soma que virou concatenação? De onde veio a string?",
+        "Você já rejeitou 0 ou \"\" por engano ao validar inputs?",
+        "Você já comparou objetos com === esperando comparação por conteúdo?",
+        "Você já viu NaN vazar e quebrar lógica silenciosamente?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 1"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu entendo que dados externos variam e que normalização deve acontecer na fronteira do sistema.",
+        "Eu sei que o operador + pode somar ou concatenar e consigo explicar o critério.",
+        "Eu sei que truthy/falsy não é validação universal e que 0 e \"\" são casos críticos.",
+        "Eu sei que == envolve coerção e que === envolve tipo, e que objetos comparam por referência.",
+        "Eu consigo formular contratos explícitos para entradas e falhar cedo com mensagens claras."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 2, você vai construir a base teórica: quais são os tipos em JavaScript, o que significa primitivo versus objeto, e como o runtime representa valores. Isso será o alicerce para entender coerção sem folclore."
+    }
+  ]
+}

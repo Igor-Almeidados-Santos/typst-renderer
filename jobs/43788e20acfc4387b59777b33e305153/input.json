@@ -1,0 +1,1730 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 1 — O que é JavaScript de verdade — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "O que é JavaScript de verdade",
+    "part_number": 5,
+    "part_title": "Exemplos práticos comentados: laboratório no console e DevTools",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — O que é JavaScript de verdade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Exemplos práticos comentados: laboratório no console e DevTools"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesta parte, você transforma o modelo mental em rotina de estudo. O objetivo não é decorar atalhos de DevTools, e sim treinar a habilidade que separa iniciante de pleno: investigar com método. Você fará micro-experimentos e aprenderá a coletar evidências do runtime."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.1 Um roteiro de investigação (método reutilizável)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes dos exemplos, fixe um roteiro. Ele evita depuração por ansiedade. Em qualquer bug, siga esta ordem:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Defina o comportamento esperado (em uma frase).",
+        "2) Reproduza o problema de forma consistente (mesmos passos -> mesmo resultado).",
+        "3) Reduza: crie o menor caso que ainda falha (micro-experimento).",
+        "4) Observe: cole evidências (logs, breakpoints, stack trace).",
+        "5) Explique: escreva a causa em termos de contrato violado.",
+        "6) Corrija e valide: o caso mínimo passa? O caso real passa?"
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O passo 5 é o que transfere aprendizado: você não quer apenas 'consertar', você quer entender qual contrato foi quebrado."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.2 Console como laboratório: tipos, coerção e suposições"
+    },
+    {
+      "type": "paragraph",
+      "text": "O console é um REPL: você testa hipóteses rapidamente. O erro comum é digitar coisas aleatórias até parecer fazer sentido. O uso correto é validar suposições específicas: tipo, forma, conteúdo e invariantes."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Hipótese: n é número.\nconst n = \"10\";\n\nconsole.log(typeof n);       // 'string' -> hipótese falsa\nconsole.log(Number(n) + 5);  // 15        -> conversão explícita\nconsole.log(n + 5);          // '105'     -> coerção + concatenação\n\n// Invariante útil: entrada numérica deve ser número.\nfunction soma(a, b) {\n  if (typeof a !== \"number\" || typeof b !== \"number\") {\n    throw new TypeError(\"soma(a,b) exige números\");\n  }\n  return a + b;\n}\n\n// soma(n, 5) -> TypeError",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Hipótese: n é número."
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"10\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " n);       "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'string' -> hipótese falsa"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(n) "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ");  "
+          },
+          {
+            "kind": "comment",
+            "text": "// 15        -> conversão explícita"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(n "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ");          "
+          },
+          {
+            "kind": "comment",
+            "text": "// '105'     -> coerção + concatenação"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Invariante útil: entrada numérica deve ser número."
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "soma"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"number\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"number\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"soma(a,b) exige números\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// soma(n, 5) -> TypeError"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo sem estudar coerção ainda, você já treina postura profissional: validação e invariantes. Isso reduz bugs e melhora mensagens de erro."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.3 Stack trace como mapa: encontrar a origem, não o sintoma"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um iniciante corrige o lugar onde o erro aparece. Um pleno procura a origem: onde o dado incorreto foi criado ou onde o contrato foi quebrado. A ferramenta é o stack trace."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function parseId(raw) {\n  // Contrato: raw deve ser string numérica.\n  const id = Number(raw);\n  if (!Number.isInteger(id)) throw new Error(\"id inválido\");\n  return id;\n}\n\nfunction carregarUsuario(rawId) {\n  const id = parseId(rawId);\n  return { id, name: \"Exemplo\" };\n}\n\ntry {\n  carregarUsuario(\"abc\");\n} catch (e) {\n  console.error(e.message);\n  console.error(e.stack);\n}\n\n// Leitura correta: o contrato violado está em parseId (entrada não numérica).",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseId"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Contrato: raw deve ser string numérica."
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " id "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isInteger"
+          },
+          {
+            "kind": "plain",
+            "text": "(id)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"id inválido\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " id;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "carregarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "(rawId) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " id "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseId"
+          },
+          {
+            "kind": "plain",
+            "text": "(rawId);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { id, name"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Exemplo\""
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "carregarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"abc\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (e) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "error"
+          },
+          {
+            "kind": "plain",
+            "text": "(e.message);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "error"
+          },
+          {
+            "kind": "plain",
+            "text": "(e.stack);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Leitura correta: o contrato violado está em parseId (entrada não numérica)."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Treine a leitura causal: quem chamou quem, com quais dados, e onde o contrato se rompeu. Essa habilidade economiza horas em bugs assíncronos e em integração com APIs."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.4 Breakpoints: congelar o tempo para inspecionar estado"
+    },
+    {
+      "type": "paragraph",
+      "text": "A principal vantagem do debugger é congelar o tempo. Isso permite inspecionar variáveis no instante exato do erro, sem depender de logs. Um padrão simples de uso:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Coloque um breakpoint no início da função suspeita.",
+        "Passe uma entrada que reproduz o problema.",
+        "Inspecione parâmetros, variáveis locais e retorno.",
+        "Use Step over e Step into para acompanhar a transformação dos dados.",
+        "Confirme a hipótese e ajuste o código com base em evidência."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "No contexto de estudo, vale mais um breakpoint bem colocado do que muitos console.logs. Você treina o hábito de observar, não de adivinhar."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.5 Observando o ambiente: o que existe aqui?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de usar uma API, valide sua existência e sua origem. Isso evita bugs de portabilidade e acelera diagnóstico quando você muda de ambiente (browser e Node)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Diagnóstico rápido de ambiente\nconst env = {\n  hasWindow: typeof window !== \"undefined\",\n  hasDocument: typeof document !== \"undefined\",\n  hasProcess: typeof process !== \"undefined\",\n  hasFetch: typeof fetch !== \"undefined\",\n};\n\nconsole.table(env);\n\nfunction exigeBrowser() {\n  if (typeof document === \"undefined\") {\n    throw new Error(\"Este módulo exige ambiente de browser: DOM não disponível.\");\n  }\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Diagnóstico rápido de ambiente"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " env "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  hasWindow"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " window "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"undefined\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  hasDocument"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " document "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"undefined\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  hasProcess"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " process "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"undefined\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  hasFetch"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " fetch "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"undefined\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "table"
+          },
+          {
+            "kind": "plain",
+            "text": "(env);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exigeBrowser"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " document "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"undefined\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Este módulo exige ambiente de browser: DOM não disponível.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Validar dependências de ambiente faz parte do design. Em projetos reais, isso se transforma em módulos separados: browser-only, node-only, e isomórficos."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.6 Exercício guiado: medir antes de opinar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Performance gera mito. A postura madura é medir. Aqui você compara duas formas de transformar um array sob condições controladas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Exercício: comparar duas formas de transformar array\nconst xs = Array.from({ length: 200000 }, (_, i) => i);\n\nconsole.time(\"map\");\nxs.map(x => x * 2);\nconsole.timeEnd(\"map\");\n\nconsole.time(\"for\");\nconst b = new Array(xs.length);\nfor (let i = 0; i < xs.length; i++) b[i] = xs[i] * 2;\nconsole.timeEnd(\"for\");\n\n// Rode algumas vezes e observe variação (GC, aquecimento da engine, etc.).",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Exercício: comparar duas formas de transformar array"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " xs "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Array."
+          },
+          {
+            "kind": "function",
+            "text": "from"
+          },
+          {
+            "kind": "plain",
+            "text": "({ length"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "200000"
+          },
+          {
+            "kind": "plain",
+            "text": " }, (_, i) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " i);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "time"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"map\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "xs."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "(x "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "timeEnd"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"map\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "time"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"for\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Array"
+          },
+          {
+            "kind": "plain",
+            "text": "(xs.length);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " xs.length; i"
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": ") b[i] "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " xs[i] "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "timeEnd"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"for\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Rode algumas vezes e observe variação (GC, aquecimento da engine, etc.)."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.7 Erros comuns ao usar DevTools"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tratar console.log como substituto de raciocínio (sem hipótese).",
+        "Esquecer que logs de objetos podem refletir estado atual, não o estado no momento do log.",
+        "Colocar breakpoints depois do dano feito.",
+        "Medir performance sem repetir e sem controlar condições (conclusões falsas)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sigo um roteiro: esperado -> reproduzir -> reduzir -> observar -> explicar -> corrigir.",
+        "Eu uso o console para testar hipóteses (tipo, forma, invariantes).",
+        "Eu sei ler stack trace como cadeia causal e localizar contrato violado.",
+        "Eu uso breakpoints para inspecionar estado no tempo certo, reduzindo logs.",
+        "Eu meço antes de opinar sobre performance e repito testes para evitar conclusões frágeis."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 6, você vai aplicar isso em um estudo de caso curto: um mini-script vanilla que falha de propósito em camadas diferentes (linguagem, runtime e plataforma), para praticar diagnóstico com o mapa conceitual do capítulo."
+    }
+  ]
+}

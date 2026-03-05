@@ -1,0 +1,962 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 5 — Strings em profundidade — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 5,
+    "chapter_title": "Strings em profundidade",
+    "part_number": 3,
+    "part_title": "Modelo mental correto: normalização na fronteira e operações seguras",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Strings em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Modelo mental correto: normalização na fronteira e operações seguras"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com Unicode e normalização no radar, você está pronto para um modelo mental que evita a maior parte dos bugs de string: trate texto como dado de fronteira e normalize cedo. A regra de ouro é: fora do seu core, strings são incertas; dentro do seu core, strings devem obedecer a contratos (formato, tamanho, charset e normalização). Isso torna comparações previsíveis, parsing menos frágil e mensagens de erro mais claras."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.10 A fronteira: de texto cru para texto canônico"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em sistemas reais, a mesma informação pode chegar em múltiplas formas: espaços extras, casing diferente, acentos compostos, caracteres invisíveis e separadores variados. Se você deixa esse caos entrar no core, você cria bugs de deduplicação e busca. A solução é criar uma forma canônica (canonical form) para o domínio: um texto normalizado que representa a mesma coisa sempre do mesmo jeito."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Trim: remover espaços nas bordas (quase sempre).",
+        "Normalização Unicode (NFC): reduzir representações equivalentes.",
+        "Casing: definir estratégia (lowercase/uppercase) quando o domínio pede comparação case-insensitive.",
+        "Compactação de espaços internos: quando o domínio trata múltiplos espaços como equivalentes.",
+        "Validação de tamanho e charset: impedir entradas inesperadas ou perigosas."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O ponto é simples: normalização não é estética. É contrato."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.11 Função canônica: um vocabulário reutilizável"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você não quer espalhar trim/normalize/lowercase pelo código. Você quer um vocabulário: funções pequenas que expressam intenção. Um exemplo genérico (ajuste ao seu domínio):"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "export function canonicalizeText(raw) {\n  if (raw == null) throw new Error('texto obrigatório');\n\n  const s = String(raw)\n    .trim()\n    .normalize('NFC');\n\n  if (s === '') throw new Error('texto não pode ser vazio');\n  return s;\n}\n\nexport function canonicalizeKey(raw) {\n  // chave case-insensitive (por contrato)\n  return canonicalizeText(raw).toLowerCase();\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "canonicalizeText"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'texto obrigatório'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "()"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "normalize"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'NFC'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (s "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'texto não pode ser vazio'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " s;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "canonicalizeKey"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// chave case-insensitive (por contrato)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "canonicalizeText"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "toLowerCase"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.12 Operações seguras: contains, startsWith, includes e indexOf"
+    },
+    {
+      "type": "paragraph",
+      "text": "Prefira APIs que expressem intenção: includes/startsWith/endsWith. Use indexOf quando você precisa do índice, não como substituto de includes. Em todos os casos, normalize antes se o domínio exigir comparação estável."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const q = canonicalizeKey('  João ');\nconst name = canonicalizeKey('joão'); // pode vir com combining\n\nconsole.log(name.includes(q));\nconsole.log(name.startsWith('jo'));",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " q "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "canonicalizeKey"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'  João '"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " name "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "canonicalizeKey"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'joão'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// pode vir com combining"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(name."
+          },
+          {
+            "kind": "function",
+            "text": "includes"
+          },
+          {
+            "kind": "plain",
+            "text": "(q));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(name."
+          },
+          {
+            "kind": "function",
+            "text": "startsWith"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'jo'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.13 Replace com intenção: substituir tudo, não só a primeira ocorrência"
+    },
+    {
+      "type": "paragraph",
+      "text": "replace substitui apenas a primeira ocorrência quando você passa string. Para substituir todas, use replaceAll (quando disponível) ou regex global. Escolha com base no contrato: substituição literal vs padrão."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const s = 'a-b-c';\nconsole.log(s.replace('-', '_'));      // a_b-c (só a primeira)\nconsole.log(s.replaceAll('-', '_'));   // a_b_c (todas)\nconsole.log(s.replace(/-/g, '_'));     // a_b_c (todas, via regex)",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'a-b-c'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'-'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'_'"
+          },
+          {
+            "kind": "plain",
+            "text": "));      "
+          },
+          {
+            "kind": "comment",
+            "text": "// a_b-c (só a primeira)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s."
+          },
+          {
+            "kind": "function",
+            "text": "replaceAll"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'-'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'_'"
+          },
+          {
+            "kind": "plain",
+            "text": "));   "
+          },
+          {
+            "kind": "comment",
+            "text": "// a_b_c (todas)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/-/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "'_'"
+          },
+          {
+            "kind": "plain",
+            "text": "));     "
+          },
+          {
+            "kind": "comment",
+            "text": "// a_b_c (todas, via regex)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.14 Tamanho e limites: length não é \"número de caracteres\""
+    },
+    {
+      "type": "paragraph",
+      "text": "Para limites de UI e campos, cuidado: length mede code units. Para textos com emojis, isso pode distorcer. Se seu contrato de limite é por 'caracteres visíveis', você precisa de estratégia específica (fora do escopo do vanilla básico). Para a maioria dos sistemas, use length como aproximação e documente o contrato."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu trato strings como dados de fronteira e normalizo cedo para uma forma canônica.",
+        "Eu centralizo normalização em funções reutilizáveis (vocabulário), em vez de espalhar trim/lowercase.",
+        "Eu escolho operações de busca/substituição por intenção (includes/startsWith/replaceAll).",
+        "Eu sei que length mede code units e documento o contrato quando limites forem usados.",
+        "Eu uso comparação e parsing com contratos explícitos, evitando suposições sobre formato."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 4, você vai organizar parsing e formatação como arquitetura: estratégias para formatos (datas, ids, slugs, e-mails), e como usar regex com disciplina sem virar 'magia'. Também veremos escaping básico em HTML e URL como parte do contrato de output."
+    }
+  ]
+}

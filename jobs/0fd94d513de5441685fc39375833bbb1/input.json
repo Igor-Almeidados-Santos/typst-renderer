@@ -1,0 +1,3907 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 4 — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 4,
+    "chapter_title": "Operadores e expressões",
+    "part_number": 6,
+    "part_title": "Estudo de caso: validação de formulário (conversão, comparação, defaults e feedback)",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Operadores e expressões"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Estudo de caso: validação de formulário (conversão, comparação, defaults e feedback)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Operadores fazem diferença quando você sai de exemplos artificiais e entra em dados reais. E o lugar mais comum de dados reais no browser é formulário: tudo chega como string. Se você não converter e validar, você concatena em vez de somar, compara strings em vez de números e cria defaults errados com ||. Nesta parte, você vai construir uma validação completa e didática, aplicando: conversão explícita, comparações de faixa, operadores lógicos, ?? para default e uso consciente de expressões para feedback."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: validação frouxa por mistura de tipos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Validação ruim acontece quando você mistura tipos e confunde ausência com falsy. Exemplo clássico: idade = '' (string vazia) vira 0 com Number(''), o que pode passar em uma faixa sem você perceber. O caminho profissional é: validar primeiro a entrada como string (trim, vazio), depois converter, depois validar o número (NaN, faixa)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Estrutura do mini-projeto"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "content": "validacao/\n  index.html\n  app.js\n  styles.css",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "validacao"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  index.html"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  app.js"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  styles.css"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 index.html"
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<!doctype html>\n<html lang=\"pt-BR\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Validação — Cap. 4</title>\n    <link rel=\"stylesheet\" href=\"styles.css\" />\n    <script src=\"app.js\" defer></script>\n  </head>\n  <body>\n    <main class=\"card\">\n      <h1>Cadastro (exemplo)</h1>\n\n      <form id=\"form\">\n        <label>\n          Nome\n          <input id=\"nome\" type=\"text\" placeholder=\"Seu nome\" />\n        </label>\n\n        <label>\n          Idade\n          <input id=\"idade\" type=\"text\" inputmode=\"numeric\" placeholder=\"Ex.: 20\" />\n        </label>\n\n        <label>\n          Desconto (opcional)\n          <input id=\"desconto\" type=\"text\" inputmode=\"numeric\" placeholder=\"Ex.: 0, 10, 15\" />\n          <small class=\"muted\">Se vazio, assume 0.</small>\n        </label>\n\n        <button type=\"submit\">Enviar</button>\n      </form>\n\n      <p id=\"saida\" class=\"saida\"></p>\n    </main>\n  </body>\n</html>",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<!"
+          },
+          {
+            "kind": "plain",
+            "text": "doctype html"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "html lang"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"pt-BR\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "meta charset"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"utf-8\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/>"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "meta name"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"viewport\""
+          },
+          {
+            "kind": "plain",
+            "text": " content"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"width=device-width, initial-scale=1\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/>"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "title"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": "Validação — Cap. "
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "title"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "link rel"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"stylesheet\""
+          },
+          {
+            "kind": "plain",
+            "text": " href"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"styles.css\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/>"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"app.js\""
+          },
+          {
+            "kind": "plain",
+            "text": " defer"
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "main class"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"card\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "h1"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "function",
+            "text": "Cadastro"
+          },
+          {
+            "kind": "plain",
+            "text": " (exemplo)"
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "h1"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "form id"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"form\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "label"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          Nome"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "input id"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"nome\""
+          },
+          {
+            "kind": "plain",
+            "text": " type"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"text\""
+          },
+          {
+            "kind": "plain",
+            "text": " placeholder"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"Seu nome\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/>"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "label"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "label"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          Idade"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "input id"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"idade\""
+          },
+          {
+            "kind": "plain",
+            "text": " type"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"text\""
+          },
+          {
+            "kind": "plain",
+            "text": " inputmode"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"numeric\""
+          },
+          {
+            "kind": "plain",
+            "text": " placeholder"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"Ex.: 20\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/>"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "label"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "label"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          "
+          },
+          {
+            "kind": "function",
+            "text": "Desconto"
+          },
+          {
+            "kind": "plain",
+            "text": " (opcional)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "input id"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"desconto\""
+          },
+          {
+            "kind": "plain",
+            "text": " type"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"text\""
+          },
+          {
+            "kind": "plain",
+            "text": " inputmode"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"numeric\""
+          },
+          {
+            "kind": "plain",
+            "text": " placeholder"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"Ex.: 0, 10, 15\""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/>"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "          "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "small class"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"muted\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": "Se vazio, assume "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "small"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "label"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "button type"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"submit\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": "Enviar"
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "button"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "form"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "p id"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"saida\""
+          },
+          {
+            "kind": "plain",
+            "text": " class"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"saida\""
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "p"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "main"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "html"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 styles.css"
+    },
+    {
+      "type": "code",
+      "lang": "css",
+      "content": "body { font-family: system-ui, sans-serif; margin: 40px; }\n.card { max-width: 520px; padding: 16px; border: 1px solid #ddd; border-radius: 12px; }\nlabel { display: grid; gap: 6px; margin-top: 12px; }\ninput { padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; }\nbutton { margin-top: 14px; padding: 10px 12px; cursor: pointer; }\n.muted { color: #666; }\n.saida { margin-top: 16px; padding: 12px; border: 1px dashed #aaa; border-radius: 10px; }",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "body { font"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "family"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " system"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "ui, sans"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "serif; margin"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 40px; }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ".card { max"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "width"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 520px; padding"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 16px; border"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 1px solid "
+          },
+          {
+            "kind": "comment",
+            "text": "#ddd; border-radius: 12px; }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "label { display"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " grid; gap"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 6px; margin"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "top"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 12px; }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "input { padding"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 10px 12px; border"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 1px solid "
+          },
+          {
+            "kind": "comment",
+            "text": "#ddd; border-radius: 10px; }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "button { margin"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "top"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 14px; padding"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 10px 12px; cursor"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " pointer; }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ".muted { color"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "comment",
+            "text": "#666; }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ".saida { margin"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "top"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 16px; padding"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 12px; border"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " 1px dashed "
+          },
+          {
+            "kind": "comment",
+            "text": "#aaa; border-radius: 10px; }"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. app.js — validação com conversão explícita (Parte A)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O fluxo correto é: (1) validar string, (2) converter, (3) validar número, (4) comparar faixas, (5) aplicar defaults. A seguir, a primeira metade do arquivo (utilitários + validações)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nfunction assertEl(selector) {\n  const el = document.querySelector(selector);\n  if (el === null) console.error(`[validacao] elemento não encontrado: ${selector}`);\n  return el;\n}\n\nconst form = assertEl('#form');\nconst elNome = assertEl('#nome');\nconst elIdade = assertEl('#idade');\nconst elDesconto = assertEl('#desconto');\nconst elSaida = assertEl('#saida');\n\nconst hasDom = Boolean(form && elNome && elIdade && elDesconto && elSaida);\nif (!hasDom) console.warn('[validacao] inicialização abortada por DOM incompleto.');\n\nfunction parseNumeroObrigatorio(raw) {\n  const s = String(raw).trim();\n  if (s.length === 0) return { ok: false, reason: 'vazio' };\n  const n = Number(s);\n  if (Number.isNaN(n)) return { ok: false, reason: 'nan' };\n  return { ok: true, value: n };\n}\n\nfunction parseNumeroOpcional(raw, fallback) {\n  const s = String(raw).trim();\n  if (s.length === 0) return { ok: true, value: fallback };\n  const n = Number(s);\n  if (Number.isNaN(n)) return { ok: false, reason: 'nan' };\n  return { ok: true, value: n };\n}\n\nfunction validarNome(nome) {\n  const n = String(nome).trim();\n  if (n.length < 2) return { ok: false, msg: 'Nome deve ter pelo menos 2 caracteres.' };\n  return { ok: true, value: n };\n}\n\nfunction validarIdade(idade) {\n  if (!Number.isInteger(idade)) return { ok: false, msg: 'Idade deve ser um inteiro.' };\n  if (idade < 0 || idade > 120) return { ok: false, msg: 'Idade fora da faixa (0 a 120).' };\n  return { ok: true, value: idade };\n}\n\nfunction validarDesconto(desconto) {\n  if (desconto < 0 || desconto > 80) return { ok: false, msg: 'Desconto fora da faixa (0 a 80).' };\n  return { ok: true, value: desconto };\n}\n\nfunction renderSaida(msg) {\n  elSaida.textContent = msg;\n}",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "(selector) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " el "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "(selector);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (el "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") console."
+          },
+          {
+            "kind": "function",
+            "text": "error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`[validacao] elemento não encontrado: ${selector}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " el;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " form "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#form'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " elNome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#nome'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " elIdade "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#idade'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " elDesconto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#desconto'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " elSaida "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#saida'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " hasDom "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Boolean"
+          },
+          {
+            "kind": "plain",
+            "text": "(form "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " elNome "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " elIdade "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " elDesconto "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " elSaida);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "hasDom) console."
+          },
+          {
+            "kind": "function",
+            "text": "warn"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'[validacao] inicialização abortada por DOM incompleto.'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseNumeroObrigatorio"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (s.length "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", reason"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'vazio'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(s);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (Number."
+          },
+          {
+            "kind": "function",
+            "text": "isNaN"
+          },
+          {
+            "kind": "plain",
+            "text": "(n)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", reason"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'nan'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", value"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " n };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseNumeroOpcional"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw, fallback) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (s.length "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", value"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " fallback };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(s);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (Number."
+          },
+          {
+            "kind": "function",
+            "text": "isNaN"
+          },
+          {
+            "kind": "plain",
+            "text": "(n)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", reason"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'nan'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", value"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " n };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validarNome"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (n.length "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", msg"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Nome deve ter pelo menos 2 caracteres.'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", value"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " n };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validarIdade"
+          },
+          {
+            "kind": "plain",
+            "text": "(idade) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isInteger"
+          },
+          {
+            "kind": "plain",
+            "text": "(idade)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", msg"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Idade deve ser um inteiro.'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (idade "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " idade "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "120"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", msg"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Idade fora da faixa (0 a 120).'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", value"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " idade };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validarDesconto"
+          },
+          {
+            "kind": "plain",
+            "text": "(desconto) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (desconto "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " desconto "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "80"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", msg"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Desconto fora da faixa (0 a 80).'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", value"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " desconto };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderSaida"
+          },
+          {
+            "kind": "plain",
+            "text": "(msg) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  elSaida.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " msg;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. app.js — submissão e aplicação de regras (Parte B)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora vem a parte onde operadores aparecem com força: comparações de faixa (>=), lógica (||), ternário (?:) e default com ?? (sem derrubar 0)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function onSubmit(event) {\n  event.preventDefault();\n  if (!hasDom) return;\n\n  const nomeRes = validarNome(elNome.value);\n  if (!nomeRes.ok) return renderSaida(`Erro: ${nomeRes.msg}`);\n\n  const idadeParsed = parseNumeroObrigatorio(elIdade.value);\n  if (!idadeParsed.ok) {\n    return renderSaida(\n      idadeParsed.reason === 'vazio'\n        ? 'Erro: Idade é obrigatória.'\n        : 'Erro: Idade inválida (não é número).'\n    );\n  }\n\n  const idadeRes = validarIdade(idadeParsed.value);\n  if (!idadeRes.ok) return renderSaida(`Erro: ${idadeRes.msg}`);\n\n  const descontoParsed = parseNumeroOpcional(elDesconto.value, 0);\n  if (!descontoParsed.ok) return renderSaida('Erro: Desconto inválido (não é número).');\n\n  const descontoRes = validarDesconto(descontoParsed.value);\n  if (!descontoRes.ok) return renderSaida(`Erro: ${descontoRes.msg}`);\n\n  const nome = nomeRes.value;\n  const idade = idadeRes.value;\n  const desconto = descontoRes.value;\n\n  const status = (idade >= 18) ? 'Maior de idade' : 'Menor de idade';\n\n  // Default correto (não confundir falsy com ausência)\n  const cupom = null;\n  const cupomFinal = cupom ?? 'SEM-CUPOM';\n\n  return renderSaida(\n    `OK: ${nome} (${idade}) — ${status}. Desconto: ${desconto}%. Cupom: ${cupomFinal}.`\n  );\n}\n\nif (hasDom) {\n  form.addEventListener('submit', onSubmit);\n  console.log('[validacao] pronto');\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "onSubmit"
+          },
+          {
+            "kind": "plain",
+            "text": "(event) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  event."
+          },
+          {
+            "kind": "function",
+            "text": "preventDefault"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "hasDom) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nomeRes "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validarNome"
+          },
+          {
+            "kind": "plain",
+            "text": "(elNome.value);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "nomeRes.ok) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderSaida"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`Erro: ${nomeRes.msg}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " idadeParsed "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseNumeroObrigatorio"
+          },
+          {
+            "kind": "plain",
+            "text": "(elIdade.value);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "idadeParsed.ok) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderSaida"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      idadeParsed.reason "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'vazio'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Erro: Idade é obrigatória.'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Erro: Idade inválida (não é número).'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    );"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " idadeRes "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validarIdade"
+          },
+          {
+            "kind": "plain",
+            "text": "(idadeParsed.value);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "idadeRes.ok) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderSaida"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`Erro: ${idadeRes.msg}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " descontoParsed "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseNumeroOpcional"
+          },
+          {
+            "kind": "plain",
+            "text": "(elDesconto.value, "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "descontoParsed.ok) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderSaida"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Erro: Desconto inválido (não é número).'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " descontoRes "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validarDesconto"
+          },
+          {
+            "kind": "plain",
+            "text": "(descontoParsed.value);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "descontoRes.ok) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderSaida"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`Erro: ${descontoRes.msg}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " nomeRes.value;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " idade "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " idadeRes.value;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " desconto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " descontoRes.value;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " status "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " (idade "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "18"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Maior de idade'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Menor de idade'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Default correto (não confundir falsy com ausência)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " cupom "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " cupomFinal "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " cupom "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'SEM-CUPOM'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderSaida"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "string",
+            "text": "`OK: ${nome} (${idade}) — ${status}. Desconto: ${desconto}%. Cupom: ${cupomFinal}.`"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  );"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (hasDom) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  form."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'submit'"
+          },
+          {
+            "kind": "plain",
+            "text": ", onSubmit);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'[validacao] pronto'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Por que este desenho evita bugs"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Valida vazio antes de Number(): evita Number('') virar 0 sem intenção.",
+        "Usa Number.isNaN: evita coerção de isNaN.",
+        "Faixa com && implícito via comparações claras (idade < 0 || idade > 120).",
+        "Default com ?? preserva 0 e '' quando válidos.",
+        "Mensagens retornam cedo (return): controle de fluxo simples e previsível."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Exercícios (evolução)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Faça idade aceitar apenas 18 a 65 e atualize as mensagens.",
+        "2) Faça desconto aceitar apenas múltiplos de 5 (dica: desconto % 5).",
+        "3) Adicione um campo 'salario' e calcule imposto por faixa (use && e ||).",
+        "4) Adicione um campo opcional 'apelido' e use ?? para default '—'.",
+        "5) Provoque bugs: digite 'abc' em idade e confirme a mensagem. Digite '' e confirme a diferença."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Checklist profissional (Parte 6)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu lembro que inputs chegam como string e faço conversão explícita.",
+        "Eu valido vazio antes de converter para number.",
+        "Eu valido NaN com Number.isNaN.",
+        "Eu escrevo validação de faixa com comparações claras (>=, <=) e lógica (&&/||).",
+        "Eu uso ?? para default quando 0 e '' são valores válidos.",
+        "Eu retorno cedo em validações para evitar if aninhado."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 7, você vai praticar operadores com exercícios graduais e aprender a reconhecer bugs de coerção e precedência rapidamente."
+    }
+  ]
+}

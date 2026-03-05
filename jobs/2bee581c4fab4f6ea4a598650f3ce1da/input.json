@@ -1,0 +1,528 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, escopo e o modelo mental do runtime",
+    "part_number": 1,
+    "part_title": "Problema real: bugs de escopo que parecem bugs de lógica",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Problema real: bugs de escopo que parecem bugs de lógica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Há um tipo de bug que derruba iniciantes e também humilha intermediários: o bug de escopo. Ele é traiçoeiro porque costuma parecer erro de lógica, erro de tipo ou o JavaScript enlouqueceu. Na verdade, quase sempre é um contrato violado sobre onde uma variável vive, quando ela passa a existir e quem pode enxergá-la."
+    },
+    {
+      "type": "paragraph",
+      "text": "Este capítulo existe para te dar previsibilidade. Ao final, você vai enxergar o runtime resolvendo identificadores, vai entender hoisting sem folclore e vai escrever código que não depende de sorte."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.1 Sintoma 1: valor inesperado (shadowing e reatribuição)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você lê uma variável e o valor não é o que você esperava. Muitas vezes, isso é shadowing (sombreamento): você declarou uma variável com o mesmo nome em um escopo mais interno e passou a usar a errada sem perceber. Em outras, é reatribuição involuntária: o valor foi trocado em algum lugar, e o restante do fluxo passou a operar com outra coisa."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "let total = 10;\n\nfunction aplicar() {\n  // Shadowing: cria um novo total local\n  let total = 0;\n  total += 5;\n  return total;\n}\n\nconsole.log(aplicar()); // 5\nconsole.log(total);     // 10\n\n// Se você esperava que total global mudasse, seu modelo mental estava errado.",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " total "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "aplicar"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Shadowing: cria um novo total local"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " total "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  total "
+          },
+          {
+            "kind": "operator",
+            "text": "+="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " total;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "aplicar"
+          },
+          {
+            "kind": "plain",
+            "text": "()); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 5"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(total);     "
+          },
+          {
+            "kind": "comment",
+            "text": "// 10"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Se você esperava que total global mudasse, seu modelo mental estava errado."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Shadowing não é errado por si só; ele é perigoso quando é acidental. Em código profissional, nomes são contratos. Reutilizar nomes exige intenção."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.2 Sintoma 2: Cannot access X before initialization (TDZ)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse erro aparece quando você tenta usar uma variável declarada com let/const antes do ponto de declaração, dentro do mesmo escopo. Isso é a TDZ (Temporal Dead Zone). O objetivo da TDZ é impedir que você leia um valor meio existente por causa de hoisting."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function exemplo() {\n  // console.log(x); // ReferenceError (TDZ)\n  const x = 10;\n  return x;\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exemplo"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// console.log(x); // ReferenceError (TDZ)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " x;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    }
+  ]
+}

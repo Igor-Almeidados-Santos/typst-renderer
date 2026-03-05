@@ -1,0 +1,793 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, escopo e o modelo mental do runtime",
+    "part_number": 2,
+    "part_title": "Fundamentação teórica: var, let, const e o que é escopo",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Fundamentação teórica: var, let, const e o que é escopo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para dominar escopo em JavaScript, você precisa de duas ideias: (1) o que é um escopo (como o runtime decide qual variável você está referenciando) e (2) como var/let/const criam bindings diferentes. O objetivo aqui é construir uma definição operacional: algo que te permita prever comportamento, não apenas repetir regra."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.3 O que é escopo (definição operacional)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Escopo é o conjunto de regras que determina onde um identificador (nome de variável ou função) pode ser visto e qual binding será escolhido quando você o usa. Em JavaScript moderno, o escopo é principalmente léxico: ele é determinado pela estrutura do código (onde você escreveu), não pela ordem de chamada (isso é diferente de escopo dinâmico)."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos práticos: quando você escreve x, a engine procura x no escopo local; se não encontra, procura no escopo externo, e assim por diante, até chegar ao escopo global. Essa cadeia é conhecida como scope chain."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.4 Escopo global, escopo de função e escopo de bloco"
+    },
+    {
+      "type": "paragraph",
+      "text": "JavaScript tem três níveis comuns de visibilidade no dia a dia:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Global: nomes disponíveis no topo do módulo/script. Em ESM, o global é o módulo; em scripts, há integração com o objeto global (window/globalThis).",
+        "Função: cada função cria um escopo próprio para parâmetros e variáveis internas.",
+        "Bloco: blocos delimitados por { } (if, for, while, try/catch) criam escopo para let/const e para o binding do catch."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "A distinção central é: var respeita escopo de função (e global), mas não respeita escopo de bloco. let e const respeitam escopo de bloco."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.5 var: legado útil para ler código, perigoso para escrever"
+    },
+    {
+      "type": "paragraph",
+      "text": "var existe por razões históricas. Ele tem duas características que causam bugs: (1) não é block-scoped e (2) sofre hoisting com inicialização como undefined. Isso cria situações onde a variável parece existir antes de você declará-la. Em código moderno, var é algo que você precisa saber para entender legado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function f() {\n  if (true) {\n    var x = 10;\n  }\n  // x vaza do bloco\n  console.log(x); // 10\n}\n\nfunction g() {\n  console.log(y); // undefined (hoisting)\n  var y = 1;\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "f"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// x vaza do bloco"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 10"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "g"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(y); "
+          },
+          {
+            "kind": "comment",
+            "text": "// undefined (hoisting)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " y "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.6 let: escopo de bloco e existência controlada"
+    },
+    {
+      "type": "paragraph",
+      "text": "let foi introduzido para oferecer escopo de bloco e reduzir armadilhas. Ele ainda sofre hoisting (o binding é criado no início do escopo), mas não é inicializado automaticamente; acessar antes da declaração gera ReferenceError (TDZ). Isso força correção: você não usa antes de declarar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function h() {\n  // console.log(a); // ReferenceError (TDZ)\n  let a = 1;\n  if (true) {\n    let a = 2; // shadowing intencional no bloco\n    console.log(a); // 2\n  }\n  console.log(a); // 1\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "h"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// console.log(a); // ReferenceError (TDZ)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// shadowing intencional no bloco"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 1"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.7 const: binding imutável, não objeto imutável"
+    },
+    {
+      "type": "paragraph",
+      "text": "const impede reatribuição do binding, mas não congela o valor. Se o valor é um objeto, suas propriedades ainda podem ser mutadas. A decisão de usar const é sobre intenção: este nome não deve apontar para outro valor."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const user = { name: \"Ana\" };\nuser.name = \"ANA\"; // ok (mutação do objeto)\n\n// user = {}; // TypeError: Assignment to constant variable (reatribuição proibida)",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " user "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { name"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "user.name "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"ANA\""
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// ok (mutação do objeto)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// user = {}; // TypeError: Assignment to constant variable (reatribuição proibida)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.8 Regras práticas (padrão profissional)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use const por padrão (binding não muda).",
+        "Use let quando precisar reatribuir (loops, acumuladores).",
+        "Evite var em código novo; saiba ler em legado.",
+        "Evite shadowing acidental: nomes são contratos; se reutilizar, faça com intenção e clareza.",
+        "Prefira escopos pequenos: declare o mais perto possível do uso, mas respeitando legibilidade."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo definir escopo como regra de resolução de identificadores (scope chain).",
+        "Eu sei que var não respeita escopo de bloco e que isso causa vazamento.",
+        "Eu entendo que let/const são block-scoped e que TDZ impede acesso antes da declaração.",
+        "Eu sei que const impede reatribuição, mas não impede mutação de objetos.",
+        "Eu sei quando usar const e quando usar let e consigo justificar por intenção."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 3, você vai entender hoisting como mecanismo de criação de bindings e vai ver por que var, function e let/const se comportam diferente. O objetivo é prever o runtime, não decorar exceções."
+    }
+  ]
+}

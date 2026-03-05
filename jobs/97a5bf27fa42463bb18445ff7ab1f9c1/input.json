@@ -1,0 +1,1530 @@
+{
+  "metadata": {
+    "book_title": "Teste de Conexão",
+    "title": "Capítulo 01 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "01",
+    "chapter_title": "Teste de Conexão da API (Produção)",
+    "part_number": "1",
+    "part_title": "Conectividade, Autenticação e Contrato Básico",
+    "brand_primary": [
+      31,
+      75,
+      153
+    ],
+    "brand_secondary": [
+      15,
+      42,
+      82
+    ],
+    "brand_accent": [
+      255,
+      176,
+      32
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      238,
+      242,
+      255
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      15,
+      42,
+      82
+    ],
+    "color_heading_muted": [
+      31,
+      75,
+      153
+    ],
+    "color_heading_rule": [
+      229,
+      231,
+      235
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      147,
+      197,
+      253
+    ],
+    "color_table_header_bg": [
+      15,
+      42,
+      82
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 01 — Teste de Conexão da API (Produção)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Conectividade, Autenticação e Contrato Básico"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em produção, “testar conexão” significa validar uma cadeia: DNS → rede/egress → TLS → HTTP → autenticação/autorização → contrato mínimo (status/headers/schema) → observabilidade. O objetivo desta parte é isolar camadas com evidência, reduzindo tempo de diagnóstico e evitando correções por tentativa e erro."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real e a cadeia de camadas"
+    },
+    {
+      "type": "paragraph",
+      "text": "O mesmo sintoma (timeout, 401, 5xx) pode ter causas distintas. Um 401 pode ser token expirado, header malformado, audience errada ou relógio desalinhado. Um timeout pode ser DNS lento, handshake TLS bloqueado, rota inexistente ou read timeout por payload. Um teste profissional avança por camadas, apenas quando a anterior estiver comprovada."
+    },
+    {
+      "type": "list",
+      "items": [
+        "DNS: resolve hostname; falhas geram NXDOMAIN/SERVFAIL/lentidão.",
+        "Rede (L3/L4): rota, firewall, SG, NAT/egress; falhas geram ECONNREFUSED/ENETUNREACH/timeouts de conexão.",
+        "TLS: versão/cipher/SNI/certificado; falhas geram erro de handshake/cert inválido.",
+        "HTTP: método/path/headers; falhas geram 400/404/405 e respostas inesperadas.",
+        "AuthN/AuthZ: credencial, escopo/role; falhas geram 401/403.",
+        "Contrato: schema/versionamento; falhas geram 400/422 e bugs lógicos.",
+        "Resiliência/observabilidade: timeouts, retentativas, IDs; falhas geram cascata e “apagão” de diagnóstico."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Pré-requisitos operacionais (antes do primeiro curl)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "URL base e ambiente corretos (prod vs staging).",
+        "Esquema/porta (HTTPS/443) e base path/versionamento confirmados.",
+        "Credenciais válidas e fonte segura (vault/secret manager/CI masked).",
+        "Relógio sincronizado (NTP) para JWT/OAuth (exp/nbf).",
+        "Proxy/mesh documentados (o que adiciona/remove headers).",
+        "Egress liberado (VPC, SG, firewall, ACL) e NAT saudável.",
+        "Timeouts definidos (connect/read/total) — nunca infinito.",
+        "Padrão de correlation-id/trace-id para rastreio ponta a ponta."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. MRT (Minimum Reproducible Test): do mais barato ao mais semântico"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comece por um endpoint de healthcheck (ex.: /health) ou por um endpoint canônico e barato (ex.: /v1/ping). O MRT deve ser pequeno, determinístico e com logs suficientes para provar o que aconteceu. A ordem recomendada: (1) HTTP/TLS sem auth (quando possível), (2) auth, (3) contrato."
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "content": "# 1) DNS + TLS + HTTP (sem auth, se o endpoint permitir)\ncurl -v --connect-timeout 3 --max-time 10 https://api.exemplo.com/health\n\n# 2) Com correlation-id (rastreio)\nCORR_ID=\"test-conn-$(date +%s)\"\ncurl -v --connect-timeout 3 --max-time 10 \\\n  -H \"x-correlation-id: $CORR_ID\" \\\n  https://api.exemplo.com/health",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "# 1) DNS + TLS + HTTP (sem auth, se o endpoint permitir)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "curl "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "v "
+          },
+          {
+            "kind": "operator",
+            "text": "--"
+          },
+          {
+            "kind": "plain",
+            "text": "connect"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "timeout "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "--"
+          },
+          {
+            "kind": "plain",
+            "text": "max"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "time "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " https"
+          },
+          {
+            "kind": "operator",
+            "text": "://"
+          },
+          {
+            "kind": "plain",
+            "text": "api.exemplo.com"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "health"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "# 2) Com correlation-id (rastreio)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "CORR_ID"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"test-conn-$(date +%s)\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "curl "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "v "
+          },
+          {
+            "kind": "operator",
+            "text": "--"
+          },
+          {
+            "kind": "plain",
+            "text": "connect"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "timeout "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "--"
+          },
+          {
+            "kind": "plain",
+            "text": "max"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "time "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " \\"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "H "
+          },
+          {
+            "kind": "string",
+            "text": "\"x-correlation-id: $CORR_ID\""
+          },
+          {
+            "kind": "plain",
+            "text": " \\"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  https"
+          },
+          {
+            "kind": "operator",
+            "text": "://"
+          },
+          {
+            "kind": "plain",
+            "text": "api.exemplo.com"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "health"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Decisão: -v expõe detalhes do handshake e headers. connect-timeout curto prova rota/egress rapidamente. max-time evita travar pipelines e liberar recursos em produção."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Autenticação e autorização: separar formato de semântica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Teste primeiro o formato do header e a origem do segredo. Depois valide a semântica: escopo/role/audience, expiração e rotação. Interprete corretamente: 401 tende a ser credencial ausente/inválida; 403 tende a ser credencial válida sem permissão."
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "content": "# API Key (exemplo)\ncurl -sS --connect-timeout 3 --max-time 10 \\\n  -H \"x-api-key: $API_KEY\" \\\n  -H \"x-correlation-id: $CORR_ID\" \\\n  https://api.exemplo.com/v1/ping\n\n# Bearer token\ncurl -sS --connect-timeout 3 --max-time 10 \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n  -H \"x-correlation-id: $CORR_ID\" \\\n  https://api.exemplo.com/v1/ping",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "# API Key (exemplo)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "curl "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "sS "
+          },
+          {
+            "kind": "operator",
+            "text": "--"
+          },
+          {
+            "kind": "plain",
+            "text": "connect"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "timeout "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "--"
+          },
+          {
+            "kind": "plain",
+            "text": "max"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "time "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " \\"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "H "
+          },
+          {
+            "kind": "string",
+            "text": "\"x-api-key: $API_KEY\""
+          },
+          {
+            "kind": "plain",
+            "text": " \\"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "H "
+          },
+          {
+            "kind": "string",
+            "text": "\"x-correlation-id: $CORR_ID\""
+          },
+          {
+            "kind": "plain",
+            "text": " \\"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  https"
+          },
+          {
+            "kind": "operator",
+            "text": "://"
+          },
+          {
+            "kind": "plain",
+            "text": "api.exemplo.com"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "v1"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "ping"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "# Bearer token"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "curl "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "sS "
+          },
+          {
+            "kind": "operator",
+            "text": "--"
+          },
+          {
+            "kind": "plain",
+            "text": "connect"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "timeout "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "--"
+          },
+          {
+            "kind": "plain",
+            "text": "max"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "time "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " \\"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "H "
+          },
+          {
+            "kind": "string",
+            "text": "\"Authorization: Bearer $ACCESS_TOKEN\""
+          },
+          {
+            "kind": "plain",
+            "text": " \\"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "H "
+          },
+          {
+            "kind": "string",
+            "text": "\"x-correlation-id: $CORR_ID\""
+          },
+          {
+            "kind": "plain",
+            "text": " \\"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  https"
+          },
+          {
+            "kind": "operator",
+            "text": "://"
+          },
+          {
+            "kind": "plain",
+            "text": "api.exemplo.com"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "v1"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "ping"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Contrato mínimo: status, headers e schema"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Status code esperado (ex.: 200 em ping; 202 em async; 204 em delete).",
+        "Content-Type coerente (ex.: application/json).",
+        "Headers operacionais relevantes (ex.: request-id, rate-limit, cache-control).",
+        "Campos obrigatórios e tipos básicos; versão do contrato quando aplicável."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Observabilidade imediata: evidência antes de hipótese"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sem observabilidade, o teste vira ‘tentativa’. Propague um identificador (x-correlation-id) em todas as chamadas e registre-o em logs do cliente e do serviço. Quando houver tracing distribuído, propague traceparent."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Node.js (fetch nativo) — MRT com timeout total e correlation-id\nimport crypto from \"node:crypto\";\n\nconst baseUrl = process.env.API_BASE_URL;\nconst token = process.env.ACCESS_TOKEN;\nconst corrId = `test-conn-${Date.now()}-${crypto.randomUUID()}`;\n\nconst controller = new AbortController();\nconst totalTimeoutMs = 10_000;\nconst timer = setTimeout(() => controller.abort(), totalTimeoutMs);\n\ntry {\n  const res = await fetch(`${baseUrl}/v1/ping`, {\n    method: \"GET\",\n    headers: {\n      Authorization: `Bearer ${token}`,\n      \"x-correlation-id\": corrId,\n      Accept: \"application/json\",\n    },\n    signal: controller.signal,\n  });\n\n  const bodyText = await res.text();\n  console.log(JSON.stringify({\n    corrId,\n    status: res.status,\n    contentType: res.headers.get(\"content-type\"),\n    bodySample: bodyText.slice(0, 300),\n  }, null, 2));\n} catch (err) {\n  console.error(JSON.stringify({ corrId, error: String(err) }, null, 2));\n  process.exitCode = 1;\n} finally {\n  clearTimeout(timer);\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Node.js (fetch nativo) — MRT com timeout total e correlation-id"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " crypto from "
+          },
+          {
+            "kind": "string",
+            "text": "\"node:crypto\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " baseUrl "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " process.env.API_BASE_URL;"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " token "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " process.env.ACCESS_TOKEN;"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " corrId "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`test-conn-${Date.now()}-${crypto.randomUUID()}`"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " controller "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "AbortController"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " totalTimeoutMs "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " 10_000;"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " timer "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " controller."
+          },
+          {
+            "kind": "function",
+            "text": "abort"
+          },
+          {
+            "kind": "plain",
+            "text": "(), totalTimeoutMs);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " res "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "fetch"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`${baseUrl}/v1/ping`"
+          },
+          {
+            "kind": "plain",
+            "text": ", {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    method"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"GET\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    headers"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      Authorization"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`Bearer ${token}`"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "string",
+            "text": "\"x-correlation-id\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " corrId,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      Accept"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"application/json\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    signal"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " controller.signal,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " bodyText "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " res."
+          },
+          {
+            "kind": "function",
+            "text": "text"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(JSON."
+          },
+          {
+            "kind": "function",
+            "text": "stringify"
+          },
+          {
+            "kind": "plain",
+            "text": "({"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    corrId,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    status"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " res.status,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    contentType"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " res.headers."
+          },
+          {
+            "kind": "function",
+            "text": "get"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"content-type\""
+          },
+          {
+            "kind": "plain",
+            "text": "),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    bodySample"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " bodyText."
+          },
+          {
+            "kind": "function",
+            "text": "slice"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "300"
+          },
+          {
+            "kind": "plain",
+            "text": "),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }, "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (err) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "error"
+          },
+          {
+            "kind": "plain",
+            "text": "(JSON."
+          },
+          {
+            "kind": "function",
+            "text": "stringify"
+          },
+          {
+            "kind": "plain",
+            "text": "({ corrId, error"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(err) }, "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  process.exitCode "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "finally"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "clearTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(timer);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Decisões: timeout total evita travar workers/filas; bodySample limitado reduz risco de vazar dados; logging estruturado acelera correlação em ferramentas de observabilidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Falhas típicas: do sintoma à primeira ação objetiva"
+    },
+    {
+      "type": "table",
+      "columns": [
+        "Sintoma",
+        "Indício provável",
+        "Ação imediata"
+      ],
+      "rows": [
+        [
+          "NXDOMAIN/SERVFAIL",
+          "Hostname/zona DNS errados ou bloqueio de resolução",
+          "Validar hostname; resolver interno vs público; políticas de DNS"
+        ],
+        [
+          "Falha TLS/handshake",
+          "Cert inválido, SNI errado, TLS/cipher incompatível",
+          "Verificar cadeia, hostname, versão TLS e intermediários"
+        ],
+        [
+          "ECONNREFUSED",
+          "Porta fechada, SG/firewall, target offline",
+          "Checar egress/ingress, health do LB, porta/target group"
+        ],
+        [
+          "Timeout de conexão",
+          "Rota/egress/NAT/firewall silencioso",
+          "Validar regras de saída; testar de outra subnet; checar NAT"
+        ],
+        [
+          "401",
+          "Credencial ausente/inválida/expirada",
+          "Checar formato; exp/nbf; audience; rotação de segredo"
+        ],
+        [
+          "403",
+          "Escopo/role/policy insuficiente",
+          "Validar permissões, escopos e políticas do gateway"
+        ],
+        [
+          "404",
+          "Path/base path/versionamento incorretos",
+          "Conferir prefixos (/api), versão (/v1) e roteamento"
+        ],
+        [
+          "429",
+          "Rate limit/burst excedido",
+          "Aplicar backoff; reduzir concorrência; negociar cota"
+        ],
+        [
+          "5xx",
+          "Falha do servidor/dependência",
+          "Checar logs/status; retry com limites; acionar provedor"
+        ]
+      ],
+      "caption": "Diagnóstico rápido para testes de conexão em produção"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Erros comuns e boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Não definir timeouts e congelar processos em produção.",
+        "Vazar segredos em logs/tickets/chats — sempre mascarar.",
+        "Interpretar 403 como token inválido (frequentemente é escopo/policy).",
+        "Ignorar redirecionamentos e testar endpoint errado.",
+        "Não propagar correlation-id e perder rastreabilidade no incidente.",
+        "Misturar teste de conectividade com regras de negócio (use endpoint canônico)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "[ ] DNS resolve no ambiente de produção (tempo aceitável).",
+        "[ ] TLS válido (cadeia OK; hostname OK; sem downgrade inseguro).",
+        "[ ] Conectividade/egress confirmados (sem bloqueio de saída).",
+        "[ ] Endpoint canônico responde com status esperado.",
+        "[ ] Auth validada (401/403 compreendidos e resolvidos).",
+        "[ ] Content-Type e schema mínimo validados.",
+        "[ ] correlation-id aparece nos logs ponta a ponta.",
+        "[ ] Evidências registradas (segredos mascarados)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Conexão com a Parte 2: a seguir, você transforma ‘passou uma vez’ em operação confiável, com retentativas corretas, timeouts por camada, rate limiting, circuit breaker, segurança de segredos e monitores sintéticos."
+    }
+  ]
+}

@@ -1,0 +1,989 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 1 — O que é JavaScript de verdade — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "O que é JavaScript de verdade",
+    "part_number": 3,
+    "part_title": "Modelo mental correto: engine, call stack, heap e observabilidade",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — O que é JavaScript de verdade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Modelo mental correto: engine, call stack, heap e observabilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se você quer dominar JavaScript vanilla, precisa conseguir \"ver\" a execução sem depender de intuição. Você não precisa conhecer detalhes internos de cada engine; você precisa de um modelo mental mínimo que explique a maior parte dos bugs e permita depurar com método. Nesta parte, vamos construir esse modelo e conectar diretamente com ferramentas (DevTools) e hábitos de observabilidade."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.1 Engine não é runtime: o motor que executa a linguagem"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma engine JavaScript é o componente que interpreta/compila e executa código ECMAScript. Ela implementa a semântica da linguagem: como variáveis são resolvidas, como objetos são criados, como funções são chamadas e como o garbage collector decide liberar memória."
+    },
+    {
+      "type": "paragraph",
+      "text": "O runtime é maior: ele inclui a engine e os serviços ao redor (APIs, I/O, timers, integração com UI, módulos e permissões). Ao depurar, você precisa saber se o problema é (a) lógica do seu código, (b) regra da linguagem ou (c) contrato da API do ambiente."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.2 Call stack: o rastro de como você chegou até aqui"
+    },
+    {
+      "type": "paragraph",
+      "text": "Call stack (pilha de chamadas) é a estrutura que registra funções em execução. Cada vez que uma função chama outra, cria-se um novo frame. Quando a função retorna, o frame é removido. Esse comportamento explica:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Por que recursão profunda estoura (stack overflow).",
+        "Por que exceptions sobem até serem tratadas.",
+        "Por que o debugger mostra uma trilha de chamadas (stack trace)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "A call stack é o seu mapa de causalidade. Quando você vê um erro, não pergunte \"por que quebrou?\". Pergunte: \"qual foi a cadeia de chamadas que trouxe dados inválidos até aqui?\"."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function c() {\n  throw new Error(\"Falha em c()\");\n}\n\nfunction b() {\n  c();\n}\n\nfunction a() {\n  b();\n}\n\ntry {\n  a();\n} catch (e) {\n  console.error(\"Stack trace:\\n\", e.stack);\n}\n\n// Leia o stack trace como: a() chamou b(), b() chamou c(), e a falha ocorreu em c().",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "c"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Falha em c()\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "b"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "c"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "a"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "b"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "a"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (e) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Stack trace:\\n\""
+          },
+          {
+            "kind": "plain",
+            "text": ", e.stack);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Leia o stack trace como: a() chamou b(), b() chamou c(), e a falha ocorreu em c()."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.3 Heap: onde vivem os objetos (e por que mutação confunde)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Heap é a região de memória onde objetos e estruturas alocadas dinamicamente ficam armazenadas. Em JavaScript, variáveis não guardam objetos; elas guardam referências para objetos. Isso explica:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Duas variáveis podem apontar para o mesmo objeto.",
+        "Mutação em um lugar pode aparecer em outro sem você perceber.",
+        "Comparação de objetos por igualdade verifica referência, não conteúdo."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const a = { total: 10 };\nconst b = a;          // b referencia o mesmo objeto\nb.total += 5;\n\nconsole.log(a.total); // 15\nconsole.log(a === b); // true\n\nconst c = { total: 15 };\nconsole.log(a === c); // false - conteúdo igual, referência diferente",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { total"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " a;          "
+          },
+          {
+            "kind": "comment",
+            "text": "// b referencia o mesmo objeto"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "b.total "
+          },
+          {
+            "kind": "operator",
+            "text": "+="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a.total); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 15"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " b); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " c "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { total"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "15"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " c); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false - conteúdo igual, referência diferente"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O domínio vanilla exige que você seja explícito: quando quer compartilhar estado, compartilhe; quando quer isolar, copie. Mais adiante, você verá estratégias de imutabilidade para manter previsibilidade sem sacrificar produtividade."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.4 Garbage collector: o que você precisa saber (sem folclore)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Garbage collector (GC) é o mecanismo que libera memória de objetos que não são mais alcançáveis pelo programa. O ponto-chave é \"alcançável\": se existe um caminho de referências a partir de raízes (como variáveis globais, stack frames ativos e estruturas internas do runtime), o objeto é considerado vivo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você não controla quando o GC roda. Portanto, práticas profissionais evitam padrões que mantêm objetos vivos sem necessidade, como:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Caches sem política de expiração.",
+        "Listeners que nunca são removidos (especialmente em DOM).",
+        "Estruturas globais que crescem indefinidamente.",
+        "Closures que capturam grandes objetos sem necessidade."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.5 Observabilidade: ver estado e fluxo sem adivinhar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observabilidade é a capacidade de entender o que o sistema está fazendo a partir de sinais. Em JavaScript vanilla, os sinais mais acessíveis são logs, breakpoints, inspeção de variáveis e profiling. O erro comum é usar console.log como chute. O uso correto é usar logs como instrumento: mensagens consistentes, com contexto e com limites."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Logue hipóteses: o que você espera ver vs o que está vendo.",
+        "Inclua contexto: qual função, qual id, qual estado relevante.",
+        "Evite logar objetos mutáveis sem copiar (DevTools mostra referência atual).",
+        "Remova ou rebaixe logs ruidosos antes de considerar o código pronto."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.6 Debugger: breakpoints como método"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um breakpoint é um congelamento intencional da execução para inspeção. O método profissional é:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Reproduzir o bug de forma determinística.",
+        "2) Isolar a menor sequência que reproduz o problema.",
+        "3) Colocar breakpoint antes do ponto de falha e observar variáveis-chave.",
+        "4) Confirmar a hipótese (ou descartá-la) com evidência."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Depurar deixa de ser arte e vira engenharia."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.7 Micro-experimentos: a unidade mínima de aprendizado vanilla"
+    },
+    {
+      "type": "paragraph",
+      "text": "No contexto de estudo, a ferramenta mais poderosa é o micro-experimento: um arquivo pequeno ou snippet no console que testa apenas uma hipótese. A regra de ouro é mudar uma variável por vez. Isso será decisivo nos capítulos de coerção, this, protótipos e assíncrono."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Micro-experimento: como o console lida com objetos mutáveis\nconst obj = { n: 1 };\nconsole.log(\"antes\", obj);\nobj.n = 2;\nconsole.log(\"depois\", obj);\n\n// Para congelar o estado, logue uma cópia rasa:\nconsole.log(\"snapshot\", { ...obj });",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Micro-experimento: como o console lida com objetos mutáveis"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " obj "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { n"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"antes\""
+          },
+          {
+            "kind": "plain",
+            "text": ", obj);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "obj.n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"depois\""
+          },
+          {
+            "kind": "plain",
+            "text": ", obj);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Para congelar o estado, logue uma cópia rasa:"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"snapshot\""
+          },
+          {
+            "kind": "plain",
+            "text": ", { ...obj });"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.8 Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo distinguir engine (execução ES) de runtime (engine + APIs + integração).",
+        "Eu sei ler um stack trace como cadeia causal e usá-lo para chegar na origem do bug.",
+        "Eu entendo que objetos vivem no heap e que variáveis apontam por referência.",
+        "Eu sei por que mutação vaza e consigo decidir conscientemente entre compartilhar e copiar.",
+        "Eu uso logs e breakpoints como método: hipótese -> evidência -> conclusão."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 4, você vai transformar este modelo mental em disciplina de estudo: como estruturar experimentos e como usar o console/DevTools para construir intuição correta, sem cair em folclore."
+    }
+  ]
+}

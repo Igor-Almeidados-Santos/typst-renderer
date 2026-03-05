@@ -1,0 +1,276 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 2 — Valores, tipos e coerção — Parte 7",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 2,
+    "chapter_title": "Valores, tipos e coerção",
+    "part_number": 7,
+    "part_title": "Erros comuns e boas práticas: coerção sob controle",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 2 — Valores, tipos e coerção"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 7 — Erros comuns e boas práticas: coerção sob controle"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você já viu o suficiente para reconhecer o padrão: coerção não é inimiga; coerção é uma regra do jogo. O problema é deixá-la implícita em lugares onde o contrato deveria ser explícito. Nesta parte, consolidamos os erros mais comuns e as boas práticas correspondentes — como um guia de revisão mental para você aplicar em qualquer código vanilla."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.1 Erro comum: usar + com dados não normalizados"
+    },
+    {
+      "type": "paragraph",
+      "text": "O operador + é ambíguo por design: ele soma números e concatena strings. Se você recebe dados como string (DOM, URL, JSON) e usa + no meio do fluxo, você convida bugs."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sintoma: 10 + 5 vira '105'.",
+        "Causa: um dos operandos é string, então + vira concatenação.",
+        "Correção: normalize (Number/parse) na fronteira; no miolo, assuma number."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.2 Erro comum: if(v) como validação universal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Truthiness é útil para controle de fluxo, mas é uma péssima validação genérica. Ela rejeita 0 e '' quando esses valores são válidos."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sintoma: erro 'obrigatório' para 0, '' ou false válidos.",
+        "Causa: confundir ausência (null/undefined) com falsy.",
+        "Correção: checar ausência com v == null; checar conteúdo com regras específicas."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.3 Erro comum: comparar string numérica com número sem normalizar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comparar '10' e 10 com == pode “funcionar”, mas esconde um contrato frágil. O código fica dependente de coerção implícita. Em sistemas maiores, isso vira inconsistência."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sintoma: comparações que 'às vezes dão' e às vezes não.",
+        "Causa: dados chegam em tipos diferentes; coerção implícita cria surpresas.",
+        "Correção: normalize para um tipo e compare com ===."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.4 Erro comum: confiar em JSON como se fosse tipado"
+    },
+    {
+      "type": "paragraph",
+      "text": "JSON é texto parseado em objetos sem garantias. Campos podem faltar, vir como null, ou mudar tipo. Confiar em JSON é empurrar bugs para o miolo do sistema."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sintoma: 'Cannot read properties of undefined' em transformações.",
+        "Causa: forma do dado diferente do esperado.",
+        "Correção: tratar como unknown, validar e normalizar no limite (normalizarUsers)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.5 Erro comum: usar instanceof como validação de dado externo"
+    },
+    {
+      "type": "paragraph",
+      "text": "instanceof é útil para alguns casos (por exemplo, error objects, classes do seu domínio), mas é frágil para dados externos e para objetos vindos de outros contexts (iframes). Para validação de dados, forma e propriedades importam mais do que protótipo."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use Array.isArray para arrays.",
+        "Use typeof para primitivos.",
+        "Para objetos, valide propriedades necessárias e seus tipos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.6 Boas práticas: um padrão de coerção seguro (regra de ouro)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Adote uma regra de ouro simples: coerção explícita na fronteira; coerção implícita no miolo só quando for intencional e claramente legível."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fronteira: parse/normalize + valida invariantes + falha cedo.",
+        "Miolo: contratos estáveis + === como padrão + funções puras sempre que possível.",
+        "Saída: serialize/converta de volta apenas no adaptador (DOM/HTTP/storage)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.7 Checklist de revisão de PR (tipos e coerção)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Existe algum + operando sobre valores que podem ser string? Se sim, onde está a normalização?",
+        "Há if(v) sendo usado como validação? Isso pode punir 0 ou ''?",
+        "Há uso de == fora do caso v == null? Se sim, por quê?",
+        "Dados de fora (JSON/DOM) são validados antes de uso?",
+        "Há comparações de objetos esperando comparação por conteúdo? O critério está explícito?",
+        "Existe risco de NaN entrando no fluxo? Há Number.isFinite no parse?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 7"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei onde coerção implícita acontece e prefiro controlá-la com conversões explícitas na fronteira.",
+        "Eu não uso if(v) como validação universal; eu valido ausência e conteúdo separadamente.",
+        "Eu uso === como padrão e reservo v == null para ausência (null/undefined).",
+        "Eu trato JSON e inputs como unknown e normalizo antes de transformar.",
+        "Eu evito instanceof como validação genérica e prefiro checagens de forma/contrato.",
+        "Eu consigo revisar um trecho de código e identificar pontos de coerção perigosa."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 8, você fecha o capítulo com um checklist final e uma ponte para o Capítulo 3 (variáveis, escopo e hoisting). A conexão é direta: muitos bugs de tipo se combinam com bugs de escopo — e a maturidade vem de dominar ambos."
+    }
+  ]
+}

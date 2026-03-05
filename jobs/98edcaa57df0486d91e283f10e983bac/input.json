@@ -1,0 +1,817 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 4 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 4,
+    "chapter_title": "Operadores e expressões",
+    "part_number": 1,
+    "part_title": "Expressões e operadores: o que são, como avaliar e como evitar surpresas",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Operadores e expressões"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Expressões e operadores: o que são, como avaliar e como evitar surpresas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você chegou ao ponto onde o JavaScript começa a “produzir comportamento”: operadores e expressões. Aqui entram contas, comparações, lógica e decisões. O risco para o iniciante é cair em surpresas por coerção, precedência e por não entender o que um operador realmente retorna. O objetivo desta parte é te dar um modelo mental de avaliação de expressões — para você prever resultados antes de rodar o código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Eu escrevi uma condição e o if não entrou”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando uma condição falha, o iniciante tende a pensar que o if está errado. Na prática, o if apenas avalia uma expressão e converte o resultado para boolean. Se a expressão devolveu algo falsy, o bloco não roda. Por isso, o domínio de operadores começa por uma pergunta: que valor essa expressão produz?"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é uma expressão (revisão aplicada)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Expressão é qualquer trecho de código que produz um valor. Operadores são símbolos/palavras que combinam valores e produzem outro valor. Um erro comum é esquecer que muitos operadores retornam valores que não são boolean (por exemplo, &&, || e o operador ternário)."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Expressões produzem valores: 2 + 2, x > 10, fn(), a && b.",
+        "Operadores combinam operandos: +, -, *, /, ===, &&, ||, ??, ?:",
+        "O if quer um valor que será convertido para boolean (truthy/falsy)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Modelo mental de avaliação (passo a passo)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para prever o resultado de uma expressão, siga sempre este roteiro: (1) identifique os operandos, (2) identifique os tipos, (3) aplique as regras do operador, (4) aplique precedência, (5) se estiver em condição, aplique truthy/falsy."
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Quais são os operandos?",
+        "2) Quais são os tipos? (typeof)",
+        "3) O operador converte tipos? (coerção)",
+        "4) Qual a ordem? (precedência e parênteses)",
+        "5) O resultado vai para if/while? (truthy/falsy)"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Operadores aritméticos básicos (e suas pegadinhas)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Aritmética em JavaScript usa number (ponto flutuante). Os operadores básicos são: +, -, *, /, %, **. O + é especial porque também concatena strings."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(10 + 5);   // 15\nconsole.log(10 - 5);   // 5\nconsole.log(10 * 5);   // 50\nconsole.log(10 / 5);   // 2\nconsole.log(10 % 3);   // 1 (resto)\nconsole.log(2 ** 3);   // 8 (potência)\n\nconsole.log('10' + 5); // '105' (concatenação)\nconsole.log('10' - 5); // 5 (string vira number)\nconsole.log('x' - 1);  // NaN",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 15"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 5"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 50"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "%"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 1 (resto)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "**"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ");   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 8 (potência)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'10'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// '105' (concatenação)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'10'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 5 (string vira number)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'x'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");  "
+          },
+          {
+            "kind": "comment",
+            "text": "// NaN"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Regra profissional: se a conta envolve entrada (string), converta antes. Se aparecer NaN, pare e valide a conversão."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Incremento/decremento: ++ e -- (quando usar)"
+    },
+    {
+      "type": "paragraph",
+      "text": "++ e -- são atalhos para somar/subtrair 1. Eles existem em duas formas: prefixo e sufixo. A diferença importa porque uma forma retorna o valor antes de mudar e a outra retorna depois. Para iniciantes, prefira clareza (x = x + 1). Use ++/-- quando estiver confortável e em contexto simples."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let x = 1;\nconsole.log(x++); // 1 (retorna antes, depois incrementa)\nconsole.log(x);   // 2\n\nlet y = 1;\nconsole.log(++y); // 2 (incrementa antes, depois retorna)\nconsole.log(y);   // 2\n\n// Forma clara (recomendada para aprender)\nlet z = 1;\nz = z + 1;",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x"
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 1 (retorna antes, depois incrementa)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x);   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " y "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": "y); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2 (incrementa antes, depois retorna)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(y);   "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Forma clara (recomendada para aprender)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " z "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "z "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " z "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ]
+      ]
+    }
+  ]
+}

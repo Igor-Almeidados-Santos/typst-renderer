@@ -1,0 +1,860 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 4 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 4,
+    "chapter_title": "Operadores e expressões",
+    "part_number": 8,
+    "part_title": "Fechamento do Capítulo 4: resumo executivo, erros clássicos e checklist final",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Operadores e expressões"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Fechamento do Capítulo 4: resumo executivo, erros clássicos e checklist final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o capítulo que transforma JavaScript em “comportamento”: operadores e expressões. A partir daqui, controle de fluxo (if/else, switch, ternário) fica natural, porque você sabe o que uma expressão produz e como o JavaScript decide verdade/falsidade. Nesta parte final, você vai revisar o que mais gera bugs, reconhecer padrões clássicos rapidamente e fechar com um checklist final — o seu sinal verde para o Capítulo 5."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Resumo executivo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Expressão produz valor; operadores combinam valores e retornam outro valor.",
+        "Aritmética: *, / e % vêm antes de + e -. O + também concatena strings.",
+        "Comparações seguras: normalize tipos e use ===/!== por padrão.",
+        "Faixas: use && (x >= min && x <= max). Nunca use 0 < x < 10.",
+        "Truthy/falsy governam if: falsy inclui 0, '', null, undefined e NaN.",
+        "&& e || retornam operandos (não necessariamente boolean) e fazem curto-circuito.",
+        "Defaults: use ?? para null/undefined; use || quando qualquer falsy deve virar padrão.",
+        "Precedência existe, mas clareza vence: use parênteses quando misturar operadores.",
+        "Segurança moderna: use ?. para acesso/chamada opcional e combine com ?? para default."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Erros clássicos e correções"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Concatenação acidental com +"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log('10' + 5); // '105'\n// Causa: um operando é string.\nconsole.log(Number('10') + 5); // 15",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'10'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// '105'"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Causa: um operando é string."
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'10'"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 15"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Comparar número como string"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log('2' > '10'); // true (lexicográfico)\nconsole.log(Number('2') > Number('10')); // false",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'2'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'10'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true (lexicográfico)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'2'"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'10'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.3 Default com || derrubando 0 e ''"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(0 || 99);  // 99 (pegadinha)\nconsole.log(0 ?? 99);  // 0 (correto quando 0 é válido)\n\nconsole.log('' || 'p'); // 'p'\nconsole.log('' ?? 'p'); // ''",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");  "
+          },
+          {
+            "kind": "comment",
+            "text": "// 99 (pegadinha)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");  "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0 (correto quando 0 é válido)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'p'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'p'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'p'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// ''"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.4 0 < x < 10 (errado)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const x = 5;\nconsole.log(0 < x < 10); // true, mas por coerção\nconsole.log(x > 0 && x < 10); // true (correto)",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true, mas por coerção"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true (correto)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.5 TypeError ao acessar propriedade opcional"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const user = null;\n// user.profile.name -> TypeError\nconst nome = user?.profile?.name ?? 'Sem nome';\nconsole.log(nome); // 'Sem nome'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " user "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// user.profile.name -> TypeError"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " user"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".profile"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".name "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Sem nome'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'Sem nome'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Checklist final do Capítulo 4"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei que uma expressão sempre produz um valor e consigo prever esse valor em exemplos comuns.",
+        "Eu sei que + concatena quando há string e converto para number antes de somar.",
+        "Eu uso ===/!== por padrão e normalizo tipos antes de comparar.",
+        "Eu escrevo faixas corretamente com && e nunca uso 0 < x < 10.",
+        "Eu sei listar valores falsy e entendo como isso afeta if, && e ||.",
+        "Eu sei que && e || retornam operandos e entendo curto-circuito.",
+        "Eu escolho || vs ?? conscientemente (falsy vs null/undefined).",
+        "Eu uso parênteses para intenção quando misturo operadores.",
+        "Eu uso ?. para evitar TypeError e combino com ?? para defaults claros."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Conexão com o Capítulo 5"
+    },
+    {
+      "type": "paragraph",
+      "text": "No Capítulo 5, você vai usar operadores para controlar o fluxo do programa: if/else, switch e o operador ternário com critérios de legibilidade. O domínio deste capítulo garante que suas condições sejam previsíveis e que suas decisões sejam corretas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o Capítulo 4 com todas as 8 partes previstas. Próximo passo: Capítulo 5 — Parte 1."
+    }
+  ]
+}

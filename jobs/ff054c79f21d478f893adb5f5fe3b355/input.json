@@ -1,0 +1,1163 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 2 — Valores, tipos e coerção — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 2,
+    "chapter_title": "Valores, tipos e coerção",
+    "part_number": 2,
+    "part_title": "Fundamentação teórica: tipos, valores e representação no runtime",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 2 — Valores, tipos e coerção"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Fundamentação teórica: tipos, valores e representação no runtime"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para dominar coerção, igualdade e validação, você precisa de uma base conceitual: o que são tipos em JavaScript e como valores se comportam na execução. O objetivo aqui é um modelo mental funcional — suficiente para prever comportamento e escrever contratos — sem excesso de teoria."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.7 Tipos em JavaScript: dinâmico, mas não “sem tipo”"
+    },
+    {
+      "type": "paragraph",
+      "text": "JavaScript é dinamicamente tipado. Isso significa que variáveis não têm tipo fixo; valores têm. Uma mesma variável pode apontar para valores de tipos diferentes ao longo do tempo. A flexibilidade é útil, mas cobra disciplina: quem define contratos é você."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tipo é propriedade do valor, não da variável.",
+        "Contrato é decisão de design: o que minha função aceita e devolve?",
+        "Validação e normalização aplicam o contrato em runtime."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.8 Os 7 tipos primitivos (e por que eles importam)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Primitivos são valores que não são objetos e não carregam identidade por referência. Em JavaScript moderno, os tipos primitivos são:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "undefined — ausência por não inicialização/retorno implícito.",
+        "null — ausência intencional (sentinela).",
+        "boolean — true/false.",
+        "number — ponto flutuante (IEEE 754), inclui NaN e Infinity.",
+        "bigint — inteiros arbitrariamente grandes (com sufixo n).",
+        "string — sequência de unidades Unicode.",
+        "symbol — identificadores únicos para chaves/metaprogramação."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "A distinção entre undefined e null é fonte de confusão. Uma forma madura de pensar é: undefined costuma significar “não foi fornecido / não existe”; null costuma significar “existe, mas está vazio por decisão”. Trate os dois com intenção, não como sinônimos."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.9 Objetos: identidade, mutabilidade e referência"
+    },
+    {
+      "type": "paragraph",
+      "text": "Tudo que não é primitivo é objeto: objetos literais, arrays, funções, datas, regex, maps, sets e erros. A propriedade-chave é identidade: dois objetos podem ter o mesmo conteúdo e ainda assim serem diferentes, porque ocupam posições diferentes no heap."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Igualdade: objetos comparam por referência (identidade).",
+        "Mutabilidade: mudanças “vazam” quando referências são compartilhadas.",
+        "Cópia: para isolar estado, você copia (raso ou profundo, dependendo do caso)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.10 Wrapper objects: quando primitivos viram objetos (sem você pedir)"
+    },
+    {
+      "type": "paragraph",
+      "text": "JavaScript permite acessar métodos em primitivos, como \"abc\".toUpperCase(). Isso acontece porque o runtime faz boxing temporário: cria um wrapper (String/Number/Boolean), aplica o método e descarta. Evite criar wrappers manualmente (new String('x')), porque eles introduzem identidade e coerção confusa."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "console.log(\"abc\".toUpperCase()); // funciona (boxing temporário)\n\nconst s1 = \"x\";\nconst s2 = new String(\"x\");\n\nconsole.log(typeof s1); // 'string'\nconsole.log(typeof s2); // 'object'\nconsole.log(s1 === s2); // false (tipos diferentes)",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"abc\""
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "function",
+            "text": "toUpperCase"
+          },
+          {
+            "kind": "plain",
+            "text": "()); "
+          },
+          {
+            "kind": "comment",
+            "text": "// funciona (boxing temporário)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"x\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"x\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " s1); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'string'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " s2); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'object'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s1 "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " s2); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false (tipos diferentes)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.11 typeof, instanceof e o que cada um realmente responde"
+    },
+    {
+      "type": "paragraph",
+      "text": "typeof responde o tipo em nível de linguagem para primitivos e algumas categorias. Ele é útil, mas tem armadilhas (a mais famosa: typeof null é 'object'). instanceof verifica a cadeia de protótipos contra um construtor — útil para alguns objetos, mas frágil entre realms (iframes) e pouco informativo para estruturas simples."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use typeof para primitivos (string/number/boolean/bigint/symbol/undefined) e para função.",
+        "Use Array.isArray para arrays (mais confiável que typeof).",
+        "Use value == null para testar ausência (null ou undefined) de forma objetiva.",
+        "Evite instanceof como regra geral de validação de dados externos; prefira checar forma/contrato."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "console.log(typeof null); // 'object' (armadilha histórica)\n\nconsole.log(Array.isArray([])); // true\nconsole.log(typeof []);         // 'object'\n\nfunction isAusente(v) {\n  return v == null; // true para null e undefined\n}\n\nconsole.log(isAusente(undefined)); // true\nconsole.log(isAusente(null));      // true\nconsole.log(isAusente(0));         // false\nconsole.log(isAusente(\"\"));        // false",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'object' (armadilha histórica)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(Array."
+          },
+          {
+            "kind": "function",
+            "text": "isArray"
+          },
+          {
+            "kind": "plain",
+            "text": "([])); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " []);         "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'object'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "isAusente"
+          },
+          {
+            "kind": "plain",
+            "text": "(v) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " v "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// true para null e undefined"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "isAusente"
+          },
+          {
+            "kind": "plain",
+            "text": "(undefined)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "isAusente"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": "));      "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "isAusente"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "));         "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "isAusente"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"\""
+          },
+          {
+            "kind": "plain",
+            "text": "));        "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.12 Number: ponto flutuante, NaN, Infinity e -0 (o mínimo necessário)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em JavaScript, number é ponto flutuante. Isso traz efeitos práticos: imprecisão decimal (0.1 + 0.2), existência de NaN (resultado inválido) e Infinity (estouro). -0 existe e pode afetar algumas operações e comparações específicas. A regra profissional é: valide números e use comparações tolerantes quando o domínio exigir."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "console.log(0.1 + 0.2); // 0.30000000000000004\n\nconst x = Number(\"abc\");\nconsole.log(x);               // NaN\nconsole.log(Number.isNaN(x)); // true\n\nconsole.log(1 / 0);  // Infinity\nconsole.log(1 / -0); // -Infinity\n\nconsole.log(Object.is(-0, 0)); // false (Object.is diferencia -0 e 0)",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0.1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0.2"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0.30000000000000004"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"abc\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x);               "
+          },
+          {
+            "kind": "comment",
+            "text": "// NaN"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(Number."
+          },
+          {
+            "kind": "function",
+            "text": "isNaN"
+          },
+          {
+            "kind": "plain",
+            "text": "(x)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");  "
+          },
+          {
+            "kind": "comment",
+            "text": "// Infinity"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// -Infinity"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(Object."
+          },
+          {
+            "kind": "function",
+            "text": "is"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false (Object.is diferencia -0 e 0)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.13 BigInt e Symbol: onde eles entram (sem exagero)"
+    },
+    {
+      "type": "paragraph",
+      "text": "BigInt resolve um problema específico: inteiros grandes com precisão, comum em ids, contadores e cripto. Ele não mistura com number sem conversão explícita. Symbol serve como chave única e evita colisão em objetos; também aparece em protocolos internos (como iterables via Symbol.iterator)."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use BigInt quando precisão inteira importa (e aceite o custo de conversão).",
+        "Não misture BigInt e number; escolha um domínio e converta na borda.",
+        "Use Symbol principalmente para chaves internas e APIs que exigem protocolos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu entendo que valores têm tipo; variáveis apontam para valores.",
+        "Eu sei listar os tipos primitivos e diferenciar null de undefined por intenção.",
+        "Eu sei que objetos têm identidade e comparam por referência.",
+        "Eu entendo boxing temporário e evito new String/new Number/new Boolean.",
+        "Eu uso typeof/Array.isArray e testes de ausência (v == null) com critério.",
+        "Eu sei que number é ponto flutuante e trato NaN/Infinity/-0 quando necessário.",
+        "Eu sei quando BigInt e Symbol fazem sentido e por que não misturam com number."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 3, você vai aplicar este modelo mental diretamente na coerção: como JavaScript converte valores entre tipos, por que isso ocorre e como controlar coerção com conversões explícitas e validações consistentes."
+    }
+  ]
+}

@@ -1,0 +1,1340 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, escopo e o modelo mental do runtime",
+    "part_number": 5,
+    "part_title": "Exemplos práticos comentados: loops, callbacks e o bug clássico do var",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Exemplos práticos comentados: loops, callbacks e o bug clássico do var"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesta parte, você vai ver escopo “em ação” com exemplos que aparecem em código real: loops, callbacks, handlers e closures. O objetivo é treinar previsão: antes de rodar, você deve conseguir dizer qual será a saída — e explicar por quê em termos de bindings e scope chain. Isso é exatamente o tipo de habilidade que separa quem apenas usa JavaScript de quem domina JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.1 O bug clássico: var no for com callback"
+    },
+    {
+      "type": "paragraph",
+      "text": "Este é um dos exemplos mais didáticos para entender por que var é perigoso. A intenção é simples: imprimir 0, 1, 2 em momentos diferentes. Com var, o resultado surpreende: imprime 3, 3, 3. O motivo é escopo de função: existe um único binding i, que é reatribuído até 3; quando o callback roda, ele lê o valor atual."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "for (var i = 0; i < 3; i++) {\n  setTimeout(() => {\n    console.log(\"var i =\", i);\n  }, 10);\n}\n\n// Saída típica:\n// var i = 3\n// var i = 3\n// var i = 3\n\n// Explicação: há um único binding i (escopo de função/global),\n// e os callbacks observam o mesmo i depois do loop terminar.",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "; i"
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"var i =\""
+          },
+          {
+            "kind": "plain",
+            "text": ", i);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }, "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Saída típica:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// var i = 3"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// var i = 3"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// var i = 3"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Explicação: há um único binding i (escopo de função/global),"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// e os callbacks observam o mesmo i depois do loop terminar."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.2 A correção moderna: let cria um binding por iteração"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com let, o loop cria um novo binding i para cada iteração (escopo de bloco/iteração). Cada callback captura um binding diferente. Isso alinha execução ao que você pretendia."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "for (let i = 0; i < 3; i++) {\n  setTimeout(() => {\n    console.log(\"let i =\", i);\n  }, 10);\n}\n\n// Saída:\n// let i = 0\n// let i = 1\n// let i = 2\n\n// Explicação: cada iteração tem seu próprio binding i.",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "; i"
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"let i =\""
+          },
+          {
+            "kind": "plain",
+            "text": ", i);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }, "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Saída:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// let i = 0"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// let i = 1"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// let i = 2"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Explicação: cada iteração tem seu próprio binding i."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.3 Correção alternativa (legado): IIFE para “congelar” valor"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de let existir, a técnica comum era criar um escopo de função por iteração usando uma IIFE (Immediately Invoked Function Expression). É útil para ler código legado e para entender o mecanismo: criar um escopo novo cria um binding novo."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "for (var i = 0; i < 3; i++) {\n  (function (j) {\n    setTimeout(() => console.log(\"IIFE j =\", j), 10);\n  })(i);\n}\n\n// Saída:\n// IIFE j = 0\n// IIFE j = 1\n// IIFE j = 2\n\n// j é parâmetro: um binding novo por chamada.",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "; i"
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (j) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"IIFE j =\""
+          },
+          {
+            "kind": "plain",
+            "text": ", j), "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  })(i);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Saída:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// IIFE j = 0"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// IIFE j = 1"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// IIFE j = 2"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// j é parâmetro: um binding novo por chamada."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.4 Shadowing no dia a dia: quando é útil e quando é armadilha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Shadowing é comum em callbacks (por exemplo, map) e pode melhorar clareza quando o nome representa o mesmo conceito em outra escala. Mas ele vira armadilha quando você sombra sem perceber e perde acesso a uma variável importante."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const users = [{ id: 1 }, { id: 2 }];\n\n// Shadowing útil: u é usuário no contexto do callback\nconst ids = users.map(u => u.id);\n\n// Shadowing perigoso: reutilizar 'users' dentro do bloco\nfunction processar(users) {\n  if (users.length > 0) {\n    const users = [\"shadowing acidental\"]; // ReferenceError (TDZ) se tentar usar antes\n    return users;\n  }\n  return users;\n}\n\n// Evite reutilizar nomes de coleções/variáveis externas em escopos internos sem necessidade.",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " users "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " [{ id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " }, { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " }];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Shadowing útil: u é usuário no contexto do callback"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ids "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " users."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "(u "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " u.id);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Shadowing perigoso: reutilizar 'users' dentro do bloco"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "processar"
+          },
+          {
+            "kind": "plain",
+            "text": "(users) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (users.length "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " users "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "\"shadowing acidental\""
+          },
+          {
+            "kind": "plain",
+            "text": "]; "
+          },
+          {
+            "kind": "comment",
+            "text": "// ReferenceError (TDZ) se tentar usar antes"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " users;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " users;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Evite reutilizar nomes de coleções/variáveis externas em escopos internos sem necessidade."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.5 Reatribuição vs mutação: o que const realmente protege"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos bugs parecem de escopo, mas são de estado: você mudou um objeto compartilhado. const impede reatribuição do binding; não impede mutação do objeto. Portanto, o contrato de const é sobre o nome, não sobre o conteúdo."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const config = { debug: false };\n\nfunction habilitarDebug() {\n  config.debug = true; // mutação: afeta todos que usam config\n}\n\nhabilitarDebug();\nconsole.log(config.debug); // true\n\n// Se você quer evitar mutação, precisa de estratégia (cópia/imutabilidade),\n// não apenas const.",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " config "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { debug"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "habilitarDebug"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  config.debug "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// mutação: afeta todos que usam config"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "habilitarDebug"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(config.debug); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Se você quer evitar mutação, precisa de estratégia (cópia/imutabilidade),"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// não apenas const."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.6 Debugger: enxergando escopos e bindings"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para fixar escopo, use o debugger. Coloque um breakpoint dentro de um callback e observe a aba 'Scope' (DevTools). Você verá o escopo local, o fechamento (closure) e o escopo global/módulo. Esse exercício é decisivo: ele transforma o conceito de scope chain em uma imagem mental concreta."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Experimento 1: rode o loop com var e pause dentro do setTimeout; observe que i é o mesmo para todos.",
+        "Experimento 2: rode o loop com let e pause; observe que cada callback tem um i diferente.",
+        "Experimento 3: modifique i no console durante o breakpoint e veja o efeito no restante do código (cuidado)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo explicar por que var no for com callbacks imprime o valor final (um único binding).",
+        "Eu sei que let cria um binding por iteração e por isso corrige o problema.",
+        "Eu consigo reconhecer a técnica de IIFE em código legado e explicar o mecanismo.",
+        "Eu sei diferenciar shadowing útil de shadowing acidental (cheiro de bug).",
+        "Eu entendo const como binding imutável, não objeto imutável (mutação ainda vaza).",
+        "Eu sei usar o debugger para inspecionar escopos e closures em tempo real."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 6, você vai fazer um estudo de caso curto: um módulo vanilla que expõe uma API e usa closure para encapsular estado, mostrando como escopo e hoisting afetam design de módulo e previsibilidade."
+    }
+  ]
+}

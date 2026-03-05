@@ -1,0 +1,277 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime — Parte 7",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, escopo e o modelo mental do runtime",
+    "part_number": 7,
+    "part_title": "Erros comuns e boas práticas: disciplina de declaração e escopo",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 7 — Erros comuns e boas práticas: disciplina de declaração e escopo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Escopo não é “um assunto” — é uma disciplina. Quem domina escopo escreve código previsível, fácil de depurar e menos sujeito a efeitos colaterais invisíveis. Quem não domina, produz bugs que aparecem longe da causa: callbacks que leem valores errados, variáveis que vazam do bloco, globals acidentais e estados compartilhados que se misturam."
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesta parte, consolidamos os erros mais comuns e os padrões profissionais correspondentes. Pense nisso como um checklist de revisão: ao ler um PR, você deve ser capaz de localizar cheiros de bug relacionados a var/let/const, hoisting e shadowing."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.1 Erro comum: usar var em código novo (vazamento e undefined silencioso)"
+    },
+    {
+      "type": "paragraph",
+      "text": "var não respeita escopo de bloco e inicializa com undefined. O resultado é uma combinação perigosa: valores podem “existir” antes de você atribuir e nomes podem vazar de blocos e loops. Em código moderno, isso não traz benefício real; traz ambiguidade."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sintoma: callbacks lendo o mesmo i no loop (valor final).",
+        "Sintoma: variável usada antes da atribuição e ninguém percebe (undefined).",
+        "Correção: use let/const e declare no menor escopo possível com intenção."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.2 Erro comum: depender de hoisting para organizar código"
+    },
+    {
+      "type": "paragraph",
+      "text": "Hoisting de function declarations pode ser útil para organização top-down, mas depender de hoisting como “atalho” é cheiro de design frágil. Em especial, function expressions em var produzem undefined, e let/const produzem TDZ. Isso vira bug quando você reorganiza linhas."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Correção: declare antes de usar (regra simples).",
+        "Se usar function declaration por estilo top-down, mantenha consistência no módulo inteiro.",
+        "Evite misturar function declaration e function expression sem critério."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.3 Erro comum: shadowing acidental (nomes repetidos sem intenção)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Shadowing é legítimo, mas perigoso quando é acidental. Nomes são contratos. Repetir nome em escopo interno pode esconder o valor externo e produzir comportamento inesperado."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sintoma: variável 'parece não atualizar' porque você está alterando a sombra.",
+        "Sintoma: bloco cria um let com o mesmo nome e o externo continua intacto.",
+        "Correção: evite reutilizar nomes de variáveis externas em blocos internos; prefira nomes específicos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.4 Erro comum: global acidental (em script não estrito) ou acoplamento ao global"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em scripts antigos (não estritos), atribuir a um nome não declarado pode criar uma propriedade no global. Em strict mode (e em módulos), isso vira ReferenceError — o que é bom. Mas ainda existe outro problema: mesmo quando intencional, usar o global como depósito de estado cria acoplamento e dificulta teste."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Correção: use módulos e strict mode sempre (ESM já é estrito).",
+        "Evite estado global; prefira passar dependências ou encapsular em closures/factories.",
+        "Se precisar de global, use globalThis conscientemente e documente o contrato."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.5 Erro comum: confundir reatribuição (binding) com mutação (objeto)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos bugs de escopo são, na verdade, bugs de mutação: o binding é const, mas o objeto dentro muda e “vaza” para outros lugares. const não é imutabilidade; é um compromisso de não reatribuir o nome."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Correção: quando precisar previsibilidade, use cópias (spread/slice) ou padrões de imutabilidade.",
+        "Trate objetos compartilhados como risco: documente quem pode mutar e quando.",
+        "Use o debugger para verificar se o valor mudou por reatribuição ou por mutação."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.6 Boas práticas (padrão profissional de declaração)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use const por padrão; use let apenas quando reatribuição for necessária e clara.",
+        "Declare variáveis o mais perto possível do uso, respeitando legibilidade.",
+        "Mantenha escopos pequenos: evite declarar no topo da função por hábito.",
+        "Evite shadowing: se reutilizar um nome, faça por intenção e deixe claro no contexto.",
+        "Evite globals: prefira módulos, factories e passagem explícita de dependências."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "7.7 Checklist de revisão de PR (escopo/hoisting)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Há var? Se sim, por quê? É legado inevitável ou erro de estilo?",
+        "Há leitura de variável antes da declaração? (pode ser hoisting/TDZ)",
+        "Há function expressions em var que podem estar undefined em certos caminhos?",
+        "Há shadowing de nomes importantes (config, users, total) em blocos internos?",
+        "Há uso de window/globalThis para estado? Isso é necessário? Está documentado?",
+        "Há mutação de objetos em const que pode vazar para outros módulos?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 7"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu evito var em código novo e reconheço seus cheiros de bug em legado.",
+        "Eu declaro antes de usar e não dependo de hoisting como muleta.",
+        "Eu controlo shadowing: uso apenas quando melhora clareza, nunca por acidente.",
+        "Eu evito estado global e prefiro encapsular em módulo/closure.",
+        "Eu diferencio reatribuição de mutação e escolho estratégia consciente para estado compartilhado."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 8, você fecha o capítulo com um checklist final e uma ponte para o Capítulo 4 (controle de fluxo e expressividade). A conexão é direta: controle de fluxo cria blocos e blocos criam escopo. Quando você domina escopo, você escreve if/for/try com intenção e sem vazamento de variáveis."
+    }
+  ]
+}

@@ -1,0 +1,1560 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 5 — Strings em profundidade — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 5,
+    "chapter_title": "Strings em profundidade",
+    "part_number": 4,
+    "part_title": "Arquitetura conceitual: parsing, regex com disciplina e escaping (HTML/URL)",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Strings em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Arquitetura conceitual: parsing, regex com disciplina e escaping (HTML/URL)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Texto é fronteira; fronteira exige parsing e escaping. A maturidade em strings aparece quando você deixa de tratar parsing como \"split rápido\" e passa a tratar como contrato de formato. Da mesma forma, você deixa de jogar string no HTML e passa a pensar em contexto de saída: HTML, atributo, URL e query string. Nesta parte, você organiza uma arquitetura conceitual para três problemas recorrentes: parsing robusto, regex com disciplina e escaping básico para evitar injeção e bugs de encoding."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.15 Parsing como contrato: o formato é parte do domínio"
+    },
+    {
+      "type": "paragraph",
+      "text": "Parsing frágil acontece quando você assume que o formato é estável sem declarar o contrato. O padrão profissional é: (1) definir um formato aceito, (2) validar antes de extrair, (3) produzir um resultado estruturado, (4) falhar cedo com mensagem clara."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Evite split sem validar número de partes e regras de cada parte.",
+        "Evite substring com índices fixos sem validar tamanho e separadores.",
+        "Prefira funções parseX que retornam estrutura e fazem validação interna.",
+        "Na fronteira, normalize (trim + NFC) antes de validar formato."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.16 Regex com disciplina: quando usar e como manter legível"
+    },
+    {
+      "type": "paragraph",
+      "text": "Regex é poderosa e perigosa. Ela é perfeita para validar padrões locais e extrair grupos bem definidos. Ela vira anti-pattern quando tenta ser parser geral de formatos complexos. A disciplina é: regex pequena, testada e limitada ao necessário."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use regex para: validar formato simples, extrair grupos curtos, substituir padrões claros.",
+        "Não use regex para: parsear HTML complexo, parsear CSV geral, validar e-mail de forma \"perfeita\".",
+        "Prefira múltiplas regex simples a uma regex monstruosa.",
+        "Sempre escreva exemplos de entrada/saída junto da regex (testes)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.17 Exemplo: parse de ID com contrato explícito"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suponha um ID no formato ABC-1234 (3 letras, hífen, 4 dígitos). Um parse robusto valida e extrai, retornando estrutura."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "const RE_ID = /^([A-Z]{3})-(\\d{4})$/;\n\nexport function parseId(raw) {\n  const s = String(raw).trim().normalize('NFC');\n  const m = RE_ID.exec(s);\n  if (!m) throw new Error('id inválido (esperado ABC-1234)');\n\n  const prefix = m[1];\n  const num = Number(m[2]);\n  return { prefix, num };\n}\n\nconsole.log(parseId('ABC-0042')); // { prefix: 'ABC', num: 42 }",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " RE_ID "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/^"
+          },
+          {
+            "kind": "plain",
+            "text": "([A"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "Z]{"
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "})"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "(\\d{"
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": "})$"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseId"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "function",
+            "text": "normalize"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'NFC'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " m "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " RE_ID."
+          },
+          {
+            "kind": "function",
+            "text": "exec"
+          },
+          {
+            "kind": "plain",
+            "text": "(s);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "m) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'id inválido (esperado ABC-1234)'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " prefix "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " m["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " num "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(m["
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "]);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { prefix, num };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "parseId"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ABC-0042'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// { prefix: 'ABC', num: 42 }"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Note o contrato: a regex valida e extrai; o parse converte para number; a mensagem de erro descreve o formato esperado."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.18 Exemplo: slug (texto → identificador URL-safe)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um slug é uma forma canônica para URL: minúsculas, sem acentos, com separador '-'. Em vanilla, você pode construir um slug simples com normalização + remoção de marcas diacríticas + substituição de espaços."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "export function slugify(raw) {\n  const s = String(raw)\n    .trim()\n    .normalize('NFD')\n    .replace(/\\p{Diacritic}/gu, '')\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .replace(/\\s+/g, '-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '');\n\n  if (s === '') throw new Error('slug vazio');\n  return s;\n}\n\nconsole.log(slugify('  João da Silva!  ')); // 'joao-da-silva'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "slugify"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "()"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "normalize"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'NFD'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\p{Diacritic}"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "gu, "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "toLowerCase"
+          },
+          {
+            "kind": "plain",
+            "text": "()"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "["
+          },
+          {
+            "kind": "operator",
+            "text": "^"
+          },
+          {
+            "kind": "plain",
+            "text": "a"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "z0"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "number",
+            "text": "9"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "]"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "'-'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/-+/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "'-'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/^-|-"
+          },
+          {
+            "kind": "plain",
+            "text": "$"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (s "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'slug vazio'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " s;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "slugify"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'  João da Silva!  '"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'joao-da-silva'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo mostra regex com propósito e tamanho controlado. Ele não tenta ser universal; ele implementa um contrato claro de slug."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "5.19 Escaping: o contexto de saída define o risco"
+    },
+    {
+      "type": "paragraph",
+      "text": "Montar HTML com strings sem escaping é um risco (XSS) e também um gerador de bugs de layout. O princípio é: se você insere texto de usuário em HTML, escape caracteres especiais. Melhor ainda: use textContent em vez de innerHTML quando o objetivo é texto puro."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Preferir textContent para inserir texto (evita HTML interpretado).",
+        "Se precisar gerar HTML por string, escape: &, <, >, aspas duplas e aspas simples.",
+        "URLs: use encodeURIComponent para valores de query param e caminhos dinâmicos."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "export function escapeHtml(raw) {\n  return String(raw)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#39;');\n}\n\n// Melhor: inserir como texto\n// el.textContent = userInput\n\n// Se gerar HTML:\n// el.innerHTML = `<span>${escapeHtml(userInput)}</span>`\n\nexport function toQueryParam(raw) {\n  return encodeURIComponent(String(raw));\n}\n\nconsole.log(toQueryParam('a&b=c')); // 'a%26b%3Dc'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "escapeHtml"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/&/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "'&amp;'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/</"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "'&lt;'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/>/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "'&gt;'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\""
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "'&quot;'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "string",
+            "text": "'/g, '"
+          },
+          {
+            "kind": "operator",
+            "text": "&"
+          },
+          {
+            "kind": "plain",
+            "text": "#"
+          },
+          {
+            "kind": "number",
+            "text": "39"
+          },
+          {
+            "kind": "plain",
+            "text": ";');"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Melhor: inserir como texto"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// el.textContent = userInput"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Se gerar HTML:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// el.innerHTML = `<span>${escapeHtml(userInput)}</span>`"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "toQueryParam"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "encodeURIComponent"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "toQueryParam"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'a&b=c'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'a%26b%3Dc'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 4"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu trato parsing como contrato: defino formato, valido, extraio e retorno estrutura.",
+        "Eu uso regex com disciplina: pequena, testada e limitada; evito regex como parser universal.",
+        "Eu construo slugs e chaves canônicas com normalização e regras explícitas.",
+        "Eu entendo contexto de saída: prefiro textContent e faço escaping quando preciso gerar HTML.",
+        "Eu uso encodeURIComponent para query params e evito concatenar URLs sem encoding."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 5, você verá exemplos práticos comentados: normalização de nomes, validação de e-mail com pragmatismo, parsing de query string e montagem segura de HTML/URL. O foco é prática com contrato, não 'regex perfeita'."
+    }
+  ]
+}

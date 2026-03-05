@@ -1,0 +1,1680 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 3 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, valores e tipos (o coração da linguagem)",
+    "part_number": 3,
+    "part_title": "Tipos em profundidade: primitivos, object, typeof e o mapa completo",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, valores e tipos (o coração da linguagem)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Tipos em profundidade: primitivos, object, typeof e o mapa completo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesta parte, você vai montar o “mapa” de tipos do JavaScript. A maioria das operações (comparar, somar, acessar propriedades, iterar) depende do tipo do valor. O objetivo aqui é prático: reconhecer rapidamente o que você tem nas mãos, inspecionar com segurança e evitar pegadinhas comuns no dia a dia."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “typeof diz uma coisa, mas o valor se comporta como outra”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você já viu duas pegadinhas: typeof null retorna \"object\" e arrays também retornam \"object\". Isso não significa que typeof é inútil; significa que ele classifica por categorias amplas. Para detalhes (array, null, date), você complementa com checagens específicas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O mapa de tipos: duas famílias principais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para estudar bem, divida o mundo em duas famílias: (1) primitivos e (2) objetos. Primitivos são valores simples e imutáveis. Objetos são estruturas compostas e, em geral, mutáveis. Arrays e funções entram como casos especiais dentro de object."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Primitivos: string, number, boolean, undefined, null, symbol, bigint.",
+        "Objetos: object (inclui objetos literais, arrays, funções, datas, regex, maps, sets...).",
+        "Regra mental: se você consegue “mudar por dentro”, provavelmente é object."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. typeof: o detector básico (com limites)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(typeof 'abc');        // \"string\"\nconsole.log(typeof 42);           // \"number\"\nconsole.log(typeof true);         // \"boolean\"\nconsole.log(typeof undefined);    // \"undefined\"\nconsole.log(typeof null);         // \"object\"  ← pegadinha histórica\nconsole.log(typeof {});           // \"object\"\nconsole.log(typeof []);           // \"object\"  ← arrays também\nconsole.log(typeof function(){}); // \"function\"",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'abc'"
+          },
+          {
+            "kind": "plain",
+            "text": ");        "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"string\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "42"
+          },
+          {
+            "kind": "plain",
+            "text": ");           "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"number\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ");         "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"boolean\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " undefined);    "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"undefined\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ");         "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"object\"  ← pegadinha histórica"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " {});           "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"object\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " []);           "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"object\"  ← arrays também"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": "(){}); "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"function\""
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Regra prática: use typeof para separar primitivos básicos. Para identificar arrays, use Array.isArray. Para null, use comparação direta (valor === null). Para datas, use valor instanceof Date."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Primitivos em detalhe (o que você precisa dominar)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.1 string (texto) — imutável"
+    },
+    {
+      "type": "paragraph",
+      "text": "Strings são imutáveis: métodos que “mudam” texto retornam uma nova string. Isso evita efeitos colaterais, mas pode surpreender quem espera alteração in-place."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const s = 'ola';\nconst s2 = s.toUpperCase();\nconsole.log(s);  // 'ola'\nconsole.log(s2); // 'OLA'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'ola'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " s."
+          },
+          {
+            "kind": "function",
+            "text": "toUpperCase"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s);  "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'ola'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s2); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'OLA'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.2 number (números) — inclui inteiros e decimais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em JavaScript, number representa inteiros e ponto flutuante (double). Isso explica por que 0.1 + 0.2 não dá exatamente 0.3. Você vai aprofundar isso em operadores; por enquanto, memorize a ideia: ponto flutuante tem arredondamento."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(0.1 + 0.2); // 0.30000000000000004 (aproximação)\nconsole.log(Number.isInteger(10)); // true",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0.1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0.2"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0.30000000000000004 (aproximação)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(Number."
+          },
+          {
+            "kind": "function",
+            "text": "isInteger"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.3 boolean (true/false) — lógica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Booleanos representam verdade/falsidade. Em JavaScript existe coerção para boolean em condições (truthy/falsy), que você verá no capítulo de operadores e controle de fluxo."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const ativo = true;\nif (ativo) {\n  console.log('ok');\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ativo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (ativo) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.4 undefined e null — ausências diferentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "undefined costuma significar “não definido” (estado padrão). null costuma significar “ausência intencional”. Trate os dois como estados que precisam de decisão: validar, inicializar ou lidar com ausência."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let a;\nconsole.log(a); // undefined\n\nconst el = document.querySelector('#nao-existe');\nconsole.log(el); // null",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " a;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a); "
+          },
+          {
+            "kind": "comment",
+            "text": "// undefined"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " el "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#nao-existe'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(el); "
+          },
+          {
+            "kind": "comment",
+            "text": "// null"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.5 symbol e bigint — visão essencial"
+    },
+    {
+      "type": "paragraph",
+      "text": "symbol é usado para chaves únicas (evita colisão). bigint representa inteiros muito grandes. Como iniciante, você precisa reconhecer que existem e saber identificá-los; uso aprofundado é mais raro no vanilla do dia a dia."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const id = Symbol('id');\nconsole.log(typeof id); // \"symbol\"\n\nconst grande = 9007199254740993n;\nconsole.log(typeof grande); // \"bigint\"",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " id "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Symbol"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'id'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " id); "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"symbol\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " grande "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " 9007199254740993n;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " grande); "
+          },
+          {
+            "kind": "comment",
+            "text": "// \"bigint\""
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Objetos (object): referência, identidade e mutação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Objetos são valores por referência. O que importa aqui é identidade: duas variáveis podem apontar para o mesmo objeto. Se você muta o objeto por uma variável, a outra “vê” a mudança."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const o1 = { n: 10 };\nconst o2 = o1;\no2.n = 99;\nconsole.log(o1.n); // 99",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " o1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { n"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " o2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " o1;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "o2.n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(o1.n); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 99"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Identificando tipos de objeto com segurança"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Array: Array.isArray(valor)",
+        "Null: valor === null",
+        "Date: valor instanceof Date",
+        "Função: typeof valor === 'function'",
+        "Objeto “puro”: typeof valor === 'object' && valor !== null && !Array.isArray(valor)"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function describe(valor) {\n  if (valor === null) return 'null';\n  if (Array.isArray(valor)) return 'array';\n  if (valor instanceof Date) return 'date';\n  return typeof valor;\n}\n\nconsole.log(describe(null));\nconsole.log(describe([1, 2]));\nconsole.log(describe(new Date()));\nconsole.log(describe({}));\nconsole.log(describe(() => {}));",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "describe"
+          },
+          {
+            "kind": "plain",
+            "text": "(valor) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (valor "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'null'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (Array."
+          },
+          {
+            "kind": "function",
+            "text": "isArray"
+          },
+          {
+            "kind": "plain",
+            "text": "(valor)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'array'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (valor "
+          },
+          {
+            "kind": "keyword",
+            "text": "instanceof"
+          },
+          {
+            "kind": "plain",
+            "text": " Date) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'date'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " valor;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "describe"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "describe"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "]));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "describe"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Date"
+          },
+          {
+            "kind": "plain",
+            "text": "()));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "describe"
+          },
+          {
+            "kind": "plain",
+            "text": "({}));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "describe"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {}));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Comparação de valores (prévia importante)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Primitivos comparam por valor; objetos comparam por identidade (referência). Isso explica por que dois objetos “iguais” não são iguais com ===."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(10 === 10); // true\nconsole.log('a' === 'a'); // true\n\nconsole.log({ a: 1 } === { a: 1 }); // false (objetos diferentes)\n\nconst x = { a: 1 };\nconst y = x;\nconsole.log(x === y); // true (mesma referência)",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'a'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'a'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "({ a"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " } "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " { a"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " }); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false (objetos diferentes)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { a"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " y "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " x;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " y); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true (mesma referência)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Erros comuns (e a correção correta)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que typeof distingue array de objeto: use Array.isArray.",
+        "Achar que const torna objeto imutável: const bloqueia reatribuição, não mutação.",
+        "Comparar objetos por === esperando comparação estrutural: === compara referência.",
+        "Misturar tipos sem perceber (string + number) e gerar concatenação/NaN: valide e converta conscientemente."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Checklist profissional (Parte 3)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei listar os tipos primitivos e reconhecer object como família separada.",
+        "Eu sei usar typeof e sei suas pegadinhas (null e arrays).",
+        "Eu sei identificar array, null e date de forma confiável.",
+        "Eu entendo que objetos comparam por referência, não por conteúdo.",
+        "Eu consigo explicar por que const não significa imutabilidade do objeto."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 4, você vai entrar na parte mais “perigosa” para iniciantes: coerção de tipos e conversões (Number, String, Boolean), incluindo as armadilhas que geram bugs em comparações e operações."
+    }
+  ]
+}

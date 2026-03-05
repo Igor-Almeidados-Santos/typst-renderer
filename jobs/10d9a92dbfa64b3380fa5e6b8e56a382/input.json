@@ -1,0 +1,1914 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 5 — Strings em profundidade — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 5,
+    "chapter_title": "Strings em profundidade",
+    "part_number": 6,
+    "part_title": "Estudo de caso: formulário vanilla de busca com slug, URL e render seguro",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Strings em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Estudo de caso: formulário vanilla de busca com slug, URL e render seguro"
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste estudo de caso, você vai juntar os principais contratos de string do capítulo em um mini-projeto vanilla: um formulário de busca. O fluxo é típico de front-end: o usuário digita um texto, você normaliza e valida, gera uma chave e um slug, monta uma URL com query params e renderiza resultados com segurança (sem XSS). O objetivo é treinar o que um pleno faz automaticamente: tratar texto como fronteira, com invariantes explícitas e saída segura."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.1 Requisitos do caso"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entrada: termo de busca (string).",
+        "Normalização: trim + NFC + compactação de espaços.",
+        "Validação: termo obrigatório, mínimo 2 caracteres (por contrato).",
+        "Derivações: chave (case-insensitive) e slug (URL-safe).",
+        "URL: /search?q=<termo>&slug=<slug> com encoding correto.",
+        "Saída: renderizar lista de resultados (mock) usando textContent, não innerHTML."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.2 Core: normalizar, validar, slugificar"
+    },
+    {
+      "type": "paragraph",
+      "text": "O core não deve depender de DOM. Ele recebe strings e devolve strings/objetos normalizados. Isso permite testar facilmente."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// core/searchText.js\n\nexport function normalizeQuery(raw) {\n  const s = String(raw)\n    .trim()\n    .normalize('NFC')\n    .replace(/\\s+/g, ' ');\n\n  if (s.length < 2) throw new Error('termo deve ter ao menos 2 caracteres');\n  return s;\n}\n\nexport function queryKey(raw) {\n  return normalizeQuery(raw).toLowerCase();\n}\n\nexport function slugify(raw) {\n  const s = normalizeQuery(raw)\n    .normalize('NFD')\n    .replace(/\\p{Diacritic}/gu, '')\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .replace(/\\s+/g, '-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '');\n\n  if (s === '') throw new Error('slug vazio');\n  return s;\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// core/searchText.js"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizeQuery"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "()"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "normalize"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'NFC'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "' '"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (s.length "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'termo deve ter ao menos 2 caracteres'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " s;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "queryKey"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizeQuery"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "toLowerCase"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "slugify"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizeQuery"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "normalize"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'NFD'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\p{Diacritic}"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "gu, "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "toLowerCase"
+          },
+          {
+            "kind": "plain",
+            "text": "()"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "["
+          },
+          {
+            "kind": "operator",
+            "text": "^"
+          },
+          {
+            "kind": "plain",
+            "text": "a"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "z0"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "number",
+            "text": "9"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "]"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "'-'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/-+/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "'-'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/^-|-"
+          },
+          {
+            "kind": "plain",
+            "text": "$"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (s "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'slug vazio'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " s;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.3 Adapter: ler input, montar URL e renderizar com segurança"
+    },
+    {
+      "type": "paragraph",
+      "text": "O adaptador conversa com o DOM e com as APIs do ambiente (URL/URLSearchParams). A regra é: inserir texto com textContent e criar elementos, evitando innerHTML."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// ui/searchForm.js (browser)\nimport { normalizeQuery, queryKey, slugify } from './core/searchText.js';\n\nfunction buildSearchUrl(term) {\n  const u = new URL('/search', window.location.origin);\n  u.searchParams.set('q', term);\n  u.searchParams.set('slug', slugify(term));\n  return u.toString();\n}\n\nfunction mockSearchResults(key) {\n  // mock: em projeto real, isso seria fetch\n  return [\n    `Resultado para: ${key}`,\n    `Sugestão: ${key}-1`,\n    `Sugestão: ${key}-2`,\n  ];\n}\n\nfunction renderList(ul, items) {\n  ul.replaceChildren();\n  for (const text of items) {\n    const li = document.createElement('li');\n    li.textContent = text; // seguro\n    ul.appendChild(li);\n  }\n}\n\nexport function wireSearchForm(formSelector, listSelector, outUrlSelector) {\n  const form = document.querySelector(formSelector);\n  const ul = document.querySelector(listSelector);\n  const outUrl = document.querySelector(outUrlSelector);\n\n  if (!form || !ul || !outUrl) throw new Error('elementos não encontrados');\n\n  form.addEventListener('submit', (ev) => {\n    ev.preventDefault();\n\n    const raw = new FormData(form).get('q');\n    const term = normalizeQuery(raw);\n    const key = queryKey(term);\n\n    const url = buildSearchUrl(term);\n    outUrl.textContent = url;\n\n    const results = mockSearchResults(key);\n    renderList(ul, results);\n  });\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// ui/searchForm.js (browser)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " { normalizeQuery, queryKey, slugify } from "
+          },
+          {
+            "kind": "string",
+            "text": "'./core/searchText.js'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buildSearchUrl"
+          },
+          {
+            "kind": "plain",
+            "text": "(term) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " u "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "URL"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'/search'"
+          },
+          {
+            "kind": "plain",
+            "text": ", window.location.origin);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  u.searchParams."
+          },
+          {
+            "kind": "function",
+            "text": "set"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'q'"
+          },
+          {
+            "kind": "plain",
+            "text": ", term);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  u.searchParams."
+          },
+          {
+            "kind": "function",
+            "text": "set"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'slug'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "function",
+            "text": "slugify"
+          },
+          {
+            "kind": "plain",
+            "text": "(term));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " u."
+          },
+          {
+            "kind": "function",
+            "text": "toString"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "mockSearchResults"
+          },
+          {
+            "kind": "plain",
+            "text": "(key) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// mock: em projeto real, isso seria fetch"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "string",
+            "text": "`Resultado para: ${key}`"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "string",
+            "text": "`Sugestão: ${key}-1`"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "string",
+            "text": "`Sugestão: ${key}-2`"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "renderList"
+          },
+          {
+            "kind": "plain",
+            "text": "(ul, items) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ul."
+          },
+          {
+            "kind": "function",
+            "text": "replaceChildren"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " text of items) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " li "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "createElement"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'li'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    li.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " text; "
+          },
+          {
+            "kind": "comment",
+            "text": "// seguro"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ul."
+          },
+          {
+            "kind": "function",
+            "text": "appendChild"
+          },
+          {
+            "kind": "plain",
+            "text": "(li);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "wireSearchForm"
+          },
+          {
+            "kind": "plain",
+            "text": "(formSelector, listSelector, outUrlSelector) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " form "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "(formSelector);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ul "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "(listSelector);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " outUrl "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "(outUrlSelector);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "form "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "ul "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "outUrl) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'elementos não encontrados'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  form."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'submit'"
+          },
+          {
+            "kind": "plain",
+            "text": ", (ev) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    ev."
+          },
+          {
+            "kind": "function",
+            "text": "preventDefault"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " raw "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "FormData"
+          },
+          {
+            "kind": "plain",
+            "text": "(form)."
+          },
+          {
+            "kind": "function",
+            "text": "get"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'q'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " term "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "normalizeQuery"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " key "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "queryKey"
+          },
+          {
+            "kind": "plain",
+            "text": "(term);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " url "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buildSearchUrl"
+          },
+          {
+            "kind": "plain",
+            "text": "(term);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    outUrl.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " url;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " results "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "mockSearchResults"
+          },
+          {
+            "kind": "plain",
+            "text": "(key);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "renderList"
+          },
+          {
+            "kind": "plain",
+            "text": "(ul, results);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.4 O que treinar (bugs propositais)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Digite apenas 1 caractere e confirme que a validação falha cedo (mensagem clara).",
+        "Digite espaços e veja trim/compactação de espaços funcionando.",
+        "Digite texto com acento composto (e + combining) e confirme que NFC normaliza.",
+        "Digite texto com caracteres especiais e veja slugify removendo/colapsando.",
+        "Tente inserir '<img onerror=...>' e confirme que textContent impede execução (sem XSS)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 6"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu separo core (normalização/slug) de adapter (DOM/URL).",
+        "Eu normalizo e valido antes de usar a string (contrato).",
+        "Eu gero slug e chaves canônicas de forma consistente.",
+        "Eu construo URLs com URL/URLSearchParams, evitando concatenação frágil.",
+        "Eu renderizo texto com textContent e crio elementos, evitando innerHTML para dados externos."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 7, você consolida erros comuns e boas práticas de strings: normalização esquecida, regex monstruosa, parsing por split sem contrato, e output inseguro. Isso vira um checklist de revisão de PR para texto."
+    }
+  ]
+}

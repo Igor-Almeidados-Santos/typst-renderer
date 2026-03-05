@@ -1,0 +1,1109 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 3 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, valores e tipos (o coração da linguagem)",
+    "part_number": 2,
+    "part_title": "Escopo e tempo de vida: bloco, função, global e o porquê de let/const",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, valores e tipos (o coração da linguagem)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Escopo e tempo de vida: bloco, função, global e o porquê de let/const"
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 1 você aprendeu a diferença entre let, const e var e o modelo mental de reatribuição vs mutação. Agora você vai entender o motivo estrutural que fez let/const existirem: escopo (scope). Escopo define onde um nome “existe” e pode ser usado. Um júnior precisa dominar isso porque muitos bugs em JavaScript não são “lógica difícil” — são nomes sendo usados fora do lugar, variáveis vazando para onde não deveriam e estados globais contaminando tudo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Por que minha variável existe aqui, mas não ali?”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você escreve uma variável dentro de um if e tenta usar fora. Às vezes dá erro; às vezes funciona — e é aí que mora o perigo. Quando você aprende escopo com um modelo mental correto, você sabe prever o que vai acontecer antes de rodar o código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é escopo (definição operacional)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Escopo é o conjunto de regiões do programa onde um identificador é válido. Em outras palavras: é o “mapa” que diz onde um nome pode ser referenciado. Em JavaScript moderno, você precisa saber três escopos principais: global, de função e de bloco."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escopo global: nomes disponíveis para o arquivo/página inteira (com cuidado).",
+        "Escopo de função: nomes declarados dentro de uma função vivem dentro daquela função.",
+        "Escopo de bloco: nomes declarados com let/const dentro de { } vivem apenas naquele bloco."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Escopo de bloco (let/const): o padrão moderno"
+    },
+    {
+      "type": "paragraph",
+      "text": "Bloco é qualquer par de chaves { }. Exemplos: if, for, while, try/catch, ou até um bloco isolado. let e const respeitam esse escopo. Isso elimina uma classe de bugs antigos em que variáveis “vazavam” de blocos."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "if (true) {\n  const mensagem = 'dentro';\n  let contador = 1;\n  console.log(mensagem, contador);\n}\n\n// Fora do bloco, os nomes não existem:\n// console.log(mensagem); // ReferenceError\n// console.log(contador); // ReferenceError",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagem "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'dentro'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagem, contador);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Fora do bloco, os nomes não existem:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// console.log(mensagem); // ReferenceError"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// console.log(contador); // ReferenceError"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ReferenceError é bom: ele te impede de usar uma variável fora do lugar e força você a organizar melhor a lógica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Escopo de função: onde var “vive”"
+    },
+    {
+      "type": "paragraph",
+      "text": "var tem escopo de função, não de bloco. Isso significa que declarar var dentro de um if ou for não cria um escopo novo para aquela variável — ela fica disponível em toda a função. Fora de função (no topo do arquivo), var vira global. Esse comportamento é uma fonte enorme de bugs e é o principal motivo de evitarmos var em código moderno."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function exemplo() {\n  if (true) {\n    var x = 10;\n  }\n\n  console.log(x); // 10 (x “vazou” do bloco)\n}\n\naexemplo = exemplo; // só para evitar linter em alguns ambientes\nexemplo();",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exemplo"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(x); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 10 (x “vazou” do bloco)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "aexemplo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " exemplo; "
+          },
+          {
+            "kind": "comment",
+            "text": "// só para evitar linter em alguns ambientes"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "exemplo"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comparação direta com let:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function exemplo2() {\n  if (true) {\n    let y = 10;\n  }\n\n  // console.log(y); // ReferenceError\n}\n\naexemplo2 = exemplo2;\nexemplo2();",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exemplo2"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " y "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// console.log(y); // ReferenceError"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "aexemplo2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " exemplo2;"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "exemplo2"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Escopo global: poder e risco"
+    },
+    {
+      "type": "paragraph",
+      "text": "No browser, o escopo global está ligado ao objeto window (isso será aprofundado depois). Variáveis globais são acessíveis de muitos lugares e podem causar colisões de nomes, dependências invisíveis e bugs difíceis. A regra de júnior: evite estado global; prefira módulos e funções para encapsular."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Global é fácil de acessar e fácil de quebrar.",
+        "Um nome global pode ser sobrescrito por outro arquivo/script.",
+        "Dependências globais escondem o fluxo real do programa."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Tempo de vida (lifetime): quando a variável nasce e morre"
+    },
+    {
+      "type": "paragraph",
+      "text": "Escopo diz “onde posso usar”. Tempo de vida diz “por quanto tempo existe”. Em geral: variáveis de bloco existem enquanto o bloco executa; variáveis de função existem durante a execução da função (e, em alguns casos, além — quando funções internas mantêm referência; isso será closures mais adiante). Variáveis globais podem durar enquanto a página estiver aberta."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Bloco: curto, controlado (bom para limitar efeitos).",
+        "Função: duração da execução; pode ser estendida por closures.",
+        "Global: longo; aumenta risco de acoplamento e bugs."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Por que let/const evitam bugs (na prática)"
+    },
+    {
+      "type": "paragraph",
+      "text": "let/const te obrigam a declarar o nome no escopo mais próximo e impedem “vazamentos”. Isso torna o código mais previsível. Além disso, let/const não permitem redeclaração no mesmo escopo, o que evita sobrescritas acidentais."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let a = 1;\n// let a = 2; // SyntaxError: Identifier 'a' has already been declared\n\nvar b = 1;\nvar b = 2; // permitido (e perigoso)\nconsole.log(b); // 2",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// let a = 2; // SyntaxError: Identifier 'a' has already been declared"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// permitido (e perigoso)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(b); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Bloco isolado: técnica simples para limitar variáveis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Às vezes você quer criar um escopo temporário para não poluir o resto do arquivo. Você pode usar um bloco isolado com { }."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "{\n  const apiBase = 'https://exemplo.local';\n  const timeoutMs = 2000;\n  console.log('Config local:', apiBase, timeoutMs);\n}\n\n// apiBase não existe aqui — e isso é intencional.",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "{"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " apiBase "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'https://exemplo.local'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " timeoutMs "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2000"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Config local:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", apiBase, timeoutMs);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// apiBase não existe aqui — e isso é intencional."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Erros comuns (e como evitar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Declarar com var dentro de loops e depois usar fora sem perceber (vazamento).",
+        "Usar variável antes de declarar (vai entrar em hoisting/TDZ; veremos no Cap. 8).",
+        "Criar variáveis globais sem querer (ex.: esquecer let/const e escrever x = 10).",
+        "Reusar o mesmo nome em escopos diferentes e confundir leitura (shadowing)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "9.1 Bug clássico: variável global acidental"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function ruim() {\n  total = 10; // sem let/const → cria (ou usa) global em modo não estrito\n}\n\n// Boa prática: use 'use strict' e declare sempre\nfunction bom() {\n  'use strict';\n  const total = 10;\n  return total;\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "ruim"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  total "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// sem let/const → cria (ou usa) global em modo não estrito"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Boa prática: use 'use strict' e declare sempre"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "bom"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " total "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " total;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é um dos motivos de usarmos 'use strict' em muitos exemplos: ele transforma erros silenciosos em erros visíveis."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Boas práticas (nível júnior)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Declare variáveis no escopo mais próximo possível (menor escopo que funciona).",
+        "Use const por padrão e let quando houver reatribuição real.",
+        "Evite var (exceto ao ler código legado).",
+        "Evite globais: encapsule em funções ou módulos.",
+        "Se um nome só é usado dentro de um if/for, declare dentro dele.",
+        "Use o debugger para inspecionar escopos (Scope panel) quando estiver confuso."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Exercícios (para fixar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Escreva um if com let dentro e tente usar fora. Observe o ReferenceError.",
+        "2) Faça o mesmo com var dentro de uma função e observe o vazamento.",
+        "3) Provoque uma redeclaração com let e compare com var.",
+        "4) Crie um bloco isolado { } e coloque 2 constantes dentro. Confirme que não existem fora.",
+        "5) Pegue um código seu e reduza escopos: mova declarações para dentro dos blocos onde são usadas."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Checklist profissional (Parte 2)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei a diferença entre escopo global, de função e de bloco.",
+        "Eu sei por que var vaza de blocos e por que isso causa bugs.",
+        "Eu sei por que variáveis globais são perigosas em projetos reais.",
+        "Eu entendo tempo de vida como complemento de escopo.",
+        "Eu consigo reduzir o escopo de variáveis para melhorar previsibilidade."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 3, você vai consolidar o mapa completo de tipos em JavaScript (primitivos vs object), e aprender a inspecionar e comparar valores sem cair nas armadilhas iniciais de coerção."
+    }
+  ]
+}

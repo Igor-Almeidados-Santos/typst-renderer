@@ -1,0 +1,491 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, escopo e o modelo mental do runtime",
+    "part_number": 4,
+    "part_title": "Arquitetura conceitual: escopos, scope chain e o global em scripts vs módulos",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, escopo e o modelo mental do runtime"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Arquitetura conceitual: escopos, scope chain e o global em scripts vs módulos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que você tem o modelo mental de bindings (hoisting/TDZ) e sabe como var/let/const se comportam, você precisa de um mapa para organizar: em que escopo cada coisa vive e como a engine resolve um nome quando você o escreve. Nesta parte, vamos construir uma arquitetura conceitual com três peças: (1) tipos de escopo (global, módulo, função, bloco), (2) scope chain e resolução de identificadores, e (3) a diferença prática entre rodar como script e rodar como módulo (ESM)."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.15 O mapa dos escopos (visibilidade e vida útil)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Pense em escopo como um “contenedor de nomes”. Cada contenedor define duas coisas: quem enxerga o nome (visibilidade) e por quanto tempo ele existe (vida útil). Em JavaScript, você trabalha principalmente com:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escopo de bloco: existe dentro de { } e vale para let/const (e o binding do catch).",
+        "Escopo de função: existe dentro de uma função e vale para parâmetros e var/let/const declarados ali.",
+        "Escopo de módulo (ESM): existe dentro do arquivo/módulo; nomes não vazam para o global.",
+        "Escopo global (script): existe no topo do script e pode se integrar ao objeto global (window/globalThis)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O erro comum é imaginar que “topo do arquivo” é sempre global. Em ESM, o topo do arquivo é o escopo do módulo, não o global."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.16 Scope chain: como a engine encontra um nome"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você escreve um identificador, a engine resolve por busca lexical: começa no escopo atual e sobe na cadeia (scope chain) até encontrar um binding com aquele nome. Se não encontrar, o resultado depende do contexto:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Em leitura: ReferenceError (nome não definido).",
+        "Em atribuição (não estrita): pode criar global implícito (em scripts antigos) — comportamento perigoso.",
+        "Em strict mode: ReferenceError (proíbe global implícito)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O principal aprendizado é: a engine não “adivinha”. Ela segue uma cadeia. Bugs de escopo são, muitas vezes, bugs de você não saber em qual ponto da cadeia está."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.17 Script vs módulo (ESM): diferença prática que muda bugs"
+    },
+    {
+      "type": "paragraph",
+      "text": "No browser, há duas formas comuns de executar JavaScript: como script clássico (<script>) e como módulo (<script type=\"module\">). Essa diferença muda o escopo do topo do arquivo e algumas regras de execução."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Scripts clássicos: top-level pode se associar ao objeto global (window).",
+        "Módulos ESM: top-level é escopo de módulo; declarações não viram propriedades de window.",
+        "Módulos são strict por padrão; scripts podem não ser (embora devam ser).",
+        "Módulos suportam import/export; scripts não."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// No browser, em script clássico:\nvar a = 1;\nlet b = 2;\n\n// window.a existe (var costuma virar propriedade do global)\n// window.b não existe (let/const não viram propriedade do global)\n\n// Em módulo ESM (<script type=\"module\">):\n// nem a nem b viram propriedade do window; são do escopo do módulo.",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// No browser, em script clássico:"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// window.a existe (var costuma virar propriedade do global)"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// window.b não existe (let/const não viram propriedade do global)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Em módulo ESM (<script type=\"module\">):"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// nem a nem b viram propriedade do window; são do escopo do módulo."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.18 globalThis: a forma moderna de falar com o global"
+    },
+    {
+      "type": "paragraph",
+      "text": "Como runtimes diferentes têm objetos globais diferentes (window no browser, global no Node), a linguagem moderna oferece globalThis como referência padrão ao objeto global. Isso é útil quando você precisa, conscientemente, interagir com o global. Mas a regra de design é: use o global com parcimônia. O global é acoplamento."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Funciona em browser e Node (quando disponível)\nconsole.log(typeof globalThis);\n\n// Evite armazenar estado global sem necessidade:\n// globalThis.state = ...  // cheiro de bug em apps grandes",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Funciona em browser e Node (quando disponível)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " globalThis);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Evite armazenar estado global sem necessidade:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// globalThis.state = ...  // cheiro de bug em apps grandes"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.19 Closures: a consequência direta da scope chain"
+    },
+    {
+      "type": "paragraph",
+      "text": "Closures são a prova viva de que escopo é léxico. Uma função “lembra” o escopo onde foi criada, não apenas onde é chamada. Isso é poderoso e perigoso: poderoso para encapsular estado; perigoso quando você captura variáveis que mudam e cria comportamentos inesperados."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você terá um capítulo inteiro de closures, mas aqui fica o ponto de conexão: a scope chain define quais bindings uma função pode acessar mesmo após o escopo externo ter “terminado” a execução."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.20 Um modelo de diagnóstico por camadas (escopo como contrato)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando aparecer um bug de escopo, use este diagnóstico rápido:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Em qual escopo a variável deveria existir? (bloco, função, módulo, global)",
+        "2) Há shadowing? Existe outro binding com o mesmo nome em um escopo interno?",
+        "3) A variável é let/const e estou na TDZ? (uso antes da declaração)",
+        "4) Estou rodando como script ou módulo? Eu esperava algo no window/globalThis?",
+        "5) Se o valor mudou, foi reatribuição do binding ou mutação do objeto?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 4"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei listar os escopos relevantes (bloco, função, módulo, global) e a vida útil típica de cada um.",
+        "Eu consigo explicar scope chain e como a engine resolve um identificador.",
+        "Eu entendo a diferença prática entre script clássico e módulo ESM no browser.",
+        "Eu sei quando globalThis é útil e por que o global é acoplamento.",
+        "Eu consigo diagnosticar bugs de escopo com perguntas objetivas (shadowing, TDZ, script vs módulo)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 5, você vai aplicar esse mapa em exemplos práticos comentados: loops, callbacks e o clássico bug do 'var no for'. Você vai ver como let/const e escopo de bloco mudam completamente o resultado e como o debugger ajuda a enxergar a scope chain."
+    }
+  ]
+}

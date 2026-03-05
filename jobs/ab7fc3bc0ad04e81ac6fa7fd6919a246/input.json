@@ -1,0 +1,1471 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla — Do Iniciante ao Pleno",
+    "title": "Capítulo 4 — Controle de fluxo e expressividade — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 4,
+    "chapter_title": "Controle de fluxo e expressividade",
+    "part_number": 3,
+    "part_title": "Modelo mental correto: fluxo como contrato (invariantes, retornos consistentes e erros)",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      17,
+      24,
+      39
+    ],
+    "brand_accent": [
+      34,
+      211,
+      238
+    ],
+    "brand_ink": [
+      11,
+      18,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      229,
+      231,
+      235
+    ],
+    "brand_tint": [
+      243,
+      244,
+      246
+    ],
+    "brand_paper": [
+      255,
+      255,
+      255
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      18,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      41,
+      55
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      243,
+      244,
+      246
+    ],
+    "color_table_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_table_header_text": [
+      249,
+      250,
+      251
+    ],
+    "color_table_body_bg": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Controle de fluxo e expressividade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Modelo mental correto: fluxo como contrato (invariantes, retornos consistentes e erros)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O salto de iniciante para pleno, no controle de fluxo, acontece quando você para de pensar em “comandos” e passa a pensar em contratos. Fluxo não é apenas decidir; é garantir invariantes ao longo do caminho. Se uma função chega ao final, o que deve ser verdade? Se falhar, como ela falha? Se houver múltiplos caminhos, o retorno é consistente? Nesta parte, você vai construir um modelo mental que guia refatorações profissionais: invariantes no topo, caminhos explícitos, retornos previsíveis e erros como parte do design."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.13 Fluxo como uma sequência de invariantes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um modo simples e poderoso de desenhar fluxo é pensar em invariantes. Uma invariável é algo que precisa ser verdadeiro para você continuar. Quando uma invariável falha, você deve encerrar o caminho o mais cedo possível — com erro, retorno ou fallback explícito."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Invariantes de presença: dados obrigatórios existem (não null/undefined).",
+        "Invariantes de tipo/forma: dados têm o tipo/estrutura esperada (array, objeto, string não vazia).",
+        "Invariantes de domínio: valores estão na faixa e obedecem regras (idade 0–130, status válido).",
+        "Invariantes de estado: certas condições já aconteceram (DOM carregado, usuário autenticado)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Guard clauses são a tradução direta desse pensamento: você declara invariantes no topo e só entra no “caminho feliz” quando elas são verdadeiras."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.14 Retornos consistentes: um contrato por função"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos maiores geradores de bugs é retorno inconsistente: uma função que ora retorna string, ora objeto, ora null, dependendo do caminho. Isso força o chamador a adivinhar e espalha ifs defensivos pelo sistema. A regra profissional é: uma função deve ter um contrato de retorno pequeno e estável."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Se a função pode falhar, escolha: ela lança erro ou ela retorna um resultado que codifica sucesso/falha.",
+        "Se ela retorna valor, retorne sempre o mesmo tipo (ex.: sempre objeto, sempre boolean, sempre number).",
+        "Se for necessário comunicar erro sem lançar, use uma forma estruturada (Result) e mantenha consistente."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.15 Erros como fluxo: lançar, propagar, tratar com contexto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em JavaScript, lançar erro (throw) é uma forma de interromper o fluxo imediatamente. Isso é útil para invariantes violadas. O problema não é lançar; é lançar sem contexto, engolir erros ou tratar tudo no mesmo lugar sem critério."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Lance erro quando o contrato foi violado (entrada inválida, estado impossível).",
+        "Adicione contexto na fronteira (qual operação, qual id, qual recurso).",
+        "Trate erros no nível certo: perto da UI, perto do boundary (request handler), ou no adaptador — não em qualquer lugar."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.16 Um padrão simples: função que lança vs função que retorna Result"
+    },
+    {
+      "type": "paragraph",
+      "text": "Há dois estilos saudáveis para fluxo com falha. O primeiro: lançar erros e tratar no boundary. O segundo: retornar um objeto Result { ok, value, error }. Em vanilla, ambos são possíveis. O importante é consistência."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Estilo 1: lançar (falha interrompe fluxo)\nfunction parseNumeroFinito(raw) {\n  const n = Number(String(raw).trim());\n  if (!Number.isFinite(n)) throw new TypeError(\"número inválido\");\n  return n;\n}\n\n// Estilo 2: Result (falha vira valor)\nfunction parseNumeroFinitoResult(raw) {\n  const n = Number(String(raw).trim());\n  if (!Number.isFinite(n)) return { ok: false, error: \"número inválido\" };\n  return { ok: true, value: n };\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Estilo 1: lançar (falha interrompe fluxo)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseNumeroFinito"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isFinite"
+          },
+          {
+            "kind": "plain",
+            "text": "(n)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "TypeError"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"número inválido\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " n;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Estilo 2: Result (falha vira valor)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "parseNumeroFinitoResult"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw)."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isFinite"
+          },
+          {
+            "kind": "plain",
+            "text": "(n)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", error"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"número inválido\""
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", value"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " n };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Escolha um estilo por módulo/projeto e mantenha. Misturar estilos cria confusão: às vezes você precisa try/catch, às vezes precisa if(!ok)."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.17 Guard clauses na prática: reduzir aninhamento sem perder semântica"
+    },
+    {
+      "type": "paragraph",
+      "text": "A refatoração central do capítulo é: transformar um labirinto em uma linha reta. Você começa validando invariantes e encerrando cedo. O caminho feliz fica “no fundo” como uma sequência limpa de passos."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "// Antes: aninhamento profundo\nfunction calcularFrete(raw) {\n  if (raw) {\n    if (raw.address) {\n      if (raw.items && raw.items.length > 0) {\n        return 20;\n      }\n    }\n  }\n  return 0;\n}\n\n// Depois: invariantes explícitas\nfunction calcularFrete2(raw) {\n  if (raw == null) return 0;\n  if (raw.address == null) return 0;\n  if (!Array.isArray(raw.items) || raw.items.length === 0) return 0;\n\n  return 20;\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Antes: aninhamento profundo"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "calcularFrete"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw.address) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw.items "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " raw.items.length "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "20"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Depois: invariantes explícitas"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "calcularFrete2"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (raw.address "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Array."
+          },
+          {
+            "kind": "function",
+            "text": "isArray"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw.items) "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " raw.items.length "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "20"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O ponto não é “retornar 0”. O ponto é: o contrato está claro. Você consegue ver imediatamente quais condições habilitam o cálculo."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.18 Valores padrão: || vs ?? como decisão de contrato"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao escolher defaults, você está definindo um contrato: quais valores contam como ausência? Se 0 e '' são válidos, || é errado porque os troca. Use ?? para tratar apenas null/undefined como ausência."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use || quando qualquer falsy deve cair no padrão (raro e deve ser intencional).",
+        "Use ?? quando apenas ausência (null/undefined) deve cair no padrão (comum).",
+        "Prefira defaults explícitos em guard clauses quando a regra de domínio for complexa."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.19 Fluxo e legibilidade: nomes, extração e estrutura"
+    },
+    {
+      "type": "paragraph",
+      "text": "Fluxo legível não depende apenas de operadores. Depende de nomes. Uma técnica simples é extrair predicados com nomes de domínio. Isso transforma condições complexas em frases."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          31,
+          41,
+          55
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          243,
+          244,
+          246
+        ],
+        "text": [
+          229,
+          231,
+          235
+        ],
+        "line_number": [
+          107,
+          114,
+          128
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "content": "function temItens(pedido) {\n  return Array.isArray(pedido.items) && pedido.items.length > 0;\n}\n\nfunction usuarioValido(pedido) {\n  return pedido.user != null && pedido.user.id != null;\n}\n\nfunction salvarPedido(pedido) {\n  if (pedido == null) return \"pedido ausente\";\n  if (!temItens(pedido)) return \"sem itens\";\n  if (!usuarioValido(pedido)) return \"usuário inválido\";\n  return \"ok\";\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "temItens"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " Array."
+          },
+          {
+            "kind": "function",
+            "text": "isArray"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido.items) "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " pedido.items.length "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "usuarioValido"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " pedido.user "
+          },
+          {
+            "kind": "operator",
+            "text": "!="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " pedido.user.id "
+          },
+          {
+            "kind": "operator",
+            "text": "!="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "salvarPedido"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (pedido "
+          },
+          {
+            "kind": "operator",
+            "text": "=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"pedido ausente\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "function",
+            "text": "temItens"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"sem itens\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "function",
+            "text": "usuarioValido"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido)) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"usuário inválido\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"ok\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Extração não é para “criar mais funções”. É para criar vocabulário: nomes que carregam intenção e reduzem carga cognitiva."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu penso em fluxo como invariantes: se falhar, encerro cedo; se passar, sigo no caminho feliz.",
+        "Eu evito retornos inconsistentes: uma função tem um contrato de retorno estável.",
+        "Eu trato erros como parte do fluxo: lanço com critério, adiciono contexto e trato no boundary.",
+        "Eu sei escolher entre throw e Result e mantenho consistência por módulo.",
+        "Eu uso guard clauses para reduzir aninhamento e tornar o contrato visível.",
+        "Eu escolho || vs ?? como decisão de contrato (o que é ausência?).",
+        "Eu extraio predicados com nomes de domínio para tornar condições legíveis."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 4, você vai aplicar esse modelo a refatorações de fluxo mais complexas: switch vs dispatch tables, encadeamento com early returns e padrões para reduzir duplicação de validação e mensagens."
+    }
+  ]
+}

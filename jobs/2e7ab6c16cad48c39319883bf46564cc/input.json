@@ -1,0 +1,1262 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 4 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 4,
+    "chapter_title": "Operadores e expressões",
+    "part_number": 5,
+    "part_title": "Operadores modernos de segurança: ?. e ?? na prática (acesso seguro e defaults corretos)",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Operadores e expressões"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Operadores modernos de segurança: ?. e ?? na prática (acesso seguro e defaults corretos)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Conforme você progride, começa a lidar com dados incompletos: respostas de API, objetos opcionais, propriedades que nem sempre existem. O iniciante tenta acessar direto e encontra um TypeError (“cannot read properties of null/undefined”). JavaScript moderno trouxe dois operadores para reduzir esse tipo de bug e tornar a intenção explícita: optional chaining (?.) e nullish coalescing (??). Nesta parte, você vai aprender quando usar cada um, por que eles existem e como eles se combinam com o que você já sabe de truthy/falsy e curto-circuito."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Quebrou porque uma propriedade não existia”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você recebe um objeto de API, mas algumas propriedades podem faltar (null/undefined). Se você acessa user.profile.name e profile é null, o JavaScript lança TypeError. O operador ?. permite acessar em cadeia, parando com segurança quando encontra null/undefined."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Optional chaining (?.): acesso seguro a propriedades e chamadas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Optional chaining avalia da esquerda para a direita. Se o lado esquerdo de ?. for null ou undefined, ele retorna undefined e para a cadeia — sem lançar erro. Se for um valor válido, ele continua o acesso normalmente."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const user1 = { profile: { name: 'Ana' } };\nconst user2 = { profile: null };\nconst user3 = null;\n\nconsole.log(user1.profile?.name); // 'Ana'\nconsole.log(user2.profile?.name); // undefined (sem erro)\nconsole.log(user3?.profile?.name); // undefined (sem erro);",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " user1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { profile"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " { name"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Ana'"
+          },
+          {
+            "kind": "plain",
+            "text": " } };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " user2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { profile"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " user3 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(user1.profile"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".name); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'Ana'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(user2.profile"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".name); "
+          },
+          {
+            "kind": "comment",
+            "text": "// undefined (sem erro)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(user3"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".profile"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".name); "
+          },
+          {
+            "kind": "comment",
+            "text": "// undefined (sem erro);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Optional chaining em chamadas (funções opcionais)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você também pode usar ?. para chamar uma função que pode não existir. Se ela for undefined/null, a chamada não acontece e o resultado é undefined."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const api = {\n  onReady: null,\n  onError: (msg) => console.log('erro:', msg),\n};\n\napi.onReady?.(); // não quebra\napi.onError?.('falhou'); // chama normalmente",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " api "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  onReady"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  onError"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " (msg) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'erro:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", msg),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "api.onReady"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".(); "
+          },
+          {
+            "kind": "comment",
+            "text": "// não quebra"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "api.onError"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".("
+          },
+          {
+            "kind": "string",
+            "text": "'falhou'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// chama normalmente"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Optional chaining com colchetes (propriedade dinâmica)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const key = 'name';\nconst u = { profile: { name: 'Ana' } };\nconsole.log(u.profile?.[key]); // 'Ana'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " key "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'name'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " u "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { profile"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " { name"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Ana'"
+          },
+          {
+            "kind": "plain",
+            "text": " } };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(u.profile"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".[key]); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'Ana'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. O que optional chaining NÃO faz (para não se enganar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ele não captura qualquer erro; ele só evita acesso/chamada quando o alvo é null/undefined.",
+        "Ele não trata string vazia, 0 ou false como ausentes. Isso é bom: evita confundir falsy com ausência.",
+        "Ele retorna undefined quando interrompe a cadeia — e você precisa decidir o que fazer com isso."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Nullish coalescing (??): default apenas para null/undefined"
+    },
+    {
+      "type": "paragraph",
+      "text": "?? resolve o bug do ||. Ele escolhe o valor da direita apenas quando o da esquerda é null ou undefined. Valores como 0, '' e false são preservados."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(0 || 99);        // 99 (0 é falsy)\nconsole.log(0 ?? 99);        // 0\n\nconsole.log('' || 'p');      // 'p'\nconsole.log('' ?? 'p');      // ''\n\nconsole.log(null ?? 'p');    // 'p'\nconsole.log(undefined ?? 'p'); // 'p'",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");        "
+          },
+          {
+            "kind": "comment",
+            "text": "// 99 (0 é falsy)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ");        "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'p'"
+          },
+          {
+            "kind": "plain",
+            "text": ");      "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'p'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'p'"
+          },
+          {
+            "kind": "plain",
+            "text": ");      "
+          },
+          {
+            "kind": "comment",
+            "text": "// ''"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'p'"
+          },
+          {
+            "kind": "plain",
+            "text": ");    "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'p'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(undefined "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'p'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'p'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Combinando ?. e ?? (o padrão mais útil do dia a dia)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O padrão mais comum é: tentar acessar algo opcionalmente e fornecer um default se vier undefined."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const user = { profile: null };\n\nconst nome = user.profile?.name ?? 'Sem nome';\nconsole.log(nome); // 'Sem nome'\n\nconst qtd = user.profile?.qtd ?? 0;\nconsole.log(qtd); // 0",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " user "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { profile"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " user.profile"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".name "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Sem nome'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'Sem nome'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " qtd "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " user.profile"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".qtd "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(qtd); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Comparação com o padrão antigo (&& e ||)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de ?. e ??, muita gente escrevia user && user.profile && user.profile.name || 'Sem nome'. Isso funciona em alguns casos, mas confunde ausência com falsy e fica difícil de ler. Os operadores modernos são mais explícitos e menos propensos a bug."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Antigo (difícil de ler, mistura falsy)\nconst antigo = (user && user.profile && user.profile.name) || 'Sem nome';\n\n// Moderno (intenção clara)\nconst moderno = user?.profile?.name ?? 'Sem nome';",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Antigo (difícil de ler, mistura falsy)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " antigo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " (user "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " user.profile "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " user.profile.name) "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Sem nome'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Moderno (intenção clara)"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " moderno "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " user"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".profile"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".name "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Sem nome'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Erros comuns (e como evitar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Usar || para default e derrubar 0/'' sem querer: prefira ?? quando 0/'' são válidos.",
+        "Achar que ?. protege contra qualquer erro: ele só protege contra null/undefined no ponto do acesso/chamada.",
+        "Esquecer que ?. pode retornar undefined: combine com ?? ou faça validação explícita.",
+        "Misturar ?? com &&/|| sem parênteses em expressões complexas: use parênteses para intenção."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Exercícios rápidos"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Crie um objeto com profile null e tente acessar profile.name com e sem ?..",
+        "2) Use ?. e ?? para fornecer default de nome e quantidade.",
+        "3) Demonstre a diferença entre 0 || 10 e 0 ?? 10.",
+        "4) Crie uma função opcional (talvez undefined) e chame com ?..",
+        "5) Reescreva um trecho usando && e || para usar ?. e ?? com intenção clara."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Checklist profissional (Parte 5)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei usar ?. para acesso seguro e entendo que ele para em null/undefined.",
+        "Eu sei usar ?. em chamadas de função opcionais e em propriedades dinâmicas (?.[key]).",
+        "Eu sei usar ?? para default apenas para null/undefined, preservando 0/''/false.",
+        "Eu sei combinar ?. e ?? para acessar e dar default de forma clara.",
+        "Eu sei as limitações: ?. não captura qualquer erro e pode retornar undefined."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 6, você vai aplicar operadores e expressões em um estudo de caso: validação de formulário com regras claras, onde entradas são strings e precisam de conversão, comparação, defaults e acessos seguros."
+    }
+  ]
+}

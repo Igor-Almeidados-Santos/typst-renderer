@@ -1,0 +1,1168 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 1 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 1,
+    "chapter_title": "Começando do Zero: o que é JavaScript e como ele roda",
+    "part_number": 4,
+    "part_title": "Carregamento da página: HTML, DOM, scripts e o bug “rodou cedo demais”",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 1 — Começando do Zero"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Carregamento da página: HTML, DOM, scripts e o bug “rodou cedo demais”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora você tem o laboratório e já sabe inspecionar valores. Falta fechar uma peça do quebra-cabeça: entender a sequência de carregamento do navegador. Isso resolve um bug muito comum: o script tenta acessar um elemento do DOM antes dele existir. Um júnior precisa explicar esse problema com clareza — e corrigi-lo de forma correta."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “document.querySelector devolve null, mas o elemento está no HTML”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você escreve HTML, o navegador precisa ler o arquivo e construir uma estrutura interna chamada DOM (Document Object Model). Se o seu JavaScript roda antes de o navegador terminar de construir o DOM, seus seletores podem retornar null. Não é “erro do JavaScript”; é ordem de execução."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Sequência mental do navegador (versão que você deve guardar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Baixa o HTML (ou recebe do cache).",
+        "2) Interpreta o HTML de cima para baixo e constrói o DOM gradualmente.",
+        "3) Ao encontrar CSS, baixa e aplica estilos (pode bloquear renderização).",
+        "4) Ao encontrar <script> sem defer/async, normalmente pausa e executa o JS naquele ponto.",
+        "5) Finaliza o DOM, dispara eventos de carregamento e permite interação completa."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O ponto crítico: um <script> tradicional (sem defer/async) pode interromper a leitura do HTML para executar. Por isso, sua posição no arquivo e seus atributos importam."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Três estratégias corretas (e por que elas funcionam)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.1 Script no fim do body (estratégia simples)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao colocar o script no final do body, você quase sempre garante que os elementos acima já foram interpretados e viraram DOM."
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<body>\n  <button id=\"btn\">Clique</button>\n  <script src=\"app.js\"></script>\n</body>",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "button id"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"btn\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": "Clique"
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "button"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"app.js\""
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.2 Script com defer (padrão moderno para arquivos clássicos)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com defer, o arquivo é baixado sem bloquear o parsing do HTML e executa quando o DOM já está pronto. Você ganha organização no head e correção na ordem."
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<head>\n  <script src=\"app.js\" defer></script>\n</head>",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"app.js\""
+          },
+          {
+            "kind": "plain",
+            "text": " defer"
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "3.3 Script module (módulos e execução adiada por padrão)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Scripts do tipo module são carregados como módulos ES e, na prática, também são executados depois do parsing do HTML. Você verá módulos a fundo mais adiante; por enquanto, entenda que é uma forma moderna de organizar código."
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<head>\n  <script type=\"module\" src=\"app.js\"></script>\n</head>",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script type"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"module\""
+          },
+          {
+            "kind": "plain",
+            "text": " src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"app.js\""
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. O que é async (e por que você deve ter cuidado agora)"
+    },
+    {
+      "type": "paragraph",
+      "text": "async baixa o script em paralelo e executa assim que terminar o download — sem garantir ordem em relação ao DOM e a outros scripts. É útil para scripts independentes (como analytics), mas é uma fonte de bugs para iniciantes quando o script depende de elementos do DOM."
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<!-- Use com cuidado: pode executar cedo demais -->\n<script src=\"app.js\" async></script>",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<!--"
+          },
+          {
+            "kind": "plain",
+            "text": " Use com cuidado"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " pode executar cedo demais "
+          },
+          {
+            "kind": "operator",
+            "text": "-->"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"app.js\""
+          },
+          {
+            "kind": "plain",
+            "text": " async"
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "list",
+      "items": [
+        "defer: mantém ordem e espera o DOM (bom para quase todos os casos de app).",
+        "async: executa quando baixar (bom para scripts independentes)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. O evento DOMContentLoaded (alternativa quando você não controla o HTML)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Às vezes você não pode mudar o lugar do script (por exemplo, em ambientes específicos). Uma alternativa é esperar o evento DOMContentLoaded, que indica que o HTML foi parseado e o DOM está pronto (sem precisar esperar imagens, por exemplo)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "document.addEventListener('DOMContentLoaded', () => {\n  const btn = document.querySelector('#btn');\n  console.log('Botão:', btn);\n});",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "document."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'DOMContentLoaded'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btn "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#btn'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Botão:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", btn);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que isso é uma decisão correta? Porque você torna explícita a dependência do seu código: “só execute quando o DOM estiver pronto”."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Estudo de caso: o bug clássico e a correção"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.1 Bug: script no head sem defer"
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<head>\n  <script src=\"app.js\"></script>\n</head>\n<body>\n  <button id=\"btn\">Clique</button>\n</body>",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"app.js\""
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "button id"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"btn\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": "Clique"
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "button"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// app.js\nconst btn = document.querySelector('#btn');\nconsole.log(btn); // null (muitas vezes)\nbtn.addEventListener('click', () => console.log('clicou')); // quebra!",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// app.js"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btn "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#btn'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(btn); "
+          },
+          {
+            "kind": "comment",
+            "text": "// null (muitas vezes)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "btn."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'clicou'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// quebra!"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse cenário, o script pode rodar antes de o botão existir. Resultado: btn é null e a linha do addEventListener gera erro (TypeError)."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.2 Correção A: adicionar defer"
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<head>\n  <script src=\"app.js\" defer></script>\n</head>",
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"app.js\""
+          },
+          {
+            "kind": "plain",
+            "text": " defer"
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.3 Correção B: esperar DOMContentLoaded"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "document.addEventListener('DOMContentLoaded', () => {\n  const btn = document.querySelector('#btn');\n  btn.addEventListener('click', () => console.log('clicou'));\n});",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "document."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'DOMContentLoaded'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btn "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#btn'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  btn."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'clicou'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Erros comuns (e como você evita hoje)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que querySelector “falhou” quando, na verdade, o elemento ainda não existia.",
+        "Não validar null e seguir usando o valor: isso vira TypeError em cascata.",
+        "Usar async por padrão em scripts que dependem do DOM.",
+        "Tentar “consertar” repetindo querySelector em todo lugar, em vez de corrigir a ordem."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Checklist profissional (Parte 4)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo explicar por que um script pode rodar antes do DOM existir.",
+        "Eu sei escolher entre: script no fim do body, defer, module, DOMContentLoaded.",
+        "Eu sei a diferença prática entre defer e async.",
+        "Eu consigo diagnosticar o bug: null em querySelector → TypeError ao usar."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 5, você vai consolidar o Capítulo 1 com exercícios guiados e um mini-estudo de caso: uma página simples com botão e contador, do zero, usando apenas DOM e Console. Isso prepara terreno para variáveis e controle de fluxo nos próximos capítulos."
+    }
+  ]
+}

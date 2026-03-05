@@ -1,0 +1,822 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 3 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 3,
+    "chapter_title": "Variáveis, valores e tipos (o coração da linguagem)",
+    "part_number": 8,
+    "part_title": "Fechamento do Capítulo 3: resumo executivo, erros clássicos e checklist final",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Variáveis, valores e tipos (o coração da linguagem)"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Fechamento do Capítulo 3: resumo executivo, erros clássicos e checklist final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu um dos capítulos mais importantes do livro. Variáveis, tipos e comparação são o “chão” sobre o qual todo o resto se apoia. Se você domina este capítulo, você para de brigar com o JavaScript e passa a controlar o comportamento do código. Nesta parte final, você vai revisar os conceitos que mais geram bugs, reconhecer padrões de erro em segundos e fechar com um checklist final — o seu sinal verde para avançar para operadores e expressões no Capítulo 4."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Resumo executivo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Variável é um binding (nome) que aponta para um valor; atribuição muda o alvo.",
+        "const bloqueia reatribuição, não mutação do objeto/array.",
+        "let é para reatribuição; use const por padrão; evite var em código moderno.",
+        "Escopo define onde o nome existe: bloco (let/const), função (var) e global (com risco).",
+        "Primitivos comparam por valor; objetos comparam por referência (identidade).",
+        "typeof ajuda, mas tem pegadinhas: null e arrays retornam 'object'.",
+        "Coerção implícita existe; prefira conversão explícita (Number/String/Boolean).",
+        "Use === por padrão; == permite coerção e gera comparações surpreendentes.",
+        "NaN exige Number.isNaN; Object.is resolve NaN e diferencia 0 e -0.",
+        "Para comparar objetos/arrays, prefira comparação dirigida (por id/chaves relevantes)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Erros clássicos (e a causa real)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 “Mudou junto” (referência compartilhada)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: duas variáveis apontam para o mesmo objeto/array. Se você muta por uma, a outra vê a mudança."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const a = { n: 1 };\nconst b = a;\nb.n = 2;\nconsole.log(a.n); // 2",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { n"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " a;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "b.n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a.n); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 “const não deixa mudar” (mas deixou)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: const não torna o objeto imutável; só impede reatribuição do binding."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const user = { nome: 'Ana' };\nuser.nome = 'Bia'; // ok\n\n// user = {}; // TypeError (reatribuição)",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " user "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Ana'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "user.nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Bia'"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// ok"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// user = {}; // TypeError (reatribuição)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.3 “Por que virou 0111...?” (concatenação por + com string)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: o operador + concatena quando um dos lados é string. Em inputs e DOM, valores costumam vir como string."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const a = '0';\nconsole.log(a + 1); // '01'\n\nconst n = Number(a);\nconsole.log(n + 1); // 1",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'0'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// '01'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " n "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(a);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(n "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 1"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.4 “NaN não compara”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: NaN não é igual a nada, nem a ele mesmo. Para testar, use Number.isNaN."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const v = Number('x');\nconsole.log(v === NaN); // false\nconsole.log(Number.isNaN(v)); // true",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " v "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'x'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(v "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " NaN); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(Number."
+          },
+          {
+            "kind": "function",
+            "text": "isNaN"
+          },
+          {
+            "kind": "plain",
+            "text": "(v)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.5 “Objetos iguais não são iguais”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: objetos comparam por referência. Compare por id/campos relevantes ou use uma estratégia controlada (shallow/deep) quando necessário."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const p1 = { id: 1, nome: 'A' };\nconst p2 = { id: 1, nome: 'A' };\nconsole.log(p1 === p2); // false\nconsole.log(p1.id === p2.id); // true",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " p1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " p2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(p1 "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " p2); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(p1.id "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " p2.id); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Padrões recomendados (o “jeito júnior”)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use const por padrão; use let só quando houver reatribuição real.",
+        "Evite var; ao ler legado, trate var como escopo de função (vaza de bloco).",
+        "Evite estado global; encapsule em funções/módulos.",
+        "Converta entrada de usuário explicitamente: Number/parseInt/parseFloat + validação.",
+        "Use === e !== por padrão; evite == em validação.",
+        "Para valores padrão, prefira ?? quando 0 e '' são válidos; use || quando qualquer falsy deve virar padrão.",
+        "Para selecionar entidades, guarde id e busque no array (find) em vez de comparar objetos por referência.",
+        "Separe “edição” (draft) do estado persistido quando houver formulário/inputs."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Checklist final do Capítulo 3 (sinal verde)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei explicar variável como binding que aponta para um valor.",
+        "Eu uso const por padrão e sei que const não implica imutabilidade do objeto.",
+        "Eu sei diferenciar reatribuição (binding) de mutação (conteúdo).",
+        "Eu sei escopo de bloco vs escopo de função e por que var é perigoso.",
+        "Eu sei listar tipos primitivos e reconhecer object como família separada.",
+        "Eu sei identificar array, null e date de forma confiável (Array.isArray, === null, instanceof).",
+        "Eu converto tipos explicitamente e valido NaN com Number.isNaN.",
+        "Eu uso === por padrão e entendo o risco de ==.",
+        "Eu sei que objetos/arrays comparam por referência e comparo por id/campos relevantes quando preciso.",
+        "Eu consigo construir e manter um estado simples (array de objetos) sem bugs de referência."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Conexão com o Capítulo 4"
+    },
+    {
+      "type": "paragraph",
+      "text": "No Capítulo 4, você entra em operadores e expressões: aritmética, comparação, lógicos, curto-circuito, precedência e operadores modernos como ?? e ?. Você vai usar, o tempo todo, o que aprendeu aqui: tipos, coerção, igualdade e inspeção. Com a base do Capítulo 3, operadores deixam de ser “decoreba” e viram ferramenta consciente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o Capítulo 3 com todas as 8 partes previstas. Próximo passo: Capítulo 4 — Parte 1."
+    }
+  ]
+}
