@@ -1,0 +1,601 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 14 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "14",
+    "chapter_title": "Testes, verificação e confiança no comportamento",
+    "part_number": "2",
+    "part_title": "Asserts e estrutura básica de testes",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 14 — Testes, verificação e confiança no comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Asserts e estrutura básica de testes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender por que testar é importante e construir o modelo mental da verificação como comparação disciplinada entre comportamento observado e comportamento esperado, o leitor está pronto para entrar em uma camada mais concreta do tema: a estrutura básica de um teste. Até aqui, o foco esteve no problema conceitual da confiança no software. Agora, esse problema ganhará forma prática. O programa deixará de apenas “ser executado para ver no que dá” e passará a ser confrontado com expectativas explícitas por meio de verificações objetivas. É exatamente nesse ponto que entram os asserts."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque testes só se tornam instrumentos reais de confiança quando a expectativa sobre o comportamento é expressa de forma verificável. Não basta olhar o resultado no console e sentir que “parece certo”. É preciso afirmar com clareza o que deveria acontecer e deixar que o sistema compare essa expectativa com o que de fato ocorreu. O assert representa justamente esse momento de confronto entre a hipótese sobre o comportamento e o comportamento realmente obtido."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre asserts e sobre a estrutura mínima de um teste antes de entrar em frameworks, organização de suítes e estratégias mais maduras de verificação. O leitor compreenderá o papel da expectativa explícita, verá como um teste se organiza em torno de cenário, execução e comparação, e começará a reconhecer que testar não é “rodar código”, mas declarar e verificar uma promessa de comportamento. Ao final, deixará de ver assert como detalhe técnico de ferramenta e passará a entendê-lo como núcleo lógico da verificação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: sem comparação explícita, a verificação continua vaga"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos maiores limites do teste informal é que ele depende demais do olhar humano casual. O programador executa uma função, vê um número, uma string ou um objeto no console e conclui que aquilo parece correto. Em casos muito simples, isso pode até ajudar. Mas essa forma de verificação continua vaga. Falta uma comparação explícita entre o que era esperado e o que foi realmente obtido."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que os asserts resolvem. Eles transformam a expectativa em algo declarativo e verificável. O teste deixa de depender apenas da interpretação subjetiva do resultado e passa a ter um critério mais objetivo para decidir se o comportamento observado está alinhado ao comportamento prometido."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que o ganho do assert não está apenas em “automatizar” algo, mas em tornar a expectativa formal e auditável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é um assert em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, um assert é uma verificação explícita que afirma que determinada condição deve ser verdadeira no contexto de um teste. Em muitas situações, isso significa comparar o resultado produzido pelo código com o resultado esperado para aquele cenário. Se a comparação falhar, o teste indica que o comportamento não correspondeu à expectativa declarada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa definição é muito importante porque concentra o coração do teste em uma ideia simples e poderosa: afirmar expectativas. O assert é o ponto em que o programador deixa de apenas observar o comportamento e passa a julgá-lo segundo um critério formal."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar assert à ideia de declaração verificável sobre o que o sistema deveria fazer."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Estrutura mínima de um teste: cenário, ação, expectativa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma forma muito útil de entender a estrutura básica de um teste é vê-la em três momentos principais. Primeiro, o cenário é preparado: valores de entrada, estado inicial ou contexto relevante. Depois, a ação é executada: a função é chamada, a transformação é realizada ou o comportamento é acionado. Por fim, a expectativa é verificada: o teste compara o resultado obtido com o que deveria acontecer naquele caso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse modelo é muito importante porque oferece ao estudante uma estrutura mental simples para pensar qualquer teste inicial. Mesmo antes de ferramentas mais sofisticadas, essa tríade já organiza a verificação de modo claro. O teste deixa de ser improviso e passa a ser construção lógica."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: testar bem exige preparar cenário, executar comportamento e verificar expectativa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Exemplo mínimo de assert com função simples"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vale observar um exemplo introdutório com a lógica central de comparação:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function somar(a, b) {\n  return a + b;\n}\n\nconst resultado = somar(2, 3);\n\nif (resultado !== 5) {\n  throw new Error(\"Esperava 5, mas recebeu \" + resultado);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Esperava 5, mas recebeu \""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é didaticamente importante porque mostra a essência do teste sem depender ainda de um framework específico. Há um cenário, uma execução e uma verificação explícita. O valor está em tornar visível que o teste não é o console.log do resultado, mas a comparação formal entre expectativa e comportamento observado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que frameworks de teste apenas organizam melhor essa lógica; eles não substituem seu núcleo conceitual."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. O valor do fracasso no teste"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma intuição importante nesta etapa é que o fracasso do teste não é derrota do processo. Pelo contrário, é parte central de sua utilidade. Quando um assert falha, ele indica que a hipótese declarada sobre o comportamento não se confirmou. Isso pode revelar bug real, expectativa mal formulada ou contrato ainda ambíguo. Em qualquer dos casos, a falha do teste produz informação valiosa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque protege o estudante da tentação de ver o teste apenas como ritual para “provar que está tudo bem”. Testar também serve para expor o que ainda não está bem. A verificação é útil justamente porque pode contrariar a confiança inicial do autor do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: um teste que falha de forma clara pode ser mais valioso do que uma confiança silenciosa que nunca foi realmente exercitada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Teste bom verifica algo relevante"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro aprendizado importante é perceber que nem toda verificação tem o mesmo valor. Um teste relevante costuma proteger comportamento que importa para o contrato da função, para a regra de negócio, para a segurança da refatoração ou para um caso de borda sensível. Já verificações triviais ou excessivamente presas a detalhes irrelevantes podem gerar volume sem aumentar muito a confiança."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque ensina o estudante a não confundir quantidade de testes com qualidade de teste. O valor está menos no número bruto de asserts e mais no quanto eles cobrem expectativas realmente importantes do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a ver o teste como escolha arquitetural sobre o que merece proteção explícita."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Igualdade esperada e clareza do resultado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos testes introdutórios, a verificação assume a forma de igualdade simples entre valor esperado e valor obtido. Essa é uma porta de entrada excelente porque torna a lógica muito visível. Se a função que soma 2 e 3 não devolver 5, o contrato básico daquele comportamento está quebrado. Esse tipo de verificação simples ajuda muito a consolidar o raciocínio sobre testes antes de casos mais ricos envolvendo objetos, arrays, erros e comportamento assíncrono."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é especialmente importante porque mostra que o teste não precisa começar complexo para ser valioso. A clareza inicial da comparação simples ajuda a formar o hábito mental correto de declarar expectativas objetivas."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: testes introdutórios fortes costumam ser claros, diretos e focados no contrato relevante do comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: desconto com caso nominal e caso inválido"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função que aplica desconto. Um primeiro teste pode verificar o caso nominal: preço 100 com desconto 10 deve resultar em 90. Um segundo teste pode verificar um caso inválido: percentual acima de 100 deve lançar erro. Esse cenário resume muito bem o valor da estrutura básica dos testes. O programador não apenas confere um número qualquer; ele transforma diferentes expectativas do comportamento em verificações explícitas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra que testar não é apenas confirmar o fluxo feliz. É também verificar se os limites do comportamento estão sendo respeitados. O contrato completo da função inclui tanto o resultado esperado no caso válido quanto a reação apropriada no caso inválido."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: um bom conjunto inicial de testes protege tanto o funcionamento correto quanto a integridade dos limites do comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de testes legíveis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um teste é bem escrito, ele ajuda a explicar o sistema. O leitor consegue ver qual cenário foi montado, que ação foi realizada e qual expectativa está sendo defendida. Isso transforma o teste em forma de documentação executável do comportamento. Em vez de depender apenas de comentários ou memória, o projeto passa a carregar exemplos verificáveis do que importa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem enorme valor editorial porque parte da qualidade de uma base de código está na facilidade com que alguém novo consegue entender seus contratos mais importantes. Testes legíveis ajudam muito nessa tarefa."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: teste bom não apenas verifica bem; ele também comunica com clareza o que está protegendo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa leitura introdutória de asserts costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa leitura de asserts costuma comunicar pelo menos três coisas importantes: qual cenário está sob análise, qual comportamento foi executado e qual expectativa formal está sendo defendida. Esses três elementos ajudam muito a distinguir teste real de execução casual do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não tratar o assert como uma linha mecânica da ferramenta. Antes de tudo, ele é a expressão formal da confiança que se quer construir sobre o comportamento. Quanto melhor essa expectativa for escrita, mais útil será a verificação."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura desta etapa, portanto, começa por reconhecer que o assert transforma uma hipótese sobre o sistema em critério objetivo de validação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir console.log com verificação real do comportamento.",
+        "Achar que assert é detalhe de framework em vez de núcleo lógico do teste.",
+        "Não distinguir cenário, execução e expectativa dentro da estrutura do teste.",
+        "Tratar o fracasso do teste como algo negativo em si, em vez de fonte de informação.",
+        "Criar verificações triviais demais ou irrelevantes para o contrato do comportamento.",
+        "Subestimar o valor de testes legíveis como documentação executável do sistema."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe assert à declaração explícita da expectativa sobre o comportamento.",
+        "Estruture mentalmente cada teste em cenário, ação e verificação.",
+        "Comece com casos simples de igualdade esperada para consolidar a lógica da comparação.",
+        "Inclua gradualmente casos de borda e de falha ao imaginar verificações.",
+        "Prefira proteger comportamento relevante em vez de detalhe acidental da implementação.",
+        "Prepare-se para estudar testes unitários e organização mais prática de casos nas próximas partes do capítulo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é um assert em nível introdutório e conceitual.",
+        "Reconheço a estrutura básica de um teste em cenário, execução e expectativa.",
+        "Percebo o valor do fracasso do teste como informação útil sobre o comportamento.",
+        "Entendo que testes relevantes protegem contratos importantes do sistema.",
+        "Reconheço a diferença entre verificar formalmente e apenas observar casualmente o resultado.",
+        "Estou preparado para estudar testes unitários e organização prática de casos na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende a lógica dos asserts e da estrutura básica de verificação, o próximo passo é estudar testes unitários como estratégia prática para exercitar funções e unidades menores de comportamento com mais foco. Na próxima parte, entraremos nesse modelo com profundidade introdutória."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque os testes unitários representam uma das formas mais importantes de transformar a clareza do contrato de pequenas partes do sistema em confiança repetível e sustentável."
+    }
+  ]
+}

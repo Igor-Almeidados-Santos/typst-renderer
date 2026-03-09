@@ -1,0 +1,629 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 13 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "13",
+    "chapter_title": "Tratamento de erros e programação defensiva",
+    "part_number": "2",
+    "part_title": "throw, Error e interrupção explícita do fluxo",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 13 — Tratamento de erros e programação defensiva"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — throw, Error e interrupção explícita do fluxo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender por que erros acontecem e por que robustez não pode ser tratada como remendo tardio do software, o leitor está pronto para estudar uma das ferramentas mais importantes da linguagem para governar falhas de forma explícita: o uso de throw e de objetos Error. Até aqui, o capítulo construiu o modelo mental do problema. Agora, esse modelo ganha forma prática. O programa deixará de apenas reconhecer em tese que certos cenários invalidam o comportamento esperado e passará a expressar, na própria linguagem, a interrupção controlada de fluxos que já não podem prosseguir corretamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque grande parte da robustez profissional depende da capacidade de tornar a falha intencional e legível. Sem isso, o sistema pode continuar operando em estado inválido, produzir resultados enganosos, propagar inconsistências ou falhar de forma tardia e menos compreensível em outro ponto. Throw existe justamente para impedir esse tipo de degradação silenciosa. Ele permite ao programa afirmar com clareza: esta condição tornou o comportamento inviável ou inseguro, portanto a execução normal precisa ser interrompida aqui."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre throw e Error antes de aprofundar try/catch, estratégias de captura e desenho de erros mais semânticos. O leitor compreenderá o que significa lançar um erro, verá por que isso é diferente de apenas retornar valores especiais ou registrar mensagens no console e entenderá que um erro bem lançado é também uma forma de comunicação arquitetural sobre os limites válidos do comportamento. Ao final, deixará de ver throw como sintaxe dramática e passará a reconhecê-lo como mecanismo essencial de honestidade semântica do fluxo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: às vezes o fluxo não deve continuar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos problemas de programação não consistem apenas em “lidar com algo inesperado”, mas em reconhecer que o comportamento não pode prosseguir corretamente naquela condição. Uma função de cálculo recebe dados inválidos. Um módulo espera configuração essencial que não existe. Uma operação depende de recurso que já falhou. Nesses casos, tentar continuar como se nada tivesse acontecido pode produzir resultados incorretos, mascarar o problema ou contaminar o restante do sistema com estado inconsistente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que throw ajuda a resolver. Em vez de permitir que o fluxo continue de forma artificial, a linguagem oferece uma maneira explícita de interromper a execução normal e sinalizar que algo relevante quebrou o contrato necessário daquele comportamento. O programa deixa de “seguir adiante de qualquer jeito” e passa a proteger a integridade do que faz."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que lançar erro não é fracasso da arquitetura. Muitas vezes é justamente sinal de que ela está protegendo seus limites corretamente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que significa lançar um erro em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, lançar um erro significa interromper explicitamente o fluxo normal de execução ao encontrar uma condição inválida, problemática ou incompatível com a continuação segura daquele comportamento. Em JavaScript, isso é feito com a palavra-chave throw, que sinaliza que a execução normal não deve prosseguir a partir dali no caminho usual."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function dividir(a, b) {\n  if (b === 0) {\n    throw new Error(\"Divisão por zero não é permitida.\");\n  }\n\n  return a / b;\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "dividir"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (b "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Divisão por zero não é permitida.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a função não tenta inventar um resultado aceitável para uma condição inválida. Ela declara de maneira explícita que o contrato do comportamento foi quebrado. Esse gesto é muito importante para a robustez do sistema, porque evita que o problema siga adiante de forma silenciosa."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve associar throw à ideia de interrupção intencional diante de uma condição que inviabiliza o fluxo correto."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Throw não é apenas “mostrar que algo deu errado”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro comum entre iniciantes é ler throw como se ele fosse apenas uma forma mais forte de exibir mensagem de problema. Isso é insuficiente. Throw não serve apenas para tornar a falha visível. Ele altera de fato o comportamento do fluxo, interrompendo o caminho normal de execução. Essa distinção é decisiva para o modelo mental correto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque diferencia tratamento real de erro de simples observação de erro. Registrar algo no console pode informar o desenvolvedor, mas não necessariamente protege a execução contra continuar em estado inválido. Throw, por sua vez, marca que aquela condição exige mudança efetiva de percurso."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: lançar um erro é governar o fluxo, não apenas comentá-lo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Error como forma estruturada de representar a falha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Embora JavaScript permita lançar diferentes tipos de valores, o uso de objetos Error é uma prática especialmente importante porque torna a falha mais estruturada, mais legível e mais consistente com a linguagem. Em termos introdutórios, Error representa uma forma padronizada de encapsular informação sobre a falha, sobretudo sua mensagem e o contexto de erro gerado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "throw new Error(\"Usuário não autenticado.\");",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Usuário não autenticado.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse uso é muito importante porque reforça a ideia de que o tratamento de erro também é comunicação. O sistema não apenas interrompe. Ele explica o motivo da interrupção em uma forma reconhecível e mais apropriada à arquitetura da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve associar Error à ideia de falha comunicada de forma mais robusta e semanticamente legível."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Retornar valor especial nem sempre é suficiente"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos cenários introdutórios, o estudante pode se acostumar a sinalizar problema retornando null, undefined, false ou alguma string especial. Embora isso possa ser útil em contextos específicos, nem sempre é a escolha correta. Quando a condição realmente invalida a continuação normal do comportamento, retornar um valor especial pode apenas empurrar o problema para outro ponto, exigindo que cada consumidor se lembre manualmente de testar aquela convenção."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque ensina a diferença entre resultado alternativo legítimo e falha que merece interrupção explícita. Nem todo problema pede throw. Mas muitos pedem. Quando o erro é estrutural o bastante para impedir o fluxo correto, lançar uma falha costuma comunicar melhor a gravidade da situação do que apenas devolver um marcador ambíguo."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: valor especial pode sinalizar ausência ou condição esperável; throw costuma ser mais adequado quando o contrato foi realmente rompido."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Lançar cedo ajuda a falhar melhor"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das grandes vantagens do uso correto de throw é a possibilidade de falhar cedo. Em vez de deixar que um dado inválido, um estado quebrado ou uma condição impossível se propaguem pelo sistema até provocar consequência menos compreensível, o programa interrompe o fluxo no ponto mais próximo da origem do problema. Isso melhora muito a capacidade de diagnóstico e reduz a propagação de inconsistências."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é extremamente importante porque conecta robustez à precisão arquitetural. Falhar cedo, quando a condição inválida é detectada, costuma ser muito melhor do que falhar tarde em um ponto distante e menos inteligível. O sistema se torna mais honesto sobre seus contratos e limites."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: detectar e lançar a falha o mais perto possível da quebra relevante costuma tornar o software mais governável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Throw também é parte da interface semântica da função"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma função não comunica apenas por seus parâmetros e por seu retorno. Em muitos casos, ela também comunica por suas condições de falha. Se determinada função exige números válidos, exige autenticação, exige objeto com certo formato ou exige estado específico da aplicação, lançar erro quando essas condições são violadas passa a fazer parte do modo como ela define sua própria interface semântica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque eleva o tratamento de erro à condição de elemento arquitetural, e não apenas operacional. O consumidor da função precisa entender não só o que ela devolve quando tudo vai bem, mas também em que condições ela considera o uso inválido ou impossível."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a ver throw como parte da honestidade contratual do comportamento expresso pela função."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: função crítica recebendo entrada inválida"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função responsável por aplicar desconto em um pedido, mas que recebe um percentual negativo ou superior a 100. Se o sistema seguir adiante sem questionar isso, poderá produzir um preço absurdo ou inconsistências na regra de negócio. Ao lançar erro explicitamente, a função comunica que o contrato de uso foi violado e interrompe a continuação incorreta da lógica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra que throw não serve apenas para catástrofes técnicas. Ele serve também para proteger regras semânticas do domínio. A robustez do sistema depende tanto de falhas externas quanto da preservação de invariantes internos importantes."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: lançar erro no momento certo ajuda a preservar a verdade do domínio que a função pretende respeitar."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de mensagens de erro claras"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um erro é lançado, a qualidade da mensagem importa muito. Mensagens vagas como \"erro\" ou \"falhou\" comunicam pouco. Mensagens mais específicas, como \"Percentual de desconto deve estar entre 0 e 100\" ou \"Usuário precisa estar autenticado para acessar este recurso\", ajudam muito mais na compreensão do problema. Em software profissional, uma mensagem clara reduz o custo de diagnóstico e aumenta a utilidade do erro como instrumento de comunicação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem enorme valor editorial porque boa parte da qualidade do tratamento de falha está na inteligibilidade que ele produz. O erro bem lançado, mas mal descrito, continua deixando o sistema mais opaco do que deveria. O erro bem lançado e bem descrito ajuda a tornar a arquitetura mais auditável."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: mensagem de erro boa descreve a quebra relevante com precisão suficiente para orientar leitura e correção."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa leitura introdutória de throw costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa leitura de throw costuma comunicar pelo menos três coisas importantes: que condição tornou o fluxo inválido, por que o comportamento não pode continuar normalmente e como a falha está sendo representada de forma compreensível. Esses três elementos ajudam muito a distinguir lançamento de erro maduro de uso arbitrário ou dramático da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não tratar throw como gesto impulsivo. Antes de lançar um erro, o programador precisa entender que limite do comportamento foi violado e por que essa violação merece interrupção explícita em vez de simples desvio silencioso."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura de throw, portanto, começa por reconhecer que o código está protegendo a validade semântica do fluxo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tratar throw como forma de “avisar” erro, sem perceber que ele interrompe o fluxo normal.",
+        "Achar que qualquer problema deve virar valor especial em vez de considerar quando o contrato foi rompido.",
+        "Lançar mensagens vagas ou pouco úteis para diagnóstico.",
+        "Usar throw de forma arbitrária, sem clareza sobre a condição invalidante.",
+        "Ignorar que lançar erro faz parte da interface semântica da função.",
+        "Subestimar o valor de falhar cedo diante de estados ou entradas inválidas."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe throw à interrupção explícita do fluxo inválido.",
+        "Use Error como forma estruturada e legível de representar falha.",
+        "Pergunte em cada exemplo se a condição apenas exige tratamento alternativo ou se realmente rompe o contrato do comportamento.",
+        "Prefira mensagens de erro específicas e semanticamente úteis.",
+        "Observe que falhar cedo costuma proteger melhor a integridade do sistema.",
+        "Prepare-se para estudar try/catch e captura organizada dessas falhas na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que significa lançar um erro em nível introdutório e conceitual.",
+        "Reconheço throw como mecanismo de interrupção explícita do fluxo inválido.",
+        "Percebo o valor de Error como representação estruturada da falha.",
+        "Entendo que nem todo problema deve virar valor especial se o contrato foi realmente rompido.",
+        "Reconheço a importância de falhar cedo e com mensagem clara.",
+        "Estou preparado para estudar try/catch como mecanismo de captura e tratamento das falhas na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende como a linguagem permite lançar erros de forma explícita, o próximo passo é estudar como essas falhas podem ser capturadas e tratadas de maneira organizada. Na próxima parte, entraremos em try/catch, observando como o sistema pode interceptar erros e decidir sua reação com mais controle."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque robustez não depende apenas de perceber e lançar a falha. Ela depende também de saber onde e como essa falha deve ser governada dentro do fluxo da aplicação."
+    }
+  ]
+}

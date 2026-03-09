@@ -1,0 +1,633 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 11 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "11",
+    "chapter_title": "Assíncronia e coordenação temporal do comportamento",
+    "part_number": "3",
+    "part_title": "then, catch e tratamento estruturado de promises",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 11 — Assíncronia e coordenação temporal do comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — then, catch e tratamento estruturado de promises"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender por que a assíncronia existe e de construir o modelo mental da promise como representação explícita de um resultado futuro, o leitor está pronto para entrar em um ponto decisivo do tema: como o programa se conecta ao desfecho dessa operação futura. Até aqui, a promise já foi entendida como entidade que representa algo ainda pendente, mas que caminhará para sucesso ou falha. Agora será estudada a forma pela qual JavaScript permite reagir a esses desfechos com mais clareza estrutural. É exatamente nesse ponto que entram then e catch."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque promises não existem apenas para representar o futuro de uma operação assíncrona. Elas existem também para oferecer uma linguagem organizada de reação ao momento em que esse futuro finalmente se define. O programa precisa saber o que fazer quando a operação dá certo e o que fazer quando ela falha. Sem uma forma expressiva de tratar esses caminhos, a promise seria apenas uma ideia incompleta. Then e catch transformam essa representação em fluxo tratável."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre then e catch antes de aprofundar encadeamento, async/await e padrões mais sofisticados. O leitor compreenderá o papel de each um desses métodos, verá como sucesso e erro são tratados em caminhos distintos e começará a enxergar a promise não apenas como entidade temporal, mas como peça de uma gramática de coordenação do comportamento assíncrono. Ao final, deixará de ver then e catch como apêndices decorados e passará a entendê-los como pontos formais de reação ao destino da operação futura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: representar o futuro não basta, é preciso reagir quando ele se torna presente"
+    },
+    {
+      "type": "paragraph",
+      "text": "Na parte anterior, a promise foi apresentada como representação do resultado futuro de uma operação assíncrona. Essa ideia é importantíssima, mas por si só ainda não resolve o problema prático do fluxo. O programa não precisa apenas “ter uma promise”. Ele precisa saber o que fazer quando a operação terminar bem e o que fazer quando terminar mal. Em outras palavras, não basta modelar o futuro; é preciso conectar o programa ao momento em que esse futuro se resolve."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que then e catch ajudam a resolver. Eles criam pontos formais de reação ao desfecho da promise. O código passa a expressar, com mais clareza, a lógica do sucesso e a lógica da falha, em vez de misturar tudo em um modelo mais difuso ou excessivamente dependente de callbacks improvisados."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que o grande valor desses métodos está em tornar o tratamento do futuro mais explícito e organizado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é then em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, then é o método usado para registrar o que deve acontecer quando uma promise for concluída com sucesso. Ele recebe uma função que será chamada com o valor resolvido da operação futura. Em vez de tentar usar o resultado antes da hora, o programa declara explicitamente o comportamento que deverá ocorrer quando aquele valor estiver disponível."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const promessa = Promise.resolve(\"Dados recebidos\");\n\npromessa.then(function (resultado) {\n  console.log(resultado);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " promessa "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Dados recebidos\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "promessa."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (resultado) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(resultado);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, o código não tenta acessar o valor futuro diretamente como se ele já estivesse pronto no presente da execução. Em vez disso, registra no then a lógica de reação ao momento em que a promise se resolver com sucesso. Isso é muito importante para consolidar a disciplina temporal do raciocínio assíncrono."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar then à ideia de continuação do fluxo no caso de sucesso da operação futura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. O que é catch em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se then trata o caminho bem-sucedido da promise, catch existe para tratar o caminho de falha. Em termos introdutórios, catch é o método usado para registrar o que deve acontecer quando a operação assíncrona for rejeitada, isto é, quando terminar em erro ou impossibilidade de conclusão bem-sucedida."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const promessa = Promise.reject(\"Falha ao buscar dados\");\n\npromessa.catch(function (erro) {\n  console.log(erro);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " promessa "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "reject"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Falha ao buscar dados\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "promessa."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (erro) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(erro);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é muito importante porque mostra que a promise não modela apenas o futuro ideal. Ela também modela a possibilidade real de erro. Catch torna esse caminho explícito no código, evitando que o tratamento de falhas fique implícito, esquecido ou desorganizado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve associar catch à ideia de continuação do fluxo no caso de falha da operação futura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Sucesso e erro como caminhos distintos do mesmo futuro"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das maiores virtudes das promises é permitir que o programa pense o futuro assíncrono em termos de caminhos distintos e estruturados. O mesmo processo futuro pode resultar em sucesso ou em erro, e then e catch oferecem linguagem clara para expressar essas duas possibilidades. Isso ajuda muito a dar forma ao comportamento temporal do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque o estudante deixa de pensar em assíncronia apenas como espera por dado e passa a pensar em assíncronia como coordenação de desfechos possíveis. O programa não está apenas aguardando alguma coisa. Está se preparando para responder de forma diferente conforme o destino da operação."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: promises organizam o futuro, e then e catch organizam a reação aos possíveis desfechos desse futuro."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Then não “pega o valor agora”; ele registra a reação para quando o valor vier"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro muito comum de iniciantes é ler then como se ele fosse um modo alternativo de “buscar o valor” imediatamente. Isso é um equívoco importante. Then não elimina a natureza futura da operação. Ele apenas registra o comportamento que deverá acontecer quando a promise se resolver. Ou seja, ele não transforma o futuro em presente; ele organiza a continuação do fluxo diante do futuro quando este se tornar presente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é essencial para a maturidade no tema. O programador precisa abandonar a expectativa de que o valor assíncrono será lido do mesmo modo que um cálculo síncrono comum. O que then oferece é uma linguagem de reação, não um atalho para ignorar o problema temporal."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve guardar com firmeza esta distinção: then não entrega o valor agora; ele define o que fazer quando o valor chegar."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Catch torna o erro parte legítima do desenho do fluxo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro ganho muito importante de catch é tornar o erro uma parte legítima e explícita do desenho do fluxo assíncrono. Em vez de tratar falhas como anomalias fora do planejamento, o programa passa a reconhecê-las como desfecho possível e a preparar uma resposta apropriada para elas. Essa postura é muito importante na prática profissional, em que falhas de rede, indisponibilidade de recurso e respostas inválidas são parte normal do ambiente do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto reforça uma visão madura de software: modelar bem um comportamento não significa apenas prever o caso ideal, mas também organizar de forma legível o que acontecerá quando o ideal não se concretizar. Catch ajuda exatamente nisso."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: um fluxo assíncrono forte trata o sucesso com clareza e o erro com a mesma seriedade estrutural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Encadear tratamento sem voltar ao callback tradicional"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro aspecto valioso de then e catch é que eles ajudam a organizar o tratamento da promise sem depender do mesmo tipo de encaixe bruto de callbacks que costuma tornar o fluxo mais difícil de ler em certos contextos. Isso não significa que callbacks desaparecem totalmente do mundo assíncrono, mas significa que a linguagem passa a oferecer uma forma mais disciplinada de coordenar continuidade de sucesso e falha."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque ajuda a compreender por que promises foram introduzidas como abstração tão central. Elas não existem apenas para representar o futuro, mas também para tornar sua coordenação mais legível. Then e catch são parte dessa melhoria na arquitetura do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a perceber que a promise não apenas encapsula um resultado futuro; ela também estrutura melhor a narrativa do que acontecerá com esse resultado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: buscar dados e tratar sucesso ou falha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma aplicação que inicia a busca de produtos em uma API. Se a operação for bem-sucedida, o sistema deve exibir os dados. Se falhar, deve mostrar uma mensagem adequada ao usuário. Esse cenário resume muito bem a utilidade de then e catch. O programa não tenta tratar o futuro como presente. Ele organiza claramente as duas continuidades possíveis do fluxo: o caminho da resposta bem-sucedida e o caminho do erro."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque aproxima o conceito de um problema extremamente comum no desenvolvimento real. Then e catch deixam de parecer nomes arbitrários da linguagem e passam a se revelar como operadores narrativos do futuro assíncrono."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: em operações assíncronas reais, organizar com clareza o que fazer no sucesso e no erro é parte essencial da robustez do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de explicitar o destino do fluxo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando then e catch entram em cena, a legibilidade do código melhora muito porque o leitor consegue ver mais claramente para onde o fluxo seguirá em cada desfecho possível. Em vez de uma operação futura tratada de forma difusa, o código passa a dizer: se isso der certo, siga por aqui; se der errado, siga por ali. Essa explicitação é muito valiosa do ponto de vista editorial e arquitetural."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem grande importância porque a assíncronia tende naturalmente a dificultar a leitura temporal do programa. Quanto mais a linguagem conseguir tornar visíveis os caminhos possíveis do comportamento, mais o sistema ganha em auditabilidade e manutenção."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: em fluxo assíncrono, clareza sobre o destino do comportamento é parte essencial da qualidade do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa leitura introdutória de then e catch costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa leitura de then e catch costuma comunicar pelo menos três coisas importantes: qual operação futura está sendo acompanhada, o que acontecerá em caso de sucesso e o que acontecerá em caso de falha. Esses três elementos ajudam muito o leitor a reconstruir o fluxo temporal do comportamento sem depender de adivinhação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não tratar esses métodos como nomes mecânicos da sintaxe. Antes de decorar fórmulas, ele deve enxergar a arquitetura que eles tornam visível: um futuro possível, um caminho de resolução e um caminho de rejeição. Quanto melhor essa arquitetura for compreendida, mais natural será o estudo do encadeamento e de async/await."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura de then e catch, portanto, começa no entendimento de que o código está descrevendo desfechos possíveis de uma operação futura e não apenas chamando métodos por convenção."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que then “transforma” a operação assíncrona em leitura imediata do valor.",
+        "Confundir then com acesso direto ao dado pronto.",
+        "Tratar catch como detalhe opcional em vez de parte importante do desenho do fluxo.",
+        "Ignorar que sucesso e falha são caminhos distintos da mesma operação futura.",
+        "Ver then e catch apenas como métodos para decorar, sem compreender seu papel temporal.",
+        "Subestimar a importância de dar nome claro às promises e aos desfechos tratados."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe then ao tratamento do sucesso e catch ao tratamento da falha.",
+        "Pergunte em cada exemplo qual operação futura está sendo observada.",
+        "Lembre-se de que then não pega o valor agora, mas registra a reação ao momento em que ele chegar.",
+        "Observe o erro como parte legítima da modelagem do fluxo assíncrono.",
+        "Use nomes que comuniquem o caráter futuro da operação e a natureza do desfecho tratado.",
+        "Prepare-se para estudar encadeamento de promises e continuidade assíncrona na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o papel de then no tratamento de promises resolvidas com sucesso.",
+        "Entendo o papel de catch no tratamento de promises rejeitadas.",
+        "Reconheço que then e catch estruturam caminhos distintos do futuro assíncrono.",
+        "Percebo que then não entrega valor imediato, mas organiza a reação ao valor futuro.",
+        "Reconheço o erro como parte central da arquitetura do fluxo assíncrono.",
+        "Estou preparado para estudar encadeamento e continuidade com promises na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende como sucesso e erro são tratados em promises, o próximo passo é estudar como essas operações futuras podem ser encadeadas para construir fluxos mais ricos. Na próxima parte, entraremos em encadeamento de promises, continuidade assíncrona e composição temporal do comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque then e catch não servem apenas para reagir a um único resultado. Eles também preparam o terreno para coordenar sequências de passos dependentes dentro do mundo assíncrono."
+    }
+  ]
+}

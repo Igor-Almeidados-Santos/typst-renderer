@@ -1,0 +1,377 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 13 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "13",
+    "chapter_title": "Tratamento de erros e programação defensiva",
+    "part_number": "1",
+    "part_title": "Por que erros acontecem e como pensar robustez",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 13 — Tratamento de erros e programação defensiva"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Por que erros acontecem e como pensar robustez"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de consolidar fundamentos da linguagem, modelagem de dados, funções, callbacks, assíncronia e organização modular do código, o leitor está pronto para entrar em um dos temas mais importantes da maturidade profissional em JavaScript: o tratamento de erros e a programação defensiva. Até aqui, grande parte do livro trabalhou com fluxos em que o comportamento esperado era o centro da análise. Essa escolha foi pedagogicamente correta, porque primeiro era necessário construir domínio sobre o caso nominal da linguagem. Agora, no entanto, é preciso avançar para uma verdade inevitável do software real: sistemas não vivem apenas do caminho ideal. Eles convivem com entrada inválida, dependências externas falhando, estados inesperados, violações de contrato e usos incorretos da própria lógica do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque uma das marcas mais claras da diferença entre código apenas funcional e código profissionalmente mais sólido está na forma como ele lida com erro. Sistemas frágeis quebram sem contexto, falham silenciosamente ou se comportam de maneira errática quando algo sai do esperado. Sistemas melhores reconhecem condições problemáticas, comunicam falhas com mais clareza, protegem invariantes importantes e reduzem a propagação caótica de estados inválidos. Em outras palavras, robustez não é luxo tardio da engenharia. É parte da responsabilidade de quem constrói software para ambientes reais."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre por que erros acontecem e por que o tratamento de erro não deve ser visto apenas como remendo técnico. Antes de entrar em throw, try/catch, criação de erros mais expressivos e estratégias de validação, é essencial compreender a natureza do problema: software lida com incerteza, com falha e com limites. Ao final, o leitor deixará de ver erro apenas como acidente desagradável da execução e passará a entendê-lo como dimensão inevitável da arquitetura de programas confiáveis."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: o software opera em um mundo imperfeito"
+    },
+    {
+      "type": "paragraph",
+      "text": "Durante a aprendizagem inicial da programação, é comum trabalhar com exemplos em que tudo colabora com o fluxo esperado. Os dados são válidos, o formato está correto, o usuário interage como previsto, a API responde como deveria e a sequência do programa acontece sem atrito. Essa simplificação é útil para introdução, mas não descreve o ambiente real em que aplicações vivem. Na prática, o software opera em um mundo imperfeito, em que entradas podem vir quebradas, dependências externas podem falhar, estados podem ser inconsistentes e suposições podem se mostrar falsas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que o tema deste capítulo enfrenta. O programador não pode assumir indefinidamente que o contexto sempre entregará exatamente o que o fluxo ideal deseja. Em algum momento, o sistema precisará reagir ao inesperado. Se não houver pensamento arquitetural sobre isso, a falha se manifestará de forma desorganizada."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que erro não é ruído periférico da computação. Ele é parte do ambiente em que o programa precisa sobreviver."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é um erro em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, um erro pode ser entendido como uma situação em que o programa encontra uma condição que impede o prosseguimento correto ou seguro de determinado comportamento. Essa condição pode surgir por vários motivos: entrada inválida, ausência de recurso, formato inesperado, falha externa, uso incorreto de uma função, violação de contrato entre partes do sistema ou até uma suposição errada do próprio autor do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa definição é muito importante porque amplia o olhar além da imagem simplista de erro como “mensagem vermelha no console”. O erro é, antes de tudo, um problema de semântica do fluxo. O sistema chegou a um ponto em que aquilo que está acontecendo já não corresponde ao que era necessário para seguir com segurança ou correção."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar erro à ideia de quebra de expectativa estrutural do comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Nem todo problema é bug; alguns são condições esperáveis de falha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma distinção muito importante neste tema é perceber que nem toda falha deve ser lida do mesmo modo. Há bugs genuínos, em que a implementação está errada. Mas há também condições de erro que fazem parte do ambiente normal do sistema: arquivo inexistente, senha inválida, recurso não encontrado, timeout de rede, dado incompleto vindo de fonte externa. Essas situações não são necessariamente defeitos da linguagem ou acidentes absurdos. Muitas vezes são possibilidades legítimas do domínio e precisam ser tratadas como tal."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque evita uma leitura infantilizada do problema. Se o programador tratar toda falha apenas como “algo deu muito errado”, perderá a chance de modelar com maturidade os caminhos em que o sistema precisa responder ao mundo real. Certas falhas são, na verdade, parte da especificação prática do comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: robustez começa quando o programador distingue entre erro de implementação e condição legítima de falha operacional."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Programação defensiva não é paranoia; é respeito aos limites do contexto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos ambientes de aprendizado, o termo programação defensiva é mal compreendido como excesso de cautela ou desconfiança permanente de tudo. Essa leitura é fraca. Em termos maduros, programar defensivamente significa reconhecer que o contexto nem sempre entregará o cenário ideal e que certas garantias importantes precisam ser verificadas, preservadas ou comunicadas com clareza quando forem violadas. Não se trata de escrever código paranoico. Trata-se de respeitar os limites do ambiente e proteger a integridade do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque corrige um preconceito comum contra validação, verificação e tratamento explícito de falhas. Em sistemas reais, esses elementos não tornam o código mais fraco; tornam-no mais honesto sobre as condições em que funciona corretamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a ver programação defensiva como disciplina de proteção semântica do comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Erros também são problema de comunicação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro aspecto central do tema é perceber que tratamento de erro não diz respeito apenas a interromper o fluxo. Diz respeito também a comunicar com qualidade o que aconteceu. Um sistema que falha com mensagem vaga ou sem contexto dificulta depuração, manutenção e observabilidade. Um sistema que falha de forma expressiva ajuda o desenvolvedor — e às vezes o próprio usuário — a entender o tipo de problema ocorrido."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é especialmente importante porque conecta robustez à clareza editorial do código. Erro mal comunicado amplia custo cognitivo. Erro bem comunicado reduz tempo de diagnóstico e melhora a compreensão da arquitetura. Em software profissional, mensagens, nomes de erros e delimitação clara de responsabilidades no tratamento de falha fazem enorme diferença."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é direta: tratar erro também é construir linguagem útil para compreender a falha."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Robustez não significa esconder falha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma armadilha recorrente na formação inicial é confundir robustez com a tentativa de impedir que qualquer erro apareça de modo visível. Isso é um equívoco importante. Em muitos casos, ser robusto não significa abafar a falha, mas detectá-la cedo, interromper o comportamento inadequado e comunicar o problema da forma mais clara possível. Sistemas que mascaram falhas podem parecer estáveis por um momento, mas frequentemente se tornam ainda mais perigosos porque deixam o estado do programa inconsistente ou silenciosamente corrompido."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque o estudante precisa abandonar a ideia de que “bom código” é o que nunca demonstra erro. Bom código é o que governa o erro de forma clara, proporcional e segura. Em certos cenários, a decisão correta é falhar explicitamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve levar adiante esta regra: robustez não é ausência artificial de erro visível; é governança responsável da falha."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Erros atravessam todas as camadas do sistema"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outra compreensão importante desta parte é que erro não pertence a uma única região da aplicação. Ele pode surgir na entrada de dados, no uso incorreto de uma função, em operações assíncronas, no acesso a recursos externos, na integração entre módulos ou até em pressupostos internos sobre estado. Isso significa que o tratamento de erro não é tema isolado de um canto técnico da linguagem. Ele atravessa praticamente toda a arquitetura do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque ajuda o estudante a perceber a amplitude do problema. Não basta aprender uma construção sintática e achar que isso esgota o assunto. É preciso cultivar olhar contínuo sobre contratos, invariantes, dependências e riscos em diferentes camadas do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "O capítulo começará por essa visão ampla justamente para evitar uma leitura estreita demais do tratamento de falhas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: dado inválido entrando em uma função crítica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função que calcula desconto para um pedido, mas recebe um valor inválido para o preço ou um percentual fora do intervalo aceitável. Se a lógica continuar sem verificação, o sistema poderá produzir resultado incorreto, gerar NaN, propagar estado ruim ou falhar em outro ponto menos claro. Esse cenário resume muito bem o valor da programação defensiva: reconhecer cedo que o contrato de uso foi quebrado e decidir de forma explícita como o sistema reagirá a isso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra que o problema do erro muitas vezes começa muito antes da mensagem final de falha. Ele começa no momento em que uma suposição importante do comportamento deixa de ser verdadeira e o programa precisa responder a isso com lucidez."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: robustez cresce quando o sistema protege seus pontos críticos contra dados ou estados que já não fazem sentido para sua responsabilidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de explicitar condições de falha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o código torna visíveis as condições em que algo pode falhar, ele se torna mais honesto e mais fácil de manter. O leitor entende melhor que garantias aquela função exige, em que contexto aquele módulo opera e quais condições externas podem quebrar o fluxo. Essa visibilidade não enfraquece a arquitetura; ao contrário, fortalece o entendimento compartilhado sobre seus limites."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem grande importância editorial porque parte da clareza profissional do código está justamente em explicitar não apenas o que ele faz quando tudo vai bem, mas também em que casos ele não pode prosseguir corretamente. Isso melhora documentação implícita, revisão técnica e tomada de decisão sobre responsabilidades."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: boa arquitetura não explica apenas o caminho feliz; explica também os pontos em que o comportamento deixa de ser válido."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa leitura introdutória de robustez costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa leitura de robustez costuma comunicar pelo menos três coisas importantes: que tipo de condição pode invalidar o comportamento esperado, como o sistema reage quando isso acontece e por que essa reação protege a integridade do fluxo. Esses três elementos ajudam muito a transformar o tratamento de erro em parte do design do programa, e não em remendo tardio."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não reduzir o tema a mensagens de erro ou blocos de captura. Antes de tudo, trata-se de uma forma de pensar. Quanto melhor essa forma de pensar for consolidada, mais natural será o estudo de throw, try/catch e estratégias mais precisas nas próximas partes do capítulo."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura de robustez, portanto, começa por reconhecer que software profissional precisa governar seus limites com consciência arquitetural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que erro é apenas uma mensagem técnica desagradável, e não parte do ambiente real do sistema.",
+        "Confundir programação defensiva com paranoia ou excesso sem propósito.",
+        "Tratar toda falha como bug, sem distinguir condições legítimas de erro operacional.",
+        "Supor que robustez significa esconder ou abafar qualquer erro.",
+        "Ignorar a dimensão de comunicação envolvida no tratamento de falhas.",
+        "Subestimar o impacto de dados inválidos ou estados incoerentes em pontos críticos do fluxo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe erro à quebra de expectativa estrutural do comportamento.",
+        "Pergunte em cada exemplo que tipo de condição pode tornar o fluxo inválido.",
+        "Distinga com cuidado bug de implementação e falha operacional legítima.",
+        "Veja programação defensiva como proteção de contratos e limites do contexto.",
+        "Observe que robustez inclui comunicar bem a falha, e não apenas interromper execução.",
+        "Prepare-se para estudar throw, try/catch e construção explícita de erros nas próximas partes do capítulo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 1"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo por que erros acontecem e por que isso faz parte da realidade do software.",
+        "Reconheço o erro como quebra relevante do comportamento esperado ou seguro.",
+        "Percebo a diferença entre bug de implementação e condição legítima de falha operacional.",
+        "Entendo programação defensiva como disciplina de proteção semântica do fluxo.",
+        "Reconheço que robustez não significa esconder falhas, mas governá-las com clareza.",
+        "Estou preparado para estudar throw e tratamento explícito de erros na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o modelo mental do erro e da robustez foi estabelecido, o próximo passo é estudar como a linguagem torna explícita a interrupção controlada de um comportamento inválido. Na próxima parte, entraremos em throw, Error e a construção intencional de falhas significativas dentro do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque o tratamento de erro profissional depende não apenas de perceber a falha, mas também de saber representá-la e comunicá-la de forma adequada na própria linguagem."
+    }
+  ]
+}

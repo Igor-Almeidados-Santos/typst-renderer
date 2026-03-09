@@ -1,0 +1,1137 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 14 — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "14",
+    "chapter_title": "Testes, verificação e confiança no comportamento",
+    "part_number": "6",
+    "part_title": "Exercícios comentados sobre testes e confiança no comportamento",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 14 — Testes, verificação e confiança no comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Exercícios comentados sobre testes e confiança no comportamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta parte do capítulo foi concebida para consolidar, por meio de exercícios comentados, tudo o que foi estudado sobre testes, verificação de comportamento, asserts, testes unitários, casos de borda, falhas esperadas e comportamento assíncrono. Ao longo das partes anteriores, o leitor compreendeu por que testar é importante, viu como a verificação exige expectativa explícita, estudou o papel dos asserts, entrou em testes unitários como proteção de pequenas unidades e avançou para testes de erro e testes assíncronos. Agora é o momento de transformar esse repertório em leitura prática da confiança no sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Exercícios comentados têm valor especial neste capítulo porque muitos desenvolvedores entendem a ideia geral de teste, mas ainda não conseguem julgar com clareza a qualidade do que está sendo realmente protegido. O código pode conter verificações, mas elas podem estar focando em detalhes irrelevantes, ignorando bordas importantes ou deixando de fora justamente os contratos mais sensíveis do comportamento. Em outros casos, o teste até parece existir, mas ainda depende demais de observação casual e pouca comparação explícita. É exatamente essa camada de critério que os exemplos a seguir procuram fortalecer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Cada exercício foi escolhido para reforçar uma dimensão essencial do capítulo. Alguns consolidam a lógica de cenário, ação e expectativa. Outros mostram a importância de proteger casos de borda e falhas esperadas. Outros ainda ajudam a perceber como a mesma disciplina de verificação se estende a fluxos assíncronos. Em todos os casos, o objetivo não é apenas dizer se o teste “passa” ou “falha”, mas explicar por que ele constrói — ou não constrói — confiança arquitetural relevante."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Como trabalhar estes exercícios"
+    },
+    {
+      "type": "paragraph",
+      "text": "A melhor forma de usar esta parte é observar primeiro que comportamento cada teste pretende proteger antes de ler o comentário. Pergunte a si mesmo: qual contrato está sendo verificado? O cenário escolhido é relevante? A expectativa está explícita? Há alguma borda importante ausente? Se for assíncrono, o teste espera corretamente pelo resultado? Em seguida, compare sua leitura com a explicação. Se acertar, isso fortalece seu critério de verificação. Se errar, melhor ainda pedagogicamente, porque o exercício terá revelado uma área em que sua noção de confiança no comportamento ainda precisava amadurecer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é recomendável reescrever mentalmente alguns exemplos. Em testes, comparar uma versão vaga com outra mais explícita, uma versão que só cobre o caso feliz com outra que cobre limites, ou uma versão assíncrona apressada com outra que espera corretamente pelo desfecho ajuda muito a consolidar o raciocínio."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por fim, vale reforçar: o foco não é decorar frameworks ou estruturas de biblioteca, e sim aprender a pensar melhor a qualidade da verificação que o sistema merece."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Exercício 1 — Verificação explícita versus observação casual"
+    },
+    {
+      "type": "paragraph",
+      "text": "Compare mentalmente dois cenários. No primeiro, o programador executa uma função e olha o resultado no console. No segundo, ele compara esse resultado com um valor esperado e lança erro se houver divergência. Qual deles é estruturalmente mais forte?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: o segundo é estruturalmente mais forte porque transforma expectativa em critério objetivo de validação. O primeiro pode até ajudar no estudo exploratório, mas ainda depende demais da interpretação casual do programador. O exercício existe para reforçar que teste começa quando há comparação explícita entre comportamento observado e comportamento esperado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: observar resultado não equivale automaticamente a verificar comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Exercício 2 — Caso nominal simples"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function somar(a, b) {\n  return a + b;\n}\n\nconst resultado = somar(2, 3);\n\nif (resultado !== 5) {\n  throw new Error(\"Esperava 5, mas recebeu \" + resultado);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Esperava 5, mas recebeu \""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício reforça a estrutura mínima do teste. Há cenário, execução e expectativa. O valor didático do exemplo está na simplicidade: ele mostra que confiança começa com uma hipótese clara sobre o comportamento e uma comparação formal com o resultado. O teste protege um contrato básico da unidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: mesmo um teste muito simples já pode ser arquiteturalmente valioso quando verifica explicitamente um contrato relevante."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Exercício 3 — Caso nominal não basta"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma função de desconto testada apenas com preço 100 e percentual 10. Por que esse conjunto de verificação ainda pode ser insuficiente?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: porque o caso nominal confirma apenas uma região confortável do contrato. Ainda restam perguntas importantes sobre bordas e limites: desconto 0, desconto 100, percentual negativo, percentual acima de 100 e assim por diante. O exercício reforça que confiança real exige mais do que um exemplo feliz que confirma a intuição inicial do autor."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: um caso nominal ajuda, mas não esgota a verdade do comportamento da unidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Exercício 4 — Testando borda válida"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma função aplicarDesconto em que percentual 0 deve manter o preço original. Por que esse teste é importante?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: porque ele protege uma borda válida do comportamento. Mesmo que o caso pareça simples, é justamente nos extremos que contratos mal modelados costumam se revelar. O teste ajuda a confirmar que a unidade continua respeitando seu domínio até os limites permitidos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: bordas válidas merecem teste porque frequentemente revelam a solidez real do contrato."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Exercício 5 — Testando falha esperada"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe a função:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function aplicarDesconto(preco, percentual) {\n  if (percentual < 0 || percentual > 100) {\n    throw new Error(\"Percentual de desconto deve estar entre 0 e 100.\");\n  }\n\n  return preco - (preco * percentual) / 100;\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "aplicarDesconto"
+          },
+          {
+            "kind": "plain",
+            "text": "(preco, percentual) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (percentual "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " percentual "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Percentual de desconto deve estar entre 0 e 100.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " preco "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " (preco "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " percentual) "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora considere um teste cujo objetivo é verificar que percentual 150 deve provocar erro. Comentário: esse teste é muito importante porque protege o limite semântico da unidade. O erro, nesse caso, não representa fracasso do comportamento; representa exatamente o que a função prometeu fazer diante de entrada inválida. O teste confirma robustez, não defeito."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: falhar corretamente em cenário inválido também é comportamento esperado e precisa ser protegido pelos testes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Exercício 6 — Contrato local e clareza do teste"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um teste que verifica diretamente o contrato local de uma função pequena, em vez de passar pelo sistema inteiro. Qual vantagem arquitetural isso tende a trazer?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: tende a trazer mais foco e precisão diagnóstica. Quando a unidade é exercitada diretamente, fica mais claro qual comportamento específico está sendo protegido e, se houver falha, a origem provável do problema se torna mais fácil de localizar. O exercício reforça o valor do teste unitário como ferramenta de clareza local."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: proteger pequenas unidades com foco ajuda a construir confiança mais precisa e mais útil para manutenção."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Exercício 7 — Teste assíncrono apressado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um teste que chama uma função assíncrona, mas faz a verificação antes de aguardar sua resolução. Qual é o risco principal?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: o risco principal é concluir cedo demais e produzir uma falsa sensação de sucesso. O teste parece existir, mas ainda não verificou o comportamento real, porque observou o fluxo antes que o resultado relevante estivesse disponível. O exercício existe para reforçar que testes assíncronos precisam respeitar o tempo da unidade verificada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: teste assíncrono forte espera o momento correto da verificação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Exercício 8 — Promise resolvida com contrato explícito"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function buscarUsuario() {\n  return Promise.resolve({ id: 1, nome: \"Ana\" });\n}\n\nasync function testarUsuario() {\n  const usuario = await buscarUsuario();\n\n  if (usuario.nome !== \"Ana\") {\n    throw new Error(\"Esperava nome Ana.\");\n  }\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "({ id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": " });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "testarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (usuario.nome "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Esperava nome Ana.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício mostra que a lógica do teste continua a mesma, mas agora adaptada ao tempo do comportamento. O contrato da unidade é verificado após a resolução da promise. O valor didático do exemplo está em mostrar que promises não mudam a natureza da verificação; apenas deslocam o momento em que ela pode ser feita com sentido."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: comportamento futuro também deve ser confrontado com expectativa explícita no momento certo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Exercício 9 — Rejeição correta também importa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma função assíncrona que deve rejeitar a promise quando recebe parâmetro inválido. Por que testar essa rejeição é tão importante quanto testar a resolução bem-sucedida?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: porque o contrato completo da unidade inclui sua forma de falhar. Se o teste só protege o caminho de sucesso, parte essencial da robustez permanece desassistida. O exercício reforça que confiança em comportamento assíncrono exige verificar tanto o futuro que resolve corretamente quanto o futuro que falha corretamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: em assíncronia, rejeição correta também faz parte do comportamento prometido pela unidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Exercício 10 — Teste como documentação executável"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma base em que testes legíveis mostram cenários válidos, bordas e falhas esperadas de uma função. Em termos arquiteturais, o que isso oferece além da verificação?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: oferece documentação executável do contrato da unidade. O leitor entende o que a função deve aceitar, o que deve rejeitar e que resultados são esperados em cenários importantes. O exercício consolida uma das ideias centrais do capítulo: teste bom também ajuda a explicar o sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: testes legíveis não apenas protegem o comportamento; eles também ajudam a contar sua verdade semântica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Como revisar o próprio raciocínio ao ler verificações"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de cada exercício, o estudante deve se fazer algumas perguntas fundamentais. Qual contrato da unidade está sendo protegido? O teste cobre apenas o cenário confortável ou também suas bordas relevantes? Se houver falha esperada, ela está sendo tratada como parte do contrato ou como ruído? Em contexto assíncrono, o momento da verificação foi corretamente alinhado ao desfecho da operação? O teste ajuda a entender melhor a unidade ou apenas existe como formalidade?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa prática é especialmente importante porque a qualidade dos testes não se mede apenas por sua presença, mas pelo tipo de confiança que realmente constroem sobre o comportamento do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Aprender testes em JavaScript é, em grande medida, aprender a transformar expectativas relevantes em critérios explícitos de confiança sobre o software."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Erros comuns ao resolver estes exercícios"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir observação casual com verificação formal.",
+        "Acreditar que um único caso nominal já protege suficientemente o contrato da unidade.",
+        "Ignorar casos de borda e cenários inválidos.",
+        "Tratar erro esperado como se fosse fracasso do teste.",
+        "Concluir teste assíncrono cedo demais.",
+        "Subestimar o valor documental dos testes legíveis.",
+        "Observar apenas o fato de o teste existir, e não a qualidade do comportamento que ele protege."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Boas práticas para consolidar o capítulo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pergunte sempre qual comportamento relevante o teste realmente protege.",
+        "Inclua casos nominais, bordas e falhas esperadas quando fizer sentido.",
+        "Trate testes de erro como verificação legítima do contrato da unidade.",
+        "Alinhe o tempo da verificação ao tempo real do comportamento assíncrono.",
+        "Escreva testes de forma clara o bastante para que expliquem o sistema.",
+        "Reveja os exercícios que contrariaram sua expectativa, pois eles revelam seus pontos de maior aprendizado.",
+        "Prepare-se para o encerramento integrador do capítulo na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "15. Checklist profissional da Parte 6"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo avaliar testes em termos de contrato protegido, e não apenas de presença formal.",
+        "Reconheço o valor de casos nominais, bordas e falhas esperadas.",
+        "Percebo a importância de verificar tanto sucesso quanto erro em contextos síncronos e assíncronos.",
+        "Entendo que testes legíveis também funcionam como documentação executável do comportamento.",
+        "Reconheço riscos de verificação vaga, apressada ou limitada demais ao caso feliz.",
+        "Estou preparado para encerrar o capítulo com uma consolidação final integrada na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "16. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois desta sequência de exercícios comentados, o capítulo está pronto para seu encerramento integrador. Na próxima parte, faremos a consolidação final dos testes, da verificação de comportamento e da confiança arquitetural no sistema, fechando a ponte entre cenários, expectativas, erros e evolução segura do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa etapa final será importante para transformar o tema em repertório sólido de construção profissional de confiança no software, preparando o leitor para os capítulos seguintes do livro."
+    }
+  ]
+}

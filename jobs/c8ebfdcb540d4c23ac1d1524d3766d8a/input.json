@@ -1,0 +1,601 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 14 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "14",
+    "chapter_title": "Testes, verificação e confiança no comportamento",
+    "part_number": "3",
+    "part_title": "Testes unitários e foco em pequenas unidades de comportamento",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 14 — Testes, verificação e confiança no comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Testes unitários e foco em pequenas unidades de comportamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender por que testar é necessário e construir o modelo mental dos asserts como confronto explícito entre comportamento esperado e comportamento observado, o leitor está pronto para estudar uma das formas mais importantes e difundidas de verificação em software: os testes unitários. Até aqui, o capítulo concentrou-se na lógica geral do teste. Agora, essa lógica se tornará mais concreta ao ser aplicada a unidades menores de comportamento, como funções, transformações e regras específicas do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque boa parte da confiança cotidiana em bases de código profissionais nasce da capacidade de verificar pequenas unidades com clareza e foco. Em vez de depender apenas de testar o sistema inteiro de uma vez, o programador passa a exercitar partes menores, com entradas conhecidas e expectativas mais controladas. Isso reduz ambiguidade, acelera diagnóstico e ajuda a localizar melhor onde um comportamento deixou de corresponder ao que deveria."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre testes unitários antes de aprofundar organização de casos, testes de erro, testes assíncronos e exercícios comentados. O leitor compreenderá o que significa testar uma unidade de comportamento, verá por que isolamento e foco aumentam o valor da verificação e entenderá que teste unitário não é apenas categoria técnica, mas forma de raciocinar sobre contratos locais do sistema. Ao final, deixará de ver esse tipo de teste como mero padrão de ferramenta e passará a reconhecê-lo como instrumento central de confiança arquitetural em pequenas partes do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: testar o sistema inteiro de uma vez nem sempre ajuda a entender a origem da falha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o software cresce, verificar apenas o comportamento global pode se tornar insuficiente para construir confiança de forma eficiente. Se o sistema inteiro falha em um cenário maior, ainda resta a pergunta: em qual parte exatamente o comportamento deixou de ser válido? Em funções menores, em regras locais, em transformação de dados, em integração entre camadas ou em dependência externa? Sem foco, a verificação tende a produzir diagnóstico mais lento e menos preciso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que os testes unitários ajudam a resolver. Eles permitem examinar pequenas unidades de comportamento em cenários mais controlados, reduzindo o número de variáveis em jogo e aumentando a clareza sobre o contrato específico que está sendo exercitado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que o valor do teste unitário está muito ligado à capacidade de responder com mais precisão: esta pequena parte faz o que deveria fazer?"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é um teste unitário em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, um teste unitário é uma verificação focada em uma unidade pequena de comportamento do sistema, normalmente uma função, método ou regra específica, exercitada com cenário controlado e expectativa explícita. O objetivo não é reproduzir toda a complexidade do sistema, mas verificar se aquela unidade cumpre corretamente o contrato que dela se espera."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa definição é muito importante porque destaca três ideias centrais: unidade pequena, cenário controlado e expectativa explícita. O teste unitário não quer responder tudo sobre o sistema. Ele quer responder bem uma pergunta menor, mas relevante, sobre o comportamento local daquela parte."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar teste unitário à ideia de foco contratual em uma peça menor do software."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Unidade pequena não significa teste trivial"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma armadilha comum nesta etapa é achar que, por lidar com unidades pequenas, o teste unitário seria necessariamente superficial ou pouco importante. Isso não é verdade. Pequenas unidades podem carregar regras centrais do domínio, decisões críticas de validação, transformações sensíveis ou garantias importantes da arquitetura. Em muitos casos, proteger essas pequenas partes com bons testes tem enorme impacto sobre a confiabilidade do sistema inteiro."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque corrige uma leitura quantitativa da relevância. O tamanho da unidade não determina, por si só, o valor do teste. O que importa é a importância do comportamento local que está sendo protegido e o quanto ele serve de base para outras partes do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: teste unitário olha para partes pequenas, mas pode defender contratos muito importantes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Isolamento como força do diagnóstico"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das maiores virtudes do teste unitário está no isolamento relativo da verificação. Quando o programador testa uma unidade pequena com entradas controladas, ele reduz o ruído de fatores externos e aumenta a capacidade de diagnosticar onde está o problema quando o comportamento falha. Isso não elimina a necessidade de outras formas de teste, mas oferece uma camada muito valiosa de clareza local."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque a utilidade do teste não está apenas em descobrir que algo está errado, mas também em facilitar o caminho até a origem da discrepância. Quanto mais bem isolada a unidade, mais preciso tende a ser o sinal produzido pela falha do teste."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a ver o teste unitário como ferramenta de precisão diagnóstica, e não apenas de conferência geral."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Funções puras costumam ser excelentes candidatas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos casos introdutórios, funções puras ou relativamente previsíveis são ótimas candidatas a testes unitários. Funções que recebem entradas claras e devolvem saídas determinísticas, sem depender fortemente de estado externo ou efeitos colaterais, tendem a ser particularmente adequadas para esse tipo de verificação. Isso não significa que apenas elas possam ser testadas, mas significa que elas ajudam muito na formação do raciocínio correto sobre contratos locais de comportamento."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function somar(a, b) {\n  return a + b;\n}\n\nconst resultado = somar(2, 3);\n\nif (resultado !== 5) {\n  throw new Error(\"Esperava 5, mas recebeu \" + resultado);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Esperava 5, mas recebeu \""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo continua simples, mas é didaticamente forte porque mostra como uma função com comportamento direto e previsível permite concentrar a verificação exatamente no contrato relevante. O teste não precisa lutar contra ruído arquitetural desnecessário para responder sua pergunta local."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve perceber que clareza da unidade favorece muito clareza do teste."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Testar unidade ajuda a explicitar contrato local"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro ganho muito importante do teste unitário é forçar o programador a formular com precisão o que aquela unidade promete fazer. Quais entradas aceita? Que saída gera? Que limites respeita? Que erro lança em caso inválido? Em muitos casos, o próprio processo de pensar os testes revela ambiguidade no desenho da função ou responsabilidade mal recortada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é especialmente valioso porque mostra que o teste unitário não serve apenas para validar depois. Ele também ajuda a esclarecer melhor a própria unidade. Se é difícil testar uma função pequena porque seu comportamento é confuso ou seus contratos são nebulosos, isso pode ser sinal de problema na própria modelagem da unidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: teste unitário bom também ajuda a revelar se a unidade foi bem desenhada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Casos nominais e casos de borda da unidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em testes unitários introdutórios, uma prática muito valiosa é combinar pelo menos um caso nominal, em que o comportamento esperado acontece no cenário comum, com alguns casos de borda, em que limites importantes são exercitados. Isso ajuda a proteger não apenas o funcionamento “normal” da unidade, mas também seus extremos mais sensíveis."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque reforça a conexão entre testes e robustez. A unidade não deve ser considerada verificada apenas porque funcionou em uma entrada confortável. Parte importante da confiança está em exercitar condições que mais facilmente revelam contratos mal definidos ou validações ausentes."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: um bom teste unitário raramente se contenta com o caso ideal isolado; ele também olha para as bordas relevantes da unidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: função de desconto com regras locais claras"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função que aplica desconto. Um teste unitário pode verificar o caso nominal, em que 100 com desconto 10 produz 90. Outro pode verificar a borda inferior, com desconto 0. Outro pode verificar a borda superior válida, com 100. Outro ainda pode confirmar que percentual maior que 100 deve lançar erro. Esse cenário resume muito bem a força do teste unitário: uma regra local do sistema passa a ser verificada em múltiplas facetas relevantes, sem depender do sistema inteiro para isso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra como o contrato local da função se torna explícito, verificável e mais protegido contra regressões futuras."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: testes unitários ajudam a cercar pequenas regras com uma rede de expectativas explícitas e úteis."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de testes unitários legíveis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando os testes unitários são bem escritos, eles ajudam a explicar o comportamento local do sistema. O leitor entende que aquela função deve somar, validar, transformar ou rejeitar determinadas entradas em condições específicas. Em bases de código profissionais, isso tem enorme valor, porque o teste não é apenas verificação: ele também funciona como exemplo executável do contrato da unidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem grande importância editorial porque muito do entendimento do sistema nasce não apenas da implementação, mas também da forma como suas pequenas partes são exercitadas. Testes legíveis ajudam manutenção, onboarding e revisão técnica."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: teste unitário bom protege o comportamento local e ainda ajuda a contar a verdade daquela unidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa leitura introdutória de testes unitários costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa leitura de testes unitários costuma comunicar pelo menos três coisas importantes: que unidade está sendo exercitada, que contrato local está em jogo e que cenário específico confirma ou contraria esse contrato. Esses três elementos ajudam muito a distinguir teste realmente focado de verificação difusa demais."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não usar o rótulo “unitário” apenas por costume. O valor do teste unitário está no foco, no recorte e na capacidade de produzir sinal claro sobre o comportamento local. Quanto mais isso estiver presente, mais útil tende a ser a verificação."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura desta etapa, portanto, começa por reconhecer que o teste unitário protege uma pequena unidade com expectativas explícitas e relevantes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que teste unitário significa teste pouco importante apenas por olhar para unidade pequena.",
+        "Confundir foco com trivialidade.",
+        "Ignorar casos de borda da unidade e proteger apenas o caso nominal.",
+        "Testar detalhes irrelevantes de implementação em vez do contrato local do comportamento.",
+        "Não perceber que dificuldade para testar pode revelar problema no desenho da unidade.",
+        "Subestimar o valor de testes unitários legíveis como documentação executável."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe teste unitário à verificação focada de uma pequena unidade de comportamento.",
+        "Prefira começar por funções com entradas e saídas claras para consolidar o raciocínio.",
+        "Estruture casos que cubram comportamento nominal e bordas relevantes.",
+        "Use o teste como instrumento para esclarecer o contrato local da unidade.",
+        "Observe se o comportamento testado importa para a confiança na evolução do sistema.",
+        "Prepare-se para estudar testes de erro, testes assíncronos e exercícios comentados nas próximas partes do capítulo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é um teste unitário em nível introdutório e conceitual.",
+        "Reconheço o valor do foco em pequenas unidades de comportamento.",
+        "Percebo o isolamento como fonte de clareza diagnóstica.",
+        "Entendo a importância de cobrir caso nominal e casos de borda da unidade.",
+        "Reconheço que testes unitários ajudam a explicitar contratos locais do sistema.",
+        "Estou preparado para estudar testes de erro e cenários mais ricos na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende o valor dos testes unitários para unidades pequenas e contratos locais, o próximo passo é observar como esses testes também podem proteger falhas esperadas, condições inválidas e comportamentos que devem lançar erro. Na próxima parte, entraremos em testes de erro e cenários de robustez."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque testar bem não significa apenas confirmar o fluxo feliz. Significa também verificar se a unidade protege corretamente seus próprios limites."
+    }
+  ]
+}

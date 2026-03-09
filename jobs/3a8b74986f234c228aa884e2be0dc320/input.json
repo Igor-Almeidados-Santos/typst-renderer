@@ -1,0 +1,893 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 14 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "14",
+    "chapter_title": "Testes, verificação e confiança no comportamento",
+    "part_number": "5",
+    "part_title": "Testes assíncronos e verificação de comportamento temporal",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 14 — Testes, verificação e confiança no comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Testes assíncronos e verificação de comportamento temporal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender por que testar é necessário, estudar asserts como núcleo lógico da verificação, entrar em testes unitários como proteção de pequenas unidades e avançar para testes de erro e de borda como defesa dos limites do contrato, o leitor está pronto para enfrentar uma das dimensões mais importantes do JavaScript moderno: a verificação de comportamento assíncrono. Até aqui, grande parte dos exemplos de teste pôde trabalhar com resultados imediatos, obtidos no mesmo fluxo linear da execução. Agora o cenário muda. O comportamento continua precisando ser verificado, mas seus resultados pertencem ao tempo do sistema: chegam depois, dependem de promises, de async/await ou de outros mecanismos temporais já estudados em capítulos anteriores."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque uma base significativa do JavaScript profissional vive em fluxos assíncronos. Buscar dados, validar respostas externas, reagir a promises rejeitadas, processar resultados futuros e coordenar continuidades temporais são comportamentos centrais da linguagem. Se os testes não souberem lidar com essa dimensão, a confiança construída até aqui ficará incompleta. O sistema poderá parecer bem verificado em funções síncronas pequenas, mas continuará vulnerável exatamente nas regiões em que o tempo, a espera e a falha externa tornam o comportamento mais delicado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre testes assíncronos antes de avançar para exercícios comentados e consolidação do capítulo. O leitor compreenderá por que testar promises exige esperar o desfecho correto, verá como async/await também reorganiza a verificação, e entenderá que o problema central continua o mesmo: comparar comportamento observado com comportamento esperado. Ao final, deixará de ver testes assíncronos como categoria estranha ou mais “mágica” da verificação e passará a reconhecê-los como extensão natural da mesma disciplina de confiança aplicada ao tempo do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: o comportamento a verificar nem sempre está pronto no mesmo instante"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nos testes mais simples, o programador chama uma função e imediatamente compara o resultado com o valor esperado. Essa lógica continua muito valiosa, mas não cobre todo o universo do JavaScript. Em fluxos assíncronos, o comportamento não termina no mesmo instante em que é iniciado. A operação pode depender de uma promise, de uma espera, de uma continuação temporal ou de uma falha que só se manifesta depois. Se o teste não respeitar esse tempo, a verificação pode observar cedo demais e concluir algo incorreto ou incompleto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que os testes assíncronos ajudam a resolver. Eles adaptam a verificação ao fato de que certos resultados pertencem a um momento posterior da execução. Em vez de abandonar a lógica do teste, o programador aprende a estendê-la ao tempo real do comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que a dificuldade não está em “mudar o conceito de teste”, mas em aprender a esperar corretamente pelo momento verificável do comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O núcleo conceitual continua o mesmo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das ideias mais importantes desta etapa é que testes assíncronos não reinventam o conceito de verificação. O núcleo continua igual: há um cenário, uma ação e uma expectativa. O que muda é que, em vez de a expectativa poder ser comparada imediatamente após a chamada, ela precisa aguardar a resolução da operação futura. Essa distinção é decisiva para evitar uma sensação de que testes assíncronos seriam um mundo inteiramente diferente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque protege o estudante de uma falsa ruptura conceitual. Promises, async/await e comportamento temporal exigem nova sintaxe e novo cuidado, mas não mudam o coração do teste. O programador continua tentando responder a mesma pergunta: o sistema fez o que deveria fazer neste cenário?"
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: testes assíncronos expandem a verificação para o tempo, mas não alteram a lógica fundamental do teste."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Promises e o momento correto da verificação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando uma função retorna uma promise, o teste não deve agir como se o valor final já estivesse pronto no mesmo instante. O comportamento verificável está no desfecho da promise, e é esse desfecho que precisa ser observado. Em termos práticos, isso significa que o teste deve esperar a resolução ou a rejeição da operação antes de concluir se a expectativa foi atendida."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function buscarUsuario() {\n  return Promise.resolve({ id: 1, nome: \"Ana\" });\n}\n\nbuscarUsuario().then(function (usuario) {\n  if (usuario.nome !== \"Ana\") {\n    throw new Error(\"Esperava nome Ana.\");\n  }\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "({ id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": " });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (usuario) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (usuario.nome "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Esperava nome Ana.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é didaticamente importante porque mostra que o assert continua existindo, mas agora aparece vinculado ao momento em que a operação assíncrona finalmente produz o valor relevante. O teste aprende a seguir o tempo da promise."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve associar testes com promises à ideia de verificar o desfecho, e não o instante da chamada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Async/await como legibilidade também nos testes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Assim como no código de produção, async/await também pode tornar a leitura dos testes assíncronos mais direta. Em vez de encadear then para cada verificação, o teste pode esperar a resolução da promise com await e, só então, comparar o resultado com a expectativa correspondente. O ganho principal continua sendo de legibilidade narrativa."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function buscarUsuario() {\n  return Promise.resolve({ id: 1, nome: \"Ana\" });\n}\n\nasync function testarUsuario() {\n  const usuario = await buscarUsuario();\n\n  if (usuario.nome !== \"Ana\") {\n    throw new Error(\"Esperava nome Ana.\");\n  }\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "({ id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": " });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "testarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (usuario.nome "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Esperava nome Ana.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque ajuda o estudante a perceber a continuidade entre o capítulo de assíncronia e o capítulo atual. Async/await não muda a natureza do comportamento testado; apenas reorganiza a leitura do tempo da verificação de forma frequentemente mais clara."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a ver async/await em testes como continuação natural do mesmo raciocínio de legibilidade construído anteriormente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Testar sucesso e testar rejeição"
+    },
+    {
+      "type": "paragraph",
+      "text": "Assim como em código assíncrono real o futuro pode terminar em sucesso ou falha, o teste também precisa ser capaz de verificar ambos os caminhos. Não basta confirmar que uma promise resolvida entrega o valor esperado. Muitas vezes é igualmente importante verificar que uma promise rejeitada falha do modo correto, com a mensagem certa ou com a categoria de erro adequada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque conecta testes assíncronos à robustez. O comportamento temporal da unidade não se resume ao valor futuro ideal. Ele inclui também a forma como a falha é produzida e comunicada quando o contrato é rompido ou a operação não pode ser concluída com sucesso."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: em fluxos assíncronos, confiança real exige verificar tanto resolução correta quanto rejeição correta."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Esperar cedo demais ou concluir cedo demais é erro de teste"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma armadilha muito comum em testes assíncronos é concluir o caso cedo demais, antes que a operação relevante tenha realmente terminado. Nesses cenários, o teste pode parecer “passar”, mas apenas porque não esperou o suficiente para verificar o comportamento real. Esse é um dos problemas mais traiçoeiros da verificação temporal: a aparência de sucesso pode esconder ausência de observação efetiva."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é extremamente importante porque ensina que o teste assíncrono precisa ser arquitetado em torno do tempo do comportamento. Não basta iniciar a operação. É preciso assegurar que o momento de comparação acontece quando o resultado ou a falha já estão disponíveis para observação confiável."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: teste assíncrono forte sabe quando a verificação realmente pode ser encerrada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. O valor de testar comportamento assíncrono local"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em nível introdutório, é especialmente valioso testar unidades assíncronas menores e mais previsíveis, como funções que retornam promises com contratos claros. Isso ajuda o estudante a consolidar a lógica da espera, da verificação e do tratamento de falha sem ainda precisar lidar com toda a complexidade de integrações externas reais. O foco permanece no comportamento local, mas agora com a dimensão temporal incluída."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto reforça uma continuidade importante do capítulo. Assim como funções puras são boas candidatas a testes unitários iniciais, unidades assíncronas com contrato claro também são excelentes candidatas a introduzir a lógica de testes temporais de forma mais controlada."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve perceber que testes assíncronos também se beneficiam muito de recorte claro e responsabilidade bem definida da unidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: buscar usuário e validar nome"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função assíncrona que busca os dados de um usuário e deve retornar um objeto com nome específico em determinado cenário de teste. O teste precisa aguardar a resolução da promise e só então verificar se o nome corresponde ao esperado. Se a função for alterada e passar a devolver estrutura incorreta, nome ausente ou valor diferente, o teste deve revelar essa regressão. Esse cenário resume muito bem o propósito da verificação assíncrona local."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra que o teste continua protegendo contrato de unidade, apenas adaptado ao fato de que o valor chega no futuro da execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: comportamento assíncrono também pode e deve ser protegido com verificações explícitas de contrato."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de testes assíncronos legíveis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um teste assíncrono é bem escrito, ele ajuda a explicar o tempo do comportamento. O leitor entende qual operação futura está sendo exercitada, o que precisa ser aguardado e que expectativa será verificada quando a resolução ou a rejeição ocorrer. Isso tem enorme valor editorial, porque comportamento temporal mal explicado é uma das fontes mais comuns de opacidade em sistemas JavaScript."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é central porque boa parte da clareza profissional em bases modernas depende de tornar legível não apenas o que o sistema faz, mas quando ele faz e em que condições o resultado futuro deve ser considerado correto."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: teste assíncrono bom não apenas espera; ele explica com clareza o que está esperando e por quê."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa leitura introdutória de testes assíncronos costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa leitura de testes assíncronos costuma comunicar pelo menos três coisas importantes: que comportamento futuro está sendo exercitado, em que momento a verificação se torna válida e qual expectativa deve ser satisfeita na resolução ou na rejeição da operação. Esses três elementos ajudam muito a distinguir teste temporal real de execução apressada ou vaga demais."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não tratar promise ou await no teste como mera cerimônia de sintaxe. Antes de tudo, eles servem para alinhar a verificação ao tempo real do comportamento observado."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura desta etapa, portanto, começa por reconhecer que o teste precisa habitar o mesmo tempo que a unidade sob verificação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que testes assíncronos mudam completamente o conceito de teste em vez de apenas estendê-lo ao tempo.",
+        "Verificar cedo demais, antes da resolução ou rejeição da operação.",
+        "Tratar await ou then como detalhe de sintaxe sem entender seu papel no momento da verificação.",
+        "Confirmar apenas o caminho de sucesso e ignorar rejeições importantes.",
+        "Subestimar o valor de testes legíveis para explicar comportamento temporal.",
+        "Não perceber que unidades assíncronas também possuem contratos locais que precisam ser protegidos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe testes assíncronos à mesma lógica de cenário, ação e expectativa, adaptada ao tempo do comportamento.",
+        "Espere explicitamente pela resolução ou rejeição antes de verificar o resultado.",
+        "Use async/await como apoio de legibilidade quando isso tornar o fluxo mais claro.",
+        "Inclua tanto cenários de sucesso quanto de falha na verificação assíncrona.",
+        "Prefira começar por unidades assíncronas com contratos locais bem definidos.",
+        "Prepare-se para consolidar o capítulo com exercícios comentados nas próximas partes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo por que comportamento assíncrono também precisa de verificação explícita.",
+        "Reconheço que o núcleo conceitual do teste continua o mesmo em contexto temporal.",
+        "Percebo a importância de aguardar corretamente a resolução ou rejeição da operação.",
+        "Entendo o valor de verificar tanto sucesso quanto falha em fluxos assíncronos.",
+        "Reconheço o papel de async/await na legibilidade dos testes temporais.",
+        "Estou preparado para consolidar testes síncronos e assíncronos com exercícios comentados na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender testes unitários, testes de erro e testes assíncronos, o próximo passo é consolidar tudo isso com exercícios comentados. Na próxima parte, o capítulo se voltará para exemplos práticos de verificação de comportamento em funções puras, casos de borda, falhas esperadas e operações futuras."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa conclusão é importante porque confiança no software não se torna clara apenas pela exposição conceitual. Ela se torna clara quando o leitor aprende a reconhecer, em exemplos concretos, o que está sendo protegido e por quê."
+    }
+  ]
+}

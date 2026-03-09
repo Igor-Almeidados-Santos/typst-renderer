@@ -1,0 +1,602 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 11 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "11",
+    "chapter_title": "Assíncronia e coordenação temporal do comportamento",
+    "part_number": "2",
+    "part_title": "Promises: modelando resultados futuros",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 11 — Assíncronia e coordenação temporal do comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Promises: modelando resultados futuros"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender por que a assíncronia existe e perceber que o programa muitas vezes precisa lidar com resultados que não chegam imediatamente, o leitor está pronto para estudar uma das abstrações mais importantes do JavaScript moderno: as promises. Até aqui, a ideia central foi construída em nível conceitual: certas operações iniciam agora, mas só serão concluídas depois. Agora, essa intuição ganhará uma forma explícita dentro da linguagem. A promise surge exatamente como estrutura para representar esse futuro ainda em aberto de maneira organizada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque, sem uma forma clara de modelar resultados futuros, o código assíncrono tende a ficar excessivamente dependente de callbacks encaixados, com fluxo mais difícil de acompanhar e tratamento de sucesso e erro menos expressivo. Promises ajudam a organizar essa situação ao oferecer uma entidade que representa o estado temporal de uma operação assíncrona. Em vez de pensar apenas em “registrar uma função para depois”, o programador passa a pensar em uma operação que caminha em direção a um desfecho e cujo resultado poderá ser tratado de modo estruturado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre o que é uma promise e por que ela existe, antes de aprofundar métodos de encadeamento, tratamento de falhas e async/await. Ao final, o leitor deixará de ver a promise como objeto misterioso da linguagem e passará a entendê-la como uma forma explícita de representar, coordenar e tratar um resultado que ainda não está disponível no presente da execução."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: o programa precisa falar sobre um resultado que ainda não chegou"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando uma operação assíncrona é iniciada, muitas vezes o programa já precisa continuar seu fluxo antes que o resultado esteja disponível. No entanto, esse resultado continua sendo importante. Ele poderá significar sucesso, erro, dado recebido, falha de rede, resposta vazia ou qualquer outro desfecho relevante para a lógica. Surge então um problema conceitual importante: como representar algo que ainda não foi resolvido, mas que claramente existe como possibilidade futura dentro do sistema?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que as promises ajudam a resolver. Elas fornecem uma maneira de tratar a operação assíncrona como algo representável agora, mesmo que seu valor final ainda não esteja disponível. Em vez de lidar apenas com uma espera difusa, o programa passa a ter em mãos uma entidade que representa o compromisso com um resultado futuro."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que esse ganho é enorme. O código deixa de falar apenas em termos de “depois eu vejo” e passa a modelar explicitamente o futuro da operação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é uma Promise em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, uma Promise é um objeto da linguagem que representa o resultado futuro de uma operação assíncrona. Esse resultado pode vir a ser concluído com sucesso ou pode falhar. Enquanto ainda não foi resolvido, a promise funciona como representação estruturada de algo que está em andamento ou em espera de definição."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa definição é importante porque desloca a atenção do valor imediato para o estado temporal da operação. A promise não é, inicialmente, o dado final em si. Ela é a representação do processo que levará a esse dado ou a esse erro. Em outras palavras, ela modela o futuro de uma computação assíncrona."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar promise à ideia de resultado futuro encapsulado de forma explícita na linguagem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Promise como compromisso com um desfecho futuro"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma analogia útil em nível introdutório é pensar a promise como um compromisso com um desfecho futuro. O programa ainda não tem o valor final nas mãos, mas tem algo que afirma: esta operação está em andamento e, quando terminar, resultará em sucesso ou falha. Essa imagem ajuda muito a construir intuição sobre o recurso sem cair logo em detalhes sintáticos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque evita um erro comum: achar que a promise já é simplesmente o valor pronto. Não é isso. Ela representa a trajetória temporal em direção a um desfecho. Em termos de leitura, isso significa que, ao ver uma promise, o programador deve pensar menos em “dado imediato” e mais em “resultado que será tratado quando estiver resolvido”."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: promise não elimina o futuro; ela dá forma legível a ele."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Os estados iniciais do raciocínio: pendente, resolvida, rejeitada"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para entender promises, é útil perceber que elas se relacionam a estados da operação assíncrona. Em nível introdutório, o estudante pode pensar em três situações fundamentais: a operação ainda está pendente, a operação foi concluída com sucesso ou a operação foi concluída com falha. Esses estados são importantes porque mostram que a promise não existe apenas para guardar um valor, mas para representar a situação temporal da computação assíncrona."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque a promise não fala só sobre o que veio, mas também sobre se algo já veio e como esse desfecho aconteceu. O programa passa a ter uma linguagem mais clara para raciocinar sobre o andamento e o resultado de operações que não se resolvem imediatamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a enxergar a promise como uma entidade de estado temporal, e não como simples recipiente de dado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Promises ajudam a organizar o tratamento de sucesso e erro"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro ganho central das promises é tornar mais explícita a separação entre sucesso e erro no tratamento de operações assíncronas. Em vez de depender apenas de convenções informais ou de callbacks misturados, o código ganha uma estrutura em que o desfecho bem-sucedido e a falha podem ser pensados como caminhos distintos da mesma operação futura."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque grande parte da complexidade da assíncronia nasce justamente da necessidade de tratar não apenas o caso ideal, mas também os cenários de falha. Requisições podem cair, respostas podem vir inválidas, recursos podem não estar disponíveis. Promises ajudam a organizar esse problema com mais clareza estrutural."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: modelar o futuro com promises também significa modelar com mais disciplina os possíveis desfechos desse futuro."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Criar uma promise simples: uma primeira visão"
+    },
+    {
+      "type": "paragraph",
+      "text": "Embora o foco desta parte ainda seja conceitual, vale observar uma forma básica de criação de promise para tornar visível a estrutura da ideia:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const promessa = new Promise(function (resolve, reject) {\n  const sucesso = true;\n\n  if (sucesso) {\n    resolve(\"Operação concluída.\");\n  } else {\n    reject(\"Operação falhou.\");\n  }\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " promessa "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Promise"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (resolve, reject) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " sucesso "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (sucesso) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Operação concluída.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  } "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "reject"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Operação falhou.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a promise é criada como uma operação que pode ser concluída com sucesso ou falha. O importante aqui não é decorar a sintaxe por inteiro neste momento, mas perceber a lógica: há um processo cujo desfecho futuro será resolvido por um caminho de sucesso ou por um caminho de rejeição."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve olhar para esse trecho como visualização concreta da ideia central de compromisso com um resultado futuro."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Resolve e reject como linguagem do desfecho"
+    },
+    {
+      "type": "paragraph",
+      "text": "Na criação de uma promise, aparecem frequentemente duas funções fornecidas pelo ambiente da linguagem: resolve e reject. Em nível introdutório, é útil pensar nelas como formas de marcar o desfecho da operação. Resolve representa a conclusão bem-sucedida. Reject representa a conclusão com falha. Essas duas possibilidades deixam muito visível a natureza bifurcada do futuro assíncrono."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque reforça que a promise não é apenas uma espera vaga. Ela é uma estrutura cujo desfecho precisa ser explicitamente definido em um dos caminhos possíveis. O código passa a falar com clareza: a operação terminou bem ou terminou com erro."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve associar resolve e reject à ideia de fechamento explícito do destino da operação assíncrona."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. O valor da promise antes mesmo de saber seu resultado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Pode parecer estranho, no começo, que algo seja útil antes mesmo de trazer o valor final. Mas esse é justamente um dos poderes das promises. Elas permitem que o programa já organize o tratamento futuro da operação, mesmo sem ter o resultado pronto naquele instante. O fluxo pode continuar, sabendo que existe uma entidade que representa aquele trabalho em andamento e que o desfecho será tratado de forma estruturada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo para a maturidade no tema. O estudante precisa abandonar a expectativa de que toda variável útil já contenha o dado final imediatamente. Em contexto assíncrono, muitas vezes o que o programa possui agora é a promise, e não o valor resolvido. Esse deslocamento é um dos marcos mais importantes da aprendizagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição principal aqui é clara: em assíncronia, ter a representação do futuro já é uma forma valiosa de organização do presente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: promessa de dados futuros de uma API"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma aplicação que inicia uma busca de dados em uma API. No exato momento da chamada, os produtos ainda não chegaram. O programa não tem os dados prontos, mas já tem a promessa de que aquela operação produzirá um desfecho futuro: sucesso com dados ou erro na tentativa. Esse cenário resume muito bem o valor conceitual da promise. Ela representa a busca em andamento e permite que o sistema prepare o modo como reagirá quando houver definição."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque aproxima o conceito de uma necessidade extremamente comum no desenvolvimento real. O programa precisa falar de algo que ainda não chegou, mas cuja resolução importa profundamente para a continuidade da lógica."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: promises permitem transformar a espera por algo futuro em entidade tratável dentro do fluxo presente do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O valor editorial de nomear o futuro com clareza"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando promises entram em cena, a clareza de nomeação continua sendo decisiva. Um identificador como promessaDeProdutos, carregamentoUsuario ou respostaDaBusca comunica muito melhor a natureza temporal da entidade do que nomes vagos ou estáticos. O leitor precisa perceber que não está lidando ainda com o valor pronto, mas com uma operação futura representada de forma estruturada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem grande valor editorial porque a maior dificuldade inicial com promises é justamente temporal. Se o nome do identificador também confunde o leitor sobre o que já está pronto e o que ainda está em andamento, a compreensão do fluxo despenca. Bons nomes ajudam a manter essa distinção visível."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: quando o valor ainda é futuro, o nome também deve comunicar esse caráter temporal com honestidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. O que uma boa leitura introdutória de promise costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa leitura de promise costuma comunicar pelo menos três coisas importantes: qual operação futura está sendo representada, que desfechos possíveis essa operação pode ter e por que o programa precisa tratar essa entidade agora, antes que o resultado esteja pronto. Esses elementos ajudam muito a construir um modelo mental sólido para o tema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não reduzir promise a um “objeto diferente” da linguagem. Antes de métodos e encadeamentos, ela já é uma forma de pensar a relação entre presente e futuro dentro do programa. Quanto melhor essa leitura for construída, mais natural será o estudo das ferramentas que virão a seguir."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura de promise, portanto, começa por reconhecer que o programa está modelando um futuro incerto de maneira estruturada e explícita."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que promise já é imediatamente o valor final da operação.",
+        "Tratar promise como sintaxe esquisita em vez de enxergá-la como modelo do futuro assíncrono.",
+        "Ignorar que a operação pode terminar em sucesso ou falha.",
+        "Não perceber a diferença entre ter o dado pronto e ter a representação de sua chegada futura.",
+        "Ver resolve e reject apenas como nomes obrigatórios, sem compreender seu papel conceitual.",
+        "Subestimar a importância de nomear bem entidades que representam resultados ainda não disponíveis."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe promise sempre à ideia de resultado futuro estruturado.",
+        "Pergunte em cada exemplo qual operação futura está sendo representada.",
+        "Observe com atenção a distinção entre operação pendente, resolvida e rejeitada.",
+        "Leia resolve e reject como linguagem do desfecho da operação.",
+        "Use nomes que comuniquem que o valor ainda não está pronto naquele instante.",
+        "Prepare-se para estudar then, catch e encadeamento como formas de tratar o desfecho das promises na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é uma promise em nível introdutório e conceitual.",
+        "Reconheço que ela representa o resultado futuro de uma operação assíncrona.",
+        "Percebo a importância dos caminhos de sucesso e falha na modelagem da operação.",
+        "Entendo resolve e reject como formas de definir o desfecho da promise.",
+        "Reconheço a diferença entre ter o dado agora e ter a promise que representa sua chegada futura.",
+        "Estou preparado para estudar tratamento de promises com then e catch na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "15. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o modelo mental da promise foi estabelecido, o próximo passo é estudar como o programa se conecta ao desfecho dessa operação futura. Na próxima parte, entraremos em then e catch, observando como sucesso e erro podem ser tratados de maneira estruturada no fluxo assíncrono."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque a promise não existe apenas para representar o futuro. Ela existe também para tornar possível uma linguagem clara de reação ao que acontecerá quando esse futuro finalmente se definir."
+    }
+  ]
+}

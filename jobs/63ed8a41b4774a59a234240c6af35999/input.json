@@ -1,0 +1,597 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 14 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "14",
+    "chapter_title": "Testes, verificação e confiança no comportamento",
+    "part_number": "4",
+    "part_title": "Testes de erro, limites e robustez do comportamento",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 14 — Testes, verificação e confiança no comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Testes de erro, limites e robustez do comportamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender por que testar é necessário, estudar asserts como núcleo lógico da verificação e entrar em testes unitários como forma focada de proteger pequenas unidades de comportamento, o leitor está pronto para avançar para uma dimensão decisiva da confiança em software: os testes de erro e de limites do comportamento. Até aqui, o capítulo mostrou como confirmar se uma unidade faz corretamente o que deve fazer no caso nominal. Agora o foco se desloca para outra pergunta igualmente importante: o sistema falha do jeito certo quando deveria falhar? É exatamente nesse ponto que o tema da robustez se conecta diretamente aos testes."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque código profissional não pode ser considerado bem verificado apenas por funcionar quando tudo vai bem. Parte essencial da confiança no comportamento está em saber se a função rejeita entradas inválidas, se lança erro quando o contrato é rompido, se protege invariantes relevantes e se não aceita silenciosamente condições que deveriam ser consideradas incorretas. Em outras palavras, verificar robustez também é parte da verificação do contrato."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre testes de erro, testes de borda e verificação dos limites do comportamento antes de avançar para testes assíncronos, exercícios comentados e consolidação do capítulo. O leitor compreenderá por que erro também deve ser testado, verá como uma falha esperada pode representar comportamento correto do sistema e entenderá que um bom conjunto de testes não protege apenas a saída ideal, mas também a integridade das restrições do domínio. Ao final, deixará de ver teste como confirmação exclusiva do caminho feliz e passará a reconhecê-lo como ferramenta de proteção dos limites válidos do software."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: um sistema pode acertar o caso nominal e ainda assim ser frágil"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma função pode passar nos cenários mais confortáveis e ainda assim estar perigosamente errada. Pode calcular corretamente um desconto simples, mas aceitar percentual negativo sem reclamar. Pode somar números corretamente, mas tratar string como número sem aviso. Pode transformar dados adequadamente no caso normal, mas falhar silenciosamente diante de entrada ausente. Se os testes observarem apenas o fluxo feliz, grande parte dessa fragilidade permanecerá invisível."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que os testes de erro e de limites ajudam a resolver. Eles ampliam a confiança sobre o comportamento ao incluir cenários em que o sistema deve rejeitar, interromper ou proteger o contrato, e não apenas produzir um resultado positivo. O teste deixa de ser apenas confirmação de sucesso e passa a ser verificação da disciplina semântica da unidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que robustez também faz parte da verdade do comportamento que o teste precisa proteger."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Falhar corretamente também é comportamento esperado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma mudança conceitual muito importante nesta etapa é perceber que, em vários cenários, lançar erro ou rejeitar uma entrada não representa falha do sistema de teste, mas sucesso do comportamento verificado. Se uma função prometeu aceitar apenas percentuais entre 0 e 100, então lançar erro ao receber 150 é justamente o comportamento esperado. O teste, nesse caso, não verifica uma saída feliz, mas a integridade do limite definido pela unidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa definição é muito importante porque corrige uma intuição inicial frequente: a de que o teste só seria “bom” quando tudo termina com valor correto e sem erro. Em software robusto, parte do comportamento correto consiste exatamente em não aceitar o que não deveria ser aceito."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar testes de erro à ideia de defesa verificável do contrato do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Testar erro é testar contrato"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o programador testa se uma função lança erro diante de entrada inválida, ele não está apenas verificando um detalhe técnico da linguagem. Está verificando o próprio contrato daquela unidade. O teste afirma: este comportamento só é válido sob certas condições, e o sistema deve tornar explícita a quebra dessas condições quando elas forem violadas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque ajuda o estudante a ver o teste de erro como parte nobre da arquitetura de verificação. Não se trata de cobrir casos “estranhos” apenas por zelo excessivo. Trata-se de proteger os limites que dão identidade e segurança ao comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: testar erro é uma forma de garantir que a unidade respeita a fronteira semântica do que prometeu fazer."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Casos de borda revelam muita verdade sobre a unidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Além do erro explícito, muitos testes importantes surgem em casos de borda. Zero, vazio, limite mínimo, limite máximo, ausência parcial de dados e formatos limítrofes são cenários que frequentemente revelam mais sobre a qualidade da unidade do que exemplos centrais muito confortáveis. Isso acontece porque o comportamento verdadeiro de um contrato aparece com nitidez especial quando é pressionado em seus extremos relevantes."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque ensina o estudante a sair da zona segura do teste nominal. Uma função que parece correta em valores médios pode revelar inconsistência séria quando encontra 0, 1, 100, lista vazia ou entrada ausente. Testar bordas é parte essencial de testar verdadeiramente a unidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: casos de borda frequentemente dizem mais sobre a robustez da função do que os cenários confortáveis do centro do domínio."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Exemplo: desconto com caso válido e caso inválido"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vale observar uma função simples e os tipos de comportamento que merecem ser verificados:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function aplicarDesconto(preco, percentual) {\n  if (percentual < 0 || percentual > 100) {\n    throw new Error(\"Percentual de desconto deve estar entre 0 e 100.\");\n  }\n\n  return preco - (preco * percentual) / 100;\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "aplicarDesconto"
+          },
+          {
+            "kind": "plain",
+            "text": "(preco, percentual) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (percentual "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " percentual "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Percentual de desconto deve estar entre 0 e 100.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " preco "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " (preco "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " percentual) "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse caso, um teste relevante não deveria verificar apenas que 100 com 10 produz 90. Também deveria verificar que 0 produz o mesmo preço, que 100 zera o valor e que percentuais inválidos provocam erro. O contrato completo da função aparece justamente na combinação entre caso nominal, bordas válidas e falhas esperadas."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve perceber que a qualidade do teste cresce quando ele cobre a forma inteira do contrato, e não apenas sua região mais confortável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Erro esperado não deve ser confundido com teste quebrado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outra distinção importante nesta etapa é não confundir teste que verifica erro esperado com teste mal-sucedido. Se o objetivo declarado do caso é confirmar que a unidade lança erro em condição inválida, então a presença dessa falha é parte do sucesso da verificação. O teste só falha se o erro não ocorrer quando deveria ocorrer, ou se ocorrer de maneira incoerente com o contrato esperado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque ajuda o estudante a desenvolver maturidade semântica sobre o papel do teste. O objetivo não é evitar qualquer erro durante a execução dos casos. O objetivo é verificar se o comportamento observado corresponde ao que deveria acontecer em cada cenário, inclusive os cenários de falha."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: em testes de robustez, erro observado pode ser sinal de que a unidade está se defendendo corretamente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Testes de erro também ajudam a explicar o sistema"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um teste mostra que determinada função lança erro ao receber valor fora do intervalo permitido, ele não está apenas protegendo a implementação. Também está documentando o contrato da unidade. O leitor futuro entende, de forma executável, que aquela função não aceita qualquer entrada e que existe uma política explícita de proteção do comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é especialmente valioso porque reforça o papel editorial dos testes. Eles não apenas confirmam funcionamento. Eles ajudam a narrar o que o sistema permite, o que proíbe e como reage quando seus limites são pressionados."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que bons testes de erro tornam os limites do software muito mais visíveis para quem mantém o código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: validação de email e entrada vazia"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função de validação de email. Um teste nominal pode verificar um formato válido. Mas a robustez da unidade talvez apareça de forma mais reveladora quando os testes incluem string vazia, ausência de símbolo obrigatório, espaços inesperados ou tipo incorreto de valor. Esse cenário resume muito bem a importância dos testes de limite. O comportamento correto da função não está apenas em aceitar o válido, mas também em rejeitar o inadequado de modo coerente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra que, em muitas unidades reais, o conhecimento do contrato depende diretamente da forma como seus limites são exercitados."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: testar bordas e falhas esperadas é parte da definição do que a unidade realmente é."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de testes que mostram o que não é permitido"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um sistema bem testado não explica apenas o que faz. Ele também explica o que não aceita e por quê. Isso tem enorme valor editorial e arquitetural, porque ajuda o leitor a entender limites, invariantes e pressupostos do código sem depender apenas de comentários ou da inspeção detalhada da implementação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é central porque parte importante da legibilidade de um sistema maduro está justamente na visibilidade dos seus limites. Testes que mostram o que é rejeitado ou que deve falhar ajudam a tornar essa fronteira muito mais clara."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: testes bons não defendem apenas o comportamento permitido; eles também tornam visível o comportamento proibido."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa leitura introdutória de testes de erro costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa leitura de testes de erro costuma comunicar pelo menos três coisas importantes: que limite do contrato está sendo exercitado, que reação de defesa é esperada da unidade e por que essa defesa importa para a integridade do comportamento. Esses três elementos ajudam muito a distinguir teste de robustez real de mera repetição de cenários felizes."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não ver erro apenas como exceção desagradável ao teste. Em muitos casos, o erro esperado é parte essencial do contrato e, portanto, parte essencial da verificação."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura desta etapa, portanto, começa por reconhecer que proteger os limites da unidade também é proteger sua identidade semântica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que o teste só é valioso quando confirma um resultado positivo sem erro.",
+        "Ignorar bordas e limites do comportamento da unidade.",
+        "Confundir erro esperado com teste quebrado.",
+        "Testar apenas cenários confortáveis e deixar frágeis os contratos reais da função.",
+        "Subestimar o valor documental dos testes que mostram o que a unidade rejeita.",
+        "Não perceber que robustez também precisa ser verificada, e não apenas presumida."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe testes de erro à proteção explícita dos limites do contrato da unidade.",
+        "Inclua casos nominais, bordas válidas e cenários inválidos ao pensar verificações.",
+        "Pergunte em cada exemplo o que a função não deve aceitar e como isso deve ser comunicado.",
+        "Use testes de erro para tornar mais visíveis invariantes e restrições do comportamento.",
+        "Lembre-se de que falhar corretamente também é parte do comportamento esperado.",
+        "Prepare-se para estudar testes assíncronos e exercícios comentados nas próximas partes do capítulo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 4"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo por que testes de erro e de borda fortalecem a confiança no comportamento.",
+        "Reconheço que falhar corretamente pode ser resultado esperado da unidade.",
+        "Percebo testes de erro como verificação do contrato e dos limites do sistema.",
+        "Entendo a importância de cobrir não apenas o caso nominal, mas também casos inválidos e extremos.",
+        "Reconheço o valor documental de testes que mostram o que a unidade rejeita.",
+        "Estou preparado para estudar testes assíncronos e cenários temporais na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende como testar o comportamento feliz e também os limites da unidade, o próximo passo é estudar verificação em contextos assíncronos. Na próxima parte, entraremos em testes de promises, async/await e comportamento temporal do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque parte importante do JavaScript moderno vive em operações cujo resultado chega depois, e a confiança nesse tipo de fluxo também precisa ser construída de forma verificável."
+    }
+  ]
+}

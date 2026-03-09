@@ -1,0 +1,1397 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 12 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "12",
+    "chapter_title": "Módulos, organização e separação de responsabilidades",
+    "part_number": "5",
+    "part_title": "Exercícios comentados sobre modularização e organização",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 12 — Módulos, organização e separação de responsabilidades"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Exercícios comentados sobre modularização e organização"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta parte do capítulo foi concebida para consolidar, por meio de exercícios comentados, tudo o que foi estudado sobre módulos, importações, exportações, coesão, acoplamento e separação de responsabilidades. Ao longo das partes anteriores, o leitor compreendeu por que modularizar, viu como export e import tornam explícita a fronteira entre partes do sistema, estudou critérios de qualidade arquitetural e mapeou erros comuns da organização ruim. Agora é o momento de transformar esse repertório em leitura prática de estrutura: não apenas saber que módulos existem, mas reconhecer quando estão bem ou mal desenhados."
+    },
+    {
+      "type": "paragraph",
+      "text": "Exercícios comentados têm valor especial neste capítulo porque muitos problemas de modularização não aparecem como erro técnico imediato. O sistema roda, os imports funcionam, os arquivos existem — e, ainda assim, a arquitetura pode estar fraca. O estudante já sabe dividir código em arquivos, mas ainda pode concentrar responsabilidades demais em um lugar, exportar sem critério, importar dependências em excesso ou esconder baixa coesão atrás de nomes vagos como utils e helpers. Esse tipo de falha é silenciosa, mas muito impactante na manutenção."
+    },
+    {
+      "type": "paragraph",
+      "text": "Cada exemplo a seguir foi escolhido para reforçar uma dimensão do capítulo. Alguns consolidam o conceito de módulo como fronteira de responsabilidade. Outros revisam export e import como contrato explícito. Outros ainda ajudam a perceber baixa coesão, acoplamento excessivo e padrões de organização mais saudáveis. Em todos os casos, o objetivo não é apenas decidir “está certo ou errado”, mas justificar por que aquela estrutura comunica bem — ou mal — a arquitetura do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Como trabalhar estes exercícios"
+    },
+    {
+      "type": "paragraph",
+      "text": "A melhor forma de usar esta parte é observar primeiro o propósito aparente de cada módulo ou conjunto de módulos antes de ler o comentário. Pergunte a si mesmo: esta parte do sistema tem uma responsabilidade clara? O que ela expõe para fora faz sentido como interface pública? As dependências parecem proporcionais ou excessivas? Em seguida, compare sua leitura com a explicação. Se acertar, isso fortalece seu olhar arquitetural. Se errar, melhor ainda do ponto de vista pedagógico, porque o exercício encontrou uma zona importante em que seu critério de organização ainda precisava amadurecer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é recomendável reescrever mentalmente alguns dos exemplos. Em modularização, propor uma organização alternativa é uma excelente forma de fixar o entendimento. O estudante deve prestar atenção especial à diferença entre separar por capricho, separar por conveniência vaga e separar por responsabilidade real."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por fim, vale reforçar: o foco não é decorar “estruturas de pasta bonitas”, e sim aprender a julgar melhor a qualidade da divisão arquitetural do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Exercício 1 — Módulo com responsabilidade clara"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere o seguinte módulo:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "export function login(email, senha) {\n  // lógica de autenticação\n}\n\nexport function logout() {\n  // encerramento de sessão\n}\n\nexport function usuarioAutenticado() {\n  // verificação de sessão atual\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "login"
+          },
+          {
+            "kind": "plain",
+            "text": "(email, senha) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// lógica de autenticação"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "logout"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// encerramento de sessão"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "usuarioAutenticado"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// verificação de sessão atual"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício reforça a ideia de coesão. As funções orbitam o mesmo núcleo de responsabilidade: autenticação. O módulo comunica com clareza seu propósito e sua interface pública. O leitor consegue inferir rapidamente o que esperar daquele arquivo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: módulo forte tende a reunir comportamentos que pertencem claramente ao mesmo propósito arquitetural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Exercício 2 — Módulo genérico demais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere o seguinte arquivo util.js:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "export function formatarMoeda(valor) {}\nexport function login(email, senha) {}\nexport function buscarProdutos() {}\nexport function validarCPF(cpf) {}\nexport function alternarTema() {}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "formatarMoeda"
+          },
+          {
+            "kind": "plain",
+            "text": "(valor) {}"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "login"
+          },
+          {
+            "kind": "plain",
+            "text": "(email, senha) {}"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarProdutos"
+          },
+          {
+            "kind": "plain",
+            "text": "() {}"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validarCPF"
+          },
+          {
+            "kind": "plain",
+            "text": "(cpf) {}"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "alternarTema"
+          },
+          {
+            "kind": "plain",
+            "text": "() {}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício é propositalmente importante porque mostra um erro muito comum. Tudo aqui pode ser “útil”, mas isso não significa que tudo pertença ao mesmo módulo. O problema central é a baixa coesão mascarada por um nome genérico. O arquivo virou depósito de responsabilidades heterogêneas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: utilidade vaga não substitui identidade arquitetural real."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Exercício 3 — Exportar menos pode fortalecer a fronteira"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function validarNumero(valor) {\n  return typeof valor === \"number\";\n}\n\nexport function somar(a, b) {\n  if (!validarNumero(a) || !validarNumero(b)) {\n    throw new Error(\"Valores inválidos\");\n  }\n\n  return a + b;\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validarNumero"
+          },
+          {
+            "kind": "plain",
+            "text": "(valor) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " valor "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"number\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "function",
+            "text": "validarNumero"
+          },
+          {
+            "kind": "plain",
+            "text": "(a) "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "function",
+            "text": "validarNumero"
+          },
+          {
+            "kind": "plain",
+            "text": "(b)) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Valores inválidos\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício mostra com clareza a diferença entre detalhe interno e interface pública. A função validarNumero pertence ao interior da implementação e não precisa ser exportada. Já somar representa o serviço oferecido ao exterior. O valor didático do exemplo está em mostrar que encapsulamento também é escolha editorial da interface do módulo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: nem tudo o que existe dentro do módulo deve fazer parte do contrato público com o restante do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Exercício 4 — Import como pista de acoplamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um módulo com o seguinte topo:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "import { login } from \"./auth.js\";\nimport { formatarMoeda } from \"./formatacao.js\";\nimport { buscarProdutos } from \"./apiProdutos.js\";\nimport { alternarTema } from \"./tema.js\";\nimport { validarCPF } from \"./validacoes.js\";\nimport { salvarCarrinho } from \"./carrinho.js\";",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " { login } from "
+          },
+          {
+            "kind": "string",
+            "text": "\"./auth.js\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " { formatarMoeda } from "
+          },
+          {
+            "kind": "string",
+            "text": "\"./formatacao.js\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " { buscarProdutos } from "
+          },
+          {
+            "kind": "string",
+            "text": "\"./apiProdutos.js\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " { alternarTema } from "
+          },
+          {
+            "kind": "string",
+            "text": "\"./tema.js\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " { validarCPF } from "
+          },
+          {
+            "kind": "string",
+            "text": "\"./validacoes.js\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " { salvarCarrinho } from "
+          },
+          {
+            "kind": "string",
+            "text": "\"./carrinho.js\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: o exercício não afirma automaticamente que o módulo está errado, mas acende um alerta importante. A quantidade e a diversidade das dependências sugerem possível acoplamento excessivo ou responsabilidade mal recortada. O leitor precisa investigar se esse arquivo realmente tem um papel central legítimo ou se virou ponto de convergência desorganizado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: listas grandes e heterogêneas de importações podem indicar arquitetura tensa ou mal desenhada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Exercício 5 — Proximidade de uso não basta para justificar coesão"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um módulo que mistura chamada à API e formatação de texto apenas porque ambas aparecem na mesma tela. Isso é necessariamente uma boa ideia?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: não necessariamente. O fato de duas responsabilidades aparecerem no mesmo fluxo de uso não significa que pertençam ao mesmo módulo. Esse exercício reforça uma lição importante do capítulo: proximidade operacional não equivale automaticamente a identidade arquitetural. A coesão precisa ser julgada pelo propósito, e não apenas pela coincidência de uso em um mesmo cenário."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: responsabilidades que colaboram no mesmo fluxo ainda podem pertencer a módulos distintos se seus propósitos forem diferentes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Exercício 6 — Fragmentação excessiva também é problema"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um projeto em que cada pequena função trivial foi colocada em um arquivo próprio, mesmo quando várias pertenciam claramente ao mesmo núcleo de responsabilidade. Qual é o risco?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: o risco é transformar modularização em dispersão. O sistema ganha muitas fronteiras, mas perde fluidez de navegação e aumenta o custo cognitivo sem benefício proporcional de clareza. O exercício reforça que modularizar não significa atomizar o código arbitrariamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: boa modularização busca proporção entre agrupamento coerente e separação útil."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Exercício 7 — Named export como contrato explícito"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe os trechos abaixo:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "export const PI = 3.14;\nexport function areaCirculo(raio) {\n  return PI * raio * raio;\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " PI "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3.14"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "areaCirculo"
+          },
+          {
+            "kind": "plain",
+            "text": "(raio) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " PI "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " raio "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " raio;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "import { PI, areaCirculo } from \"./geometria.js\";",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "import"
+          },
+          {
+            "kind": "plain",
+            "text": " { PI, areaCirculo } from "
+          },
+          {
+            "kind": "string",
+            "text": "\"./geometria.js\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício consolida a ideia de contrato explícito entre módulos. O export diz o que o módulo oferece. O import declara exatamente o que o consumidor precisa. O valor arquitetural do named export está justamente em tornar essa relação mais visível e auditável."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: named exports fortalecem a leitura da fronteira pública e da dependência entre partes do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Exercício 8 — Nome ruim enfraquece a arquitetura"
+    },
+    {
+      "type": "paragraph",
+      "text": "Compare mentalmente dois cenários: um arquivo chamado misc.js e outro chamado autenticacao.js, ambos contendo lógica de login, logout e sessão. Qual deles comunica melhor a arquitetura?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: autenticacao.js comunica muito melhor a responsabilidade do módulo. O exercício existe para reforçar que nomeação não é detalhe cosmético. Em arquitetura modular, o nome do arquivo ou da pasta já participa da explicação do sistema. Um nome ruim aumenta a opacidade; um nome bom reduz custo de orientação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: em sistemas modulares, nomear bem é parte da própria organização arquitetural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Exercício 9 — Interface pública difusa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um módulo que exporta dezenas de funções internas, muitas delas auxiliares de implementação e pouco relevantes para o restante do sistema. Qual o problema central?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: o problema central é a diluição da fronteira pública. O módulo deixa de comunicar com clareza o que realmente oferece como responsabilidade e passa a expor detalhes demais. Isso aumenta acoplamento e reduz estabilidade arquitetural. Mudanças internas tornam-se mais arriscadas porque mais partes do sistema podem ter passado a depender de elementos que nunca deveriam ter sido públicos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: interface pública boa é deliberada, enxuta e coerente com o propósito do módulo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Exercício 10 — Estrutura que conta a história do sistema"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um projeto com módulos chamados auth.js, apiProdutos.js, validacoes.js, formatacaoMoeda.js e carrinho.js. Em termos arquiteturais, o que essa estrutura tende a comunicar?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: tende a comunicar melhor a distribuição de responsabilidades do sistema. Mesmo sem ler ainda cada implementação, o leitor já consegue inferir um mapa semântico do projeto. Isso reduz atrito de navegação e fortalece a sensação de que a arquitetura tem forma compreensível."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: boa modularização transforma a estrutura do projeto em documentação viva de suas responsabilidades."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Como revisar o próprio raciocínio ao ler módulos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de cada exercício, o estudante deve se fazer algumas perguntas fundamentais. Este módulo tem um propósito forte ou apenas reúne coisas convenientes? O que foi exportado realmente pertence à interface pública? As importações revelam dependências proporcionais ou excessivas? A estrutura de nomes ajuda ou atrapalha a navegação? Esta separação aumentou clareza ou apenas espalhou o código? Essas perguntas ajudam a transformar a leitura da modularização em revisão de arquitetura, e não apenas em observação superficial de arquivos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa prática é especialmente importante porque arquitetura modular raramente falha com erro explícito da linguagem. Ela falha silenciosamente, na forma como o sistema cresce, se comunica e se torna mais ou menos inteligível ao longo do tempo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Aprender modularização em JavaScript é, em grande medida, aprender a distribuir responsabilidades de forma honesta, controlada e legível."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Erros comuns ao resolver estes exercícios"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir presença de muitos arquivos com boa arquitetura.",
+        "Aceitar módulos genéricos demais sem questionar sua coesão.",
+        "Não perceber o custo da fragmentação excessiva.",
+        "Exportar demais sem revisar a interface pública real do módulo.",
+        "Ignorar listas de imports como indício de acoplamento.",
+        "Subestimar o papel da nomeação na leitura arquitetural do sistema.",
+        "Observar apenas a existência de módulos, e não a qualidade da separação entre eles."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Boas práticas para consolidar o capítulo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pergunte sempre qual responsabilidade define a identidade do módulo.",
+        "Use exports como contrato deliberado, não como reflexo automático do conteúdo do arquivo.",
+        "Observe imports como sinais concretos da relação do módulo com o restante do sistema.",
+        "Evite tanto depósitos genéricos quanto fragmentação exagerada.",
+        "Escolha nomes de arquivos e pastas que ajudem a contar a história da arquitetura.",
+        "Reveja os exercícios que contrariaram sua expectativa, pois eles revelam seus pontos de maior aprendizado.",
+        "Prepare-se para o encerramento integrador do capítulo na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "15. Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo avaliar módulos em termos de responsabilidade, coesão e fronteira pública.",
+        "Reconheço riscos de exportar e importar sem critério arquitetural.",
+        "Percebo a diferença entre modularização saudável e modularização apenas aparente.",
+        "Entendo o papel da nomeação na legibilidade do sistema.",
+        "Consigo ler a estrutura do projeto como mapa de responsabilidades.",
+        "Estou preparado para encerrar o capítulo com uma consolidação final integrada na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "16. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois desta sequência de exercícios comentados, o capítulo está pronto para seu encerramento integrador. Na próxima parte, faremos a consolidação final dos módulos, da separação de responsabilidades e da organização arquitetural, fechando a ponte entre fronteiras, dependências e crescimento saudável do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa etapa final será importante para transformar modularização em repertório sólido de organização profissional do código, preparando o leitor para os próximos capítulos do livro."
+    }
+  ]
+}

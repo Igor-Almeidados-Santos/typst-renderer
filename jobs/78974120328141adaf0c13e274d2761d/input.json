@@ -1,0 +1,1609 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 11 — Parte 7",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "11",
+    "chapter_title": "Assíncronia e coordenação temporal do comportamento",
+    "part_number": "7",
+    "part_title": "Exercícios comentados sobre promises e async/await",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 11 — Assíncronia e coordenação temporal do comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 7 — Exercícios comentados sobre promises e async/await"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta parte do capítulo foi concebida para consolidar, por meio de exercícios comentados, o que foi estudado sobre assíncronia, promises, then, catch, encadeamento e async/await. Ao longo das partes anteriores, o leitor compreendeu por que a assíncronia existe, viu como a linguagem representa resultados futuros por meio de promises, estudou o tratamento de sucesso e falha com then e catch, avançou para o encadeamento de continuidades dependentes e entrou em async/await como forma mais legível de escrever certos fluxos temporais. Também mapeou os erros mais comuns do tema, especialmente aqueles ligados à falsa sensação de que sintaxe moderna equivale automaticamente a entendimento profundo do tempo do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Exercícios comentados têm valor especial neste capítulo porque a assíncronia costuma enganar o estudante em um ponto muito delicado: o código pode parecer perfeitamente compreensível e ainda assim estar sendo lido com um modelo temporal errado. O programador reconhece a promise, vê o await, enxerga o then, mas ainda pode não perceber o que já está disponível agora, o que só virá depois, onde a falha entra no fluxo e como uma etapa realmente depende da anterior. Essa camada de entendimento é estrutural, não apenas sintática, e é exatamente isso que os exercícios a seguir procuram fortalecer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Cada exemplo foi escolhido para reforçar um aspecto essencial do capítulo: promise como representação do futuro, then e catch como reação a desfechos, encadeamento como continuidade temporal entre etapas e async/await como reescrita mais legível do mesmo modelo. Em todos os casos, o objetivo não é apenas prever o que será exibido, mas explicar por que aquele fluxo está temporalmente bem ou mal modelado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Como trabalhar estes exercícios"
+    },
+    {
+      "type": "paragraph",
+      "text": "A melhor forma de usar esta parte é prever primeiro o estado temporal do trecho antes de ler o comentário. Pergunte a si mesmo: o programa já tem o valor agora ou apenas a representação de sua chegada futura? Onde o fluxo continua em caso de sucesso? Onde a falha seria tratada? Em que ponto uma etapa depende da anterior? Só depois leia a explicação. Se sua leitura estiver correta, isso fortalece sua fluência temporal. Se estiver incompleta ou equivocada, melhor ainda pedagogicamente, porque o exercício terá encontrado uma zona importante de ajuste do seu modelo mental."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é recomendável executar os exemplos sempre que possível. No caso da assíncronia, observar o fluxo em execução ajuda bastante a consolidar a diferença entre iniciar uma operação, reagir ao seu desfecho e continuar a narrativa do comportamento. O estudante deve prestar atenção especial à distinção entre valor já pronto, promise em andamento e ponto em que a lógica é retomada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por fim, vale reforçar: o foco não é decorar combinações de then, catch ou await, e sim aprender a auditar a arquitetura temporal do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Exercício 1 — Promise não é o valor final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const promessa = Promise.resolve(\"Dados prontos\");\n\nconsole.log(promessa);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " promessa "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Dados prontos\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(promessa);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício reforça uma das distinções mais importantes do capítulo. O programa não está imprimindo diretamente a string como valor síncrono simples; está lidando com a entidade promise que representa o desfecho futuro já resolvido. O trecho é valioso porque corrige a tendência de confundir a promise com o dado final em si."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: promise representa o futuro da operação; ela não deve ser lida, em primeiro nível, como se já fosse o valor pronto tratado como dado comum."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Exercício 2 — then registra a reação ao sucesso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "Promise.resolve(\"Dados recebidos\")\n  .then(function (resultado) {\n    console.log(resultado);\n  });",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Dados recebidos\""
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (resultado) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(resultado);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: aqui o programa usa then para registrar o que deve acontecer quando a promise for resolvida com sucesso. O exercício é importante porque mostra que then não “pega o valor diretamente” como faria uma atribuição síncrona trivial. Ele estrutura a continuação do fluxo no momento em que o resultado estiver pronto para uso naquele caminho de sucesso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: then organiza a reação ao sucesso da operação futura, e não uma leitura imediata do valor como se o tempo não existisse."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Exercício 3 — catch trata a falha como desfecho legítimo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "Promise.reject(\"Falha de rede\")\n  .catch(function (erro) {\n    console.log(erro);\n  });",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "reject"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Falha de rede\""
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (erro) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(erro);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício consolida a ideia de que falha não é detalhe acidental, mas caminho legítimo do futuro assíncrono. O código deixa explícito o que deve acontecer se a operação for rejeitada. O valor didático do trecho está em mostrar que o tratamento de erro não é apêndice opcional da promessa de sucesso, mas parte estrutural da arquitetura do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: catch torna a falha visível e tratável dentro do desenho da operação futura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Exercício 4 — Encadeamento como continuidade entre etapas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "Promise.resolve(2)\n  .then(function (numero) {\n    return numero * 2;\n  })\n  .then(function (resultado) {\n    console.log(resultado);\n  });",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (numero) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " numero "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  })"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (resultado) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(resultado);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: aqui o exercício é importante porque mostra que os then não estão apenas empilhados por repetição visual. O primeiro passo recebe o valor resolvido, devolve uma nova versão desse valor, e o then seguinte recebe exatamente essa continuação. O encadeamento expressa dependência e progressão temporal, não mera acumulação de reações soltas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: encadear promises é fazer uma etapa alimentar a seguinte de maneira estruturada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Exercício 5 — Quando a etapa devolve nova promise"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function buscarUsuario() {\n  return Promise.resolve({ id: 1, nome: \"Ana\" });\n}\n\nfunction buscarPedidos(usuario) {\n  return Promise.resolve([\"Pedido A\", \"Pedido B\"]);\n}\n\nbuscarUsuario()\n  .then(function (usuario) {\n    return buscarPedidos(usuario);\n  })\n  .then(function (pedidos) {\n    console.log(pedidos);\n  });",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "({ id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": " });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarPedidos"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          },
+          {
+            "kind": "string",
+            "text": "\"Pedido A\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"Pedido B\""
+          },
+          {
+            "kind": "plain",
+            "text": "]);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "()"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (usuario) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarPedidos"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  })"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (pedidos) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedidos);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício mostra uma forma muito realista de continuidade assíncrona. A segunda operação depende do resultado da primeira, e o encadeamento deixa isso explícito. O estudante deve perceber que o retorno da nova promise é o que permite à cadeia continuar respeitando o tempo da etapa seguinte."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: quando uma etapa futura depende de outra, a cadeia de promises modela essa dependência temporal com clareza."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Exercício 6 — Esquecer de devolver o próximo passo rompe a narrativa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere a mesma ideia do exercício anterior, mas sem retornar a nova promise dentro do primeiro then. Qual é o problema conceitual?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: o problema é que a continuação da cadeia deixa de expressar corretamente a dependência entre as etapas. O leitor pode até enxergar dois then em sequência, mas a verdade estrutural do fluxo se perde se a promise da próxima operação não for devolvida ao encadeamento. Esse exercício é importante porque reforça que encadear promises não é apenas alinhar métodos: é devolver corretamente o que a etapa seguinte precisa para existir como continuação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: em cadeias assíncronas, retornar corretamente o próximo valor ou a próxima promise preserva a coerência temporal do fluxo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Exercício 7 — async/await como reescrita mais narrativa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "async function carregarPedidos() {\n  const usuario = await buscarUsuario();\n  const pedidos = await buscarPedidos(usuario);\n  console.log(pedidos);\n}\n\ncarregarPedidos();",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "carregarPedidos"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " pedidos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarPedidos"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedidos);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "carregarPedidos"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício mostra async/await em um caso em que a progressão entre as etapas fica visualmente mais direta. O estudante deve perceber que o modelo temporal continua sendo o mesmo da cadeia de promises: primeiro resolve o usuário, depois os pedidos dependentes desse usuário. O ganho está na leitura local da função, que se torna mais próxima da narrativa “primeiro isto, depois aquilo”."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: async/await reorganiza a escrita das dependências temporais sem abandonar o modelo de promises que as sustenta."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Exercício 8 — try/catch em async/await"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "async function carregarPedidos() {\n  try {\n    const usuario = await buscarUsuario();\n    const pedidos = await buscarPedidos(usuario);\n    console.log(pedidos);\n  } catch (erro) {\n    console.log(\"Erro ao carregar pedidos:\", erro);\n  }\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "carregarPedidos"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarUsuario"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " pedidos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "buscarPedidos"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedidos);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  } "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (erro) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Erro ao carregar pedidos:\""
+          },
+          {
+            "kind": "plain",
+            "text": ", erro);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: aqui o exercício reforça uma ideia central da parte anterior: a legibilidade do async/await não dispensa o tratamento sério de falhas. O try/catch reinscreve o caminho do erro em uma narrativa mais integrada ao restante da função. O código fica mais direto, mas a responsabilidade de lidar com o desfecho problemático continua essencial."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: async/await melhora a narrativa do fluxo, mas não reduz a importância estrutural do tratamento explícito do erro."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Exercício 9 — Aparência linear não elimina a dependência temporal"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um trecho com vários awaits em sequência. Por que seria um erro lê-lo como se o problema do tempo tivesse desaparecido apenas porque a escrita ficou mais linear?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: porque a linearidade visual não apaga a realidade temporal do comportamento. O código continua dependendo de resultados futuros. Cada await marca um ponto em que a continuação daquela função depende da resolução de uma operação assíncrona. O exercício reforça uma das lições mais importantes do capítulo: a sintaxe mais clara não elimina a necessidade de pensar o tempo corretamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: em assíncronia, clareza visual só é realmente valiosa quando acompanha clareza de modelo temporal."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Exercício 10 — Quando o erro é ignorado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um fluxo assíncrono com then ou await em que nenhuma estratégia clara de tratamento de falha foi prevista. O que isso revela sobre a qualidade do desenho?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: revela um desenho incompleto. O programador modelou o futuro apenas como caminho ideal e deixou a rejeição ou a falha fora da arquitetura explícita do comportamento. Esse exercício existe para consolidar uma convicção central do capítulo: erro não é detalhe secundário da assíncronia, mas parte estrutural do ambiente real em que o software opera."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: fluxo assíncrono forte é aquele que organiza tanto o sucesso quanto a falha com responsabilidade equivalente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Como revisar o próprio raciocínio ao ler promises e async/await"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de cada exercício, o estudante deve se fazer algumas perguntas fundamentais. O que já está pronto agora e o que ainda é futuro? Onde o fluxo continua em caso de sucesso? Onde a falha é tratada? Esta etapa realmente depende da anterior? O que está sendo devolvido ao próximo passo da cadeia? O await marca dependência temporal legítima ou apenas dá aparência linear a um fluxo mal pensado? Essas perguntas ajudam a transformar a leitura da assíncronia em auditoria de tempo, e não apenas em observação de sintaxe moderna."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa prática é especialmente importante porque promises e async/await costumam dar ao código uma aparência de organização que pode esconder equívocos de modelo mental. O estudante precisa aprender a revisar a verdade temporal do fluxo, e não apenas sua elegância visual."
+    },
+    {
+      "type": "paragraph",
+      "text": "Aprender assíncronia em JavaScript é, em grande medida, aprender a distinguir com clareza o presente do futuro, a dependência da mera coincidência e a continuidade real da simples sucessão visual de linhas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Erros comuns ao resolver estes exercícios"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir promise com valor já resolvido.",
+        "Tomar then como leitura imediata do dado pronto.",
+        "Ignorar catch ou try/catch como se a falha fosse secundária.",
+        "Encadear etapas sem devolver corretamente valores ou promises.",
+        "Tratar async/await como tecnologia conceitualmente separada de promises.",
+        "Ler a sintaxe mais linear e esquecer a dependência temporal real do fluxo.",
+        "Observar apenas a beleza do código sem revisar sua coerência no tempo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Boas práticas para consolidar o capítulo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Releia cada exemplo perguntando o que já está disponível no presente e o que ainda pertence ao futuro da execução.",
+        "Associe then e catch aos caminhos explícitos de sucesso e falha.",
+        "Associe encadeamento à ideia de continuidade temporal disciplinada entre etapas dependentes.",
+        "Leia async/await sempre como camada de expressão sobre promises, e não como negação do modelo anterior.",
+        "Use try/catch como parte da arquitetura do fluxo e não apenas como remendo eventual.",
+        "Reveja os exercícios que contrariaram sua expectativa, pois eles revelam seus pontos de maior aprendizado.",
+        "Leve adiante o hábito de auditar o tempo do código, e não apenas sua sintaxe."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "15. Checklist profissional da Parte 7"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo analisar promises em termos de futuro, sucesso, falha e continuidade.",
+        "Reconheço o papel de then, catch, encadeamento e async/await dentro do mesmo modelo conceitual.",
+        "Percebo erros clássicos de dependência temporal mal compreendida.",
+        "Entendo a importância de devolver corretamente valores ou promises nas cadeias.",
+        "Reconheço que async/await melhora a escrita sem dispensar o raciocínio temporal rigoroso.",
+        "Estou preparado para encerrar o capítulo com uma consolidação final integrada na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "16. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois desta sequência de exercícios comentados, o capítulo está pronto para seu encerramento integrador. Na próxima parte, faremos a consolidação final da assíncronia e da coordenação temporal do comportamento, fechando a ponte entre promises, encadeamento, async/await e leitura madura do tempo no JavaScript."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa etapa final será importante para transformar a assíncronia em repertório sólido de modelagem temporal do comportamento, preparando o leitor para os capítulos seguintes do livro."
+    }
+  ]
+}

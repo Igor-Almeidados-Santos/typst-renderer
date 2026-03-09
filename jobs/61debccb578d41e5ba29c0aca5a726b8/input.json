@@ -1,0 +1,535 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 13 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "13",
+    "chapter_title": "Tratamento de erros e programação defensiva",
+    "part_number": "3",
+    "part_title": "try/catch e captura organizada de falhas",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 13 — Tratamento de erros e programação defensiva"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — try/catch e captura organizada de falhas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender por que erros acontecem, estudar robustez como disciplina de governança dos limites do sistema e entrar em throw e Error como mecanismos de interrupção explícita do fluxo inválido, o leitor está pronto para avançar para uma das construções mais importantes do tratamento de falhas em JavaScript: try/catch. Até aqui, o capítulo mostrou como o programa pode reconhecer uma condição inválida e lançar uma falha significativa. Agora, a questão se desloca para outro ponto igualmente importante: o que fazer quando essa falha acontece? Como capturá-la de forma organizada sem deixar o sistema cair em desordem?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque robustez não depende apenas da coragem de falhar cedo. Depende também da capacidade de governar essa falha em lugares adequados da arquitetura. Em alguns casos, o erro deve realmente interromper a execução mais ampla. Em outros, o sistema precisa registrar o problema, adaptar a resposta, mostrar uma mensagem ao usuário, escolher caminho alternativo ou impedir que a falha vaze de forma caótica para fora de um contexto controlado. É exatamente nesse ponto que try/catch ganha seu valor."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre try/catch antes de aprofundar finally, criação de erros mais expressivos e desenho de estratégias maduras de tratamento. O leitor compreenderá o que significa tentar um trecho de código sujeito a falha, verá como capturar o erro quando ele ocorre e entenderá por que capturar não é o mesmo que esconder. Ao final, deixará de ver try/catch como bloco decorado de sintaxe e passará a reconhecê-lo como mecanismo de governança local e intencional do erro dentro do fluxo do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: lançar erro sem governá-lo nem sempre resolve o comportamento maior"
+    },
+    {
+      "type": "paragraph",
+      "text": "Na parte anterior, o leitor viu que lançar erro é importante quando o fluxo já não pode continuar corretamente. Essa lição continua válida. No entanto, em sistemas reais, nem sempre basta interromper o comportamento local. O programa mais amplo pode precisar decidir o que fazer diante dessa falha. Talvez registrar o problema, talvez informar o usuário, talvez encerrar apenas uma operação específica, talvez manter o restante do sistema funcionando de forma controlada. Em outras palavras, reconhecer a falha é só uma parte do problema. A outra parte é governar sua propagação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que try/catch ajuda a resolver. Ele permite envolver um trecho de código que pode falhar e definir, no próprio ponto adequado da arquitetura, como reagir se essa falha acontecer. O programa deixa de depender apenas da interrupção nua do fluxo e passa a ter linguagem para administrar a consequência da falha em um contexto mais amplo."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que tratamento de erro maduro envolve duas decisões diferentes: quando lançar e onde capturar."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é try/catch em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, try/catch é a estrutura usada para tentar executar um bloco de código que pode lançar erro e, se isso acontecer, capturar essa falha em um bloco separado, onde o sistema pode decidir como reagir. O bloco try concentra o comportamento que está sendo tentado. O bloco catch concentra a resposta à falha capturada."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "try {\n  const resultado = dividir(10, 0);\n  console.log(resultado);\n} catch (erro) {\n  console.log(\"Falha ao dividir:\", erro.message);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "dividir"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(resultado);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (erro) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Falha ao dividir:\""
+          },
+          {
+            "kind": "plain",
+            "text": ", erro.message);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, o sistema tenta executar uma operação que pode falhar. Se a função lançar um erro, o fluxo não segue normalmente dentro do try. Em vez disso, o erro é capturado pelo catch, que passa a ser o lugar em que a reação será definida. O ponto mais importante aqui é perceber a mudança de regime do fluxo: houve tentativa, falha e reação organizada."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve associar try/catch à ideia de tentativa controlada e tratamento explícito da falha resultante."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Try não “evita” o erro; ele delimita onde o erro será governado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro comum de leitura é imaginar que try serve para impedir que o erro exista ou para transformar automaticamente código problemático em código seguro. Isso é insuficiente. Try não elimina a falha. Ele apenas delimita um contexto em que, caso a falha ocorra, haverá oportunidade organizada de reação por meio do catch. A existência do erro continua real. O que muda é a forma como o sistema escolhe governá-lo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque protege o estudante de uma falsa sensação de segurança. Envolver código em try/catch sem entender o que fazer com a falha não torna a arquitetura robusta por si só. O valor da construção está no desenho da reação, não apenas na presença do bloco sintático."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: try/catch não apaga o erro; ele organiza sua captura e seu tratamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Catch recebe o erro e transforma falha em decisão arquitetural"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o erro é capturado, o catch recebe acesso à falha lançada. Isso permite ao programa registrar informação relevante, escolher resposta adequada, adaptar a mensagem exibida, interromper apenas parte do comportamento ou até relançar o problema em camada mais alta. Em termos conceituais, o catch é o ponto em que a falha deixa de ser apenas interrupção e passa a se tornar decisão arquitetural."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque mostra que o tratamento de erro não deve ser lido apenas como técnica de contenção. Ele também é um lugar de escolha semântica. O sistema precisa decidir o que aquela falha significa no contexto atual e como essa camada da aplicação deve reagir a ela."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a ver o catch como espaço de tradução entre erro técnico e resposta arquitetural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Capturar não é o mesmo que silenciar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das armadilhas mais perigosas no uso de try/catch é capturar erro apenas para abafá-lo sem critério. O programador escreve um catch vazio, ignora o problema ou registra algo genérico demais e segue como se o sistema estivesse sob controle. Isso não é robustez. Muitas vezes é apenas ocultação da falha. O programa perde oportunidade de diagnóstico e pode continuar em estado inconsistente ou com resposta enganosa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é extremamente importante porque corrige uma distorção frequente na formação inicial. Capturar erro não é sinônimo de tratar erro bem. Em muitos casos, um catch ruim pode ser pior do que deixar a falha aparecer de maneira mais honesta, porque mascara o problema e dificulta sua correção."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: catch forte governa a falha; catch fraco apenas a esconde."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Capturar no nível certo da arquitetura"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro aprendizado importante é perceber que nem todo erro deve ser capturado em qualquer ponto. Às vezes, a função que detecta a falha não é o melhor lugar para decidir a reação final. Em muitos casos, a camada mais adequada para tratar o problema é aquela que tem contexto suficiente para saber o impacto daquela falha sobre o restante do sistema. Isso significa que lançar e capturar são decisões relacionadas, mas não idênticas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é especialmente importante porque introduz uma noção madura de responsabilidade arquitetural. Uma função utilitária pode lançar erro ao detectar uso inválido, mas a camada de interface ou de serviço pode ser o lugar apropriado para capturar, registrar e definir a resposta ao usuário. O sistema ganha clareza quando cada camada assume o tipo de decisão que realmente lhe pertence."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa prática aqui é simples e poderosa: capture onde houver contexto suficiente para governar a falha com sentido."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Try/catch e programação defensiva"
+    },
+    {
+      "type": "paragraph",
+      "text": "Try/catch se conecta profundamente à programação defensiva porque permite cercar zonas do comportamento em que a falha precisa ser observada e tratada de forma consciente. Ele não substitui validações, contratos e throws bem colocados. Pelo contrário, funciona em parceria com eles. A programação defensiva reconhece limites e riscos. Throw os torna explícitos. Try/catch oferece um mecanismo para administrar certos impactos dessas falhas em pontos adequados da arquitetura."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto reforça a unidade conceitual do capítulo. O leitor deve perceber que as ferramentas de erro não são peças soltas da linguagem, mas partes de uma mesma disciplina de robustez. Quanto mais essa unidade for entendida, mais natural será o uso maduro dessas construções."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a enxergar o tratamento de erro como cadeia coerente: detectar, lançar, capturar e decidir."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: operação inválida com reação controlada ao usuário"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma camada de interface que chama uma função crítica de domínio. A função lança erro quando recebe dados inválidos, preservando a integridade da regra de negócio. A camada superior, então, captura essa falha com try/catch, registra a mensagem apropriada e informa o usuário de forma controlada. Esse cenário resume muito bem o valor arquitetural da construção: a falha é detectada onde nasce, mas tratada onde faz sentido reagir ao seu impacto sobre a experiência ou sobre o fluxo maior."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra que robustez não é apenas disciplina local da função. É também coordenação entre camadas. O sistema se fortalece quando cada nível assume o papel adequado na governança da falha."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: tratamento de erro maduro distribui responsabilidades entre detecção e reação com mais consciência arquitetural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de mensagens úteis no catch"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um erro é capturado, a forma como ele é comunicado continua sendo decisiva. Mensagens muito vagas, logs sem contexto ou reações genéricas demais dificultam observabilidade e manutenção. Um catch bom tende a preservar o máximo de clareza útil sobre o problema: o que falhou, em que contexto e qual foi a reação tomada naquele ponto da arquitetura."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem grande importância editorial porque boa parte da qualidade do tratamento de erro está na inteligibilidade que ele produz para o futuro mantenedor do sistema. O problema não é apenas sobreviver à falha. É fazer isso sem tornar o comportamento opaco."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar adiante esta regra: capturar erro bem também é produzir contexto legível sobre a falha e sua reação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa leitura introdutória de try/catch costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa leitura de try/catch costuma comunicar pelo menos três coisas importantes: que trecho do sistema está sob tentativa de execução sujeita a falha, que tipo de erro pode ser capturado ali e que reação arquitetural será tomada quando isso acontecer. Esses três elementos ajudam muito a distinguir tratamento maduro de simples presença mecânica de blocos try/catch."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não usar a construção como ornamento de segurança. Antes de escrever try/catch, ele deve entender por que aquela falha merece ser governada naquele nível do sistema e o que essa camada tem condições reais de fazer com ela."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura de try/catch, portanto, começa por reconhecer que o código está estabelecendo um ponto consciente de governança do erro dentro da arquitetura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que try impede que o erro exista em vez de organizar sua captura.",
+        "Usar catch apenas para esconder a falha sem reação útil.",
+        "Capturar erro em nível sem contexto suficiente para tratá-lo bem.",
+        "Imaginar que qualquer presença de try/catch já torna o código robusto.",
+        "Perder a diferença entre lançar a falha e decidir a reação a ela.",
+        "Subestimar a importância de mensagens e logs claros no ponto de captura."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe try/catch à ideia de tentativa controlada e captura intencional da falha.",
+        "Lembre-se de que capturar não é o mesmo que silenciar.",
+        "Pergunte em cada exemplo se o catch realmente tem contexto para decidir a reação adequada.",
+        "Observe a relação entre throw bem posicionado e try/catch bem localizado.",
+        "Use mensagens claras e contextualizadas ao reagir à falha.",
+        "Prepare-se para estudar finally, erros mais expressivos e exercícios comentados nas próximas partes do capítulo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que significa capturar um erro com try/catch em nível introdutório e conceitual.",
+        "Reconheço try/catch como mecanismo de governança local da falha dentro do fluxo.",
+        "Percebo que capturar não é o mesmo que esconder o erro.",
+        "Entendo a importância de tratar a falha no nível arquitetural adequado.",
+        "Reconheço a relação entre lançamento explícito e captura organizada.",
+        "Estou preparado para estudar finally e estratégias mais completas de tratamento na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende o papel de try/catch na captura organizada de falhas, o próximo passo é estudar como certos comportamentos precisam acontecer independentemente de sucesso ou erro. Na próxima parte, entraremos em finally e no papel da limpeza, do encerramento e da disciplina de fechamento no fluxo do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque robustez não depende apenas de lançar e capturar. Em muitos casos, depende também de garantir que determinadas responsabilidades de encerramento sejam cumpridas mesmo quando a execução encontra problemas no caminho."
+    }
+  ]
+}

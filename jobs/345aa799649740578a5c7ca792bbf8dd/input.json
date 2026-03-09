@@ -1,0 +1,1305 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 13 — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "13",
+    "chapter_title": "Tratamento de erros e programação defensiva",
+    "part_number": "6",
+    "part_title": "Exercícios comentados sobre erros e robustez",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 13 — Tratamento de erros e programação defensiva"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Exercícios comentados sobre erros e robustez"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta parte do capítulo foi concebida para consolidar, por meio de exercícios comentados, tudo o que foi estudado sobre tratamento de erros, robustez, interrupção explícita do fluxo, captura organizada, encerramento disciplinado e comunicação semântica da falha. Ao longo das partes anteriores, o leitor compreendeu por que erros fazem parte do ambiente real do software, viu como throw e Error permitem tornar explícita a quebra de contrato, estudou try/catch como mecanismo de governança local da falha, entrou em finally como disciplina de encerramento e percebeu o valor de mensagens e tipos de erro mais expressivos. Agora é o momento de transformar esse repertório em leitura prática do comportamento defensivo do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Exercícios comentados têm valor especial neste capítulo porque robustez raramente falha por desconhecimento da sintaxe pura. O estudante geralmente já sabe que throw existe, que try/catch captura falhas e que mensagens de erro podem ser escritas. A dificuldade maior está em decidir quando lançar, onde capturar, o que encerrar, o que comunicar e como distinguir entre problema tratável, ausência esperável e quebra real de contrato. É exatamente essa camada de julgamento que os exemplos a seguir procuram fortalecer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Cada exercício foi escolhido para reforçar um aspecto estrutural do capítulo. Alguns consolidam o papel do throw como interrupção honesta do fluxo inválido. Outros revisam a diferença entre erro silencioso e erro governado. Outros ainda trabalham try/catch, finally e expressividade da falha em contextos de validação, regra de negócio e integração. Em todos os casos, o objetivo não é apenas prever o que acontece, mas explicar por que aquele tratamento de erro fortalece — ou enfraquece — a arquitetura do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Como trabalhar estes exercícios"
+    },
+    {
+      "type": "paragraph",
+      "text": "A melhor forma de usar esta parte é observar primeiro qual contrato ou expectativa do comportamento está em jogo antes de ler o comentário. Pergunte a si mesmo: o fluxo ainda pode continuar corretamente ou já deveria falhar? Se houver falha, onde ela deve ser governada? Há algo que precisa ser encerrado em qualquer cenário? A mensagem comunicada ajuda a compreender o problema? Em seguida, compare sua leitura com a explicação. Se acertar, isso fortalece seu julgamento de robustez. Se errar, melhor ainda pedagogicamente, porque o exercício terá encontrado uma zona importante em que sua leitura arquitetural da falha ainda precisava amadurecer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é recomendável reescrever mentalmente alguns exemplos. Em tratamento de erros, comparar uma versão que retorna valor especial, outra que lança erro e outra que captura mal ou bem a falha ajuda bastante a consolidar critério. O estudante deve prestar atenção especial à diferença entre interromper o comportamento, esconder o problema e governá-lo com clareza."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por fim, vale reforçar: o foco não é decorar throw ou try/catch, e sim aprender a pensar melhor os limites válidos do comportamento e a qualidade da resposta a suas quebras."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Exercício 1 — Quando o contrato foi rompido"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function dividir(a, b) {\n  if (b === 0) {\n    throw new Error(\"Divisão por zero não é permitida.\");\n  }\n\n  return a / b;\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "dividir"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (b "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Divisão por zero não é permitida.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício reforça uma das distinções mais importantes do capítulo. A função não tenta inventar um resultado artificial para um caso em que o contrato do comportamento foi rompido. Ela interrompe explicitamente o fluxo e comunica a natureza da quebra. O valor didático do trecho está em mostrar que robustez nem sempre significa “continuar de algum jeito”; muitas vezes significa falhar cedo e com clareza."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: quando a continuação correta já não faz sentido, lançar erro pode ser mais honesto do que retornar valor ambíguo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Exercício 2 — Catch não é esconder a falha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "try {\n  const resultado = dividir(10, 0);\n  console.log(resultado);\n} catch (erro) {\n  console.log(\"Falha ao dividir:\", erro.message);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "dividir"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(resultado);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (erro) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Falha ao dividir:\""
+          },
+          {
+            "kind": "plain",
+            "text": ", erro.message);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: aqui o exercício mostra o papel correto do catch em nível introdutório. A falha não foi apagada; ela foi capturada e transformada em reação organizada no contexto atual. O leitor deve perceber que capturar bem é dar consequência legível à interrupção, e não apenas impedir que o programa mostre erro."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: catch forte governa a falha com clareza; catch fraco apenas a abafa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Exercício 3 — Valor especial nem sempre basta"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma função crítica que, diante de entrada inválida, retorna null em silêncio e deixa o restante do sistema descobrir isso depois. Qual é o risco principal?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: o risco principal é empurrar a quebra de contrato para outro ponto da arquitetura, tornando a falha mais distante, mais ambígua e potencialmente mais difícil de diagnosticar. O exercício reforça que retornar null ou outro marcador especial pode ser legítimo em alguns contextos, mas não substitui automaticamente o lançamento explícito quando a validade semântica do comportamento foi rompida."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: valores especiais podem sinalizar condições específicas, mas nem sempre comunicam com força suficiente uma falha estrutural do fluxo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Exercício 4 — Finally como disciplina de encerramento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let carregando = true;\n\ntry {\n  console.log(\"Buscando dados...\");\n  throw new Error(\"Falha na requisição\");\n} catch (erro) {\n  console.log(\"Erro:\", erro.message);\n} finally {\n  carregando = false;\n  console.log(\"Carregamento encerrado.\");\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " carregando "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Buscando dados...\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Falha na requisição\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (erro) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Erro:\""
+          },
+          {
+            "kind": "plain",
+            "text": ", erro.message);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "finally"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  carregando "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Carregamento encerrado.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício consolida a função arquitetural de finally. O estado carregando não pertence ao caminho de sucesso nem ao de erro como resposta específica. Ele pertence ao encerramento da tentativa. O valor do exemplo está em mostrar que robustez também exige limpar e recompor estado ao final do processo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: finally protege responsabilidades de saída comuns ao sucesso e à falha."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Exercício 5 — Mensagem genérica versus mensagem útil"
+    },
+    {
+      "type": "paragraph",
+      "text": "Compare mentalmente duas mensagens de erro: \"Erro\" e \"Percentual de desconto deve estar entre 0 e 100\". Qual delas fortalece mais a manutenção e por quê?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: a segunda fortalece muito mais, porque comunica a quebra relevante com precisão suficiente para orientar diagnóstico e correção. O exercício existe para reforçar que lançar erro não basta; é preciso comunicar a falha de maneira útil ao contexto técnico."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: mensagem boa reduz opacidade e transforma a falha em informação arquiteturalmente valiosa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Exercício 6 — Erro mais expressivo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "class ErroDeValidacao extends Error {\n  constructor(mensagem) {\n    super(mensagem);\n    this.name = \"ErroDeValidacao\";\n  }\n}\n\nfunction aplicarDesconto(preco, percentual) {\n  if (percentual < 0 || percentual > 100) {\n    throw new ErroDeValidacao(\"Percentual de desconto deve estar entre 0 e 100.\");\n  }\n\n  return preco - (preco * percentual) / 100;\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "class"
+          },
+          {
+            "kind": "plain",
+            "text": " ErroDeValidacao "
+          },
+          {
+            "kind": "keyword",
+            "text": "extends"
+          },
+          {
+            "kind": "plain",
+            "text": " Error {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "constructor"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagem) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "super"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagem);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "this"
+          },
+          {
+            "kind": "plain",
+            "text": ".name "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"ErroDeValidacao\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "aplicarDesconto"
+          },
+          {
+            "kind": "plain",
+            "text": "(preco, percentual) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (percentual "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " percentual "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "ErroDeValidacao"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Percentual de desconto deve estar entre 0 e 100.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " preco "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " (preco "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " percentual) "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício mostra que a arquitetura ganha força quando não apenas a mensagem, mas também a categoria da falha se torna mais nítida. O sistema deixa de enxergar apenas “algum erro” e passa a ter uma semântica mais clara sobre o tipo de problema ocorrido. Isso melhora captura, reação e leitura do contrato violado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: nomear melhor o erro ajuda o sistema a pensar melhor sobre a falha."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Exercício 7 — Capturar no nível certo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma função utilitária que detecta entrada inválida e lança erro, enquanto a camada de interface captura esse erro e decide exibir mensagem ao usuário. Por que esse desenho pode ser superior a capturar tudo dentro da própria função utilitária?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: porque a camada utilitária tem clareza sobre a quebra do contrato local, mas não necessariamente sobre a melhor reação arquitetural no contexto maior da aplicação. A camada de interface ou serviço costuma ter mais contexto para decidir como a falha deve impactar a experiência ou o fluxo global. O exercício reforça a diferença entre lançar e governar a falha."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: nem sempre o melhor lugar para detectar o erro é também o melhor lugar para decidir sua resposta final."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Exercício 8 — Captura silenciosa como fragilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um catch vazio, sem log, sem reação e sem relançamento. Qual é o problema arquitetural mais sério?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: o problema mais sério é a opacidade. O sistema sofre a falha, mas sua captura não produz entendimento, resposta adequada nem propagação controlada. O comportamento pode até seguir em frente, mas agora com menos honestidade e menos capacidade de diagnóstico. O exercício existe para mostrar que capturar sem tratar bem pode ser pior do que deixar a falha aparecer de forma clara."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: erro capturado e silenciado sem critério costuma enfraquecer a robustez em vez de fortalecê-la."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Exercício 9 — Proximidade da origem da falha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere duas abordagens: uma detecta e lança o erro no ponto em que a entrada inválida é percebida; a outra deixa o dado ruim circular até provocar comportamento estranho em trecho distante do sistema. Qual tende a ser melhor e por quê?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: a primeira tende a ser melhor, porque falha mais cedo, com mais honestidade e com maior proximidade da origem do problema. Isso melhora diagnóstico e reduz propagação de estado inconsistente. O exercício reforça uma das grandes lições do capítulo: detectar cedo é frequentemente parte central da robustez."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: falhar perto da origem da quebra costuma tornar o sistema mais compreensível e governável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Exercício 10 — Comunicação técnica versus comunicação ao usuário"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um sistema que usa mensagens técnicas claras internamente, mas apresenta na interface uma mensagem mais adequada ao usuário quando a falha é capturada. Por que isso pode ser melhor do que expor o mesmo texto técnico diretamente em qualquer contexto?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: porque diferentes contextos exigem diferentes graus e estilos de comunicação. O desenvolvedor precisa de precisão diagnóstica. O usuário precisa de clareza prática e segurança de interação. O exercício reforça que tratamento de erro maduro inclui sensibilidade sobre para quem a falha está sendo comunicada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: comunicar erro bem também significa adequar a mensagem ao público e ao ponto arquitetural da reação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Como revisar o próprio raciocínio ao ler tratamento de falhas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de cada exercício, o estudante deve se fazer algumas perguntas fundamentais. O fluxo ainda podia continuar corretamente ou o contrato já tinha sido rompido? O erro foi lançado perto o suficiente da origem do problema? O catch tinha contexto real para decidir a reação? O finally protegeu uma responsabilidade de fechamento comum? A mensagem comunica a quebra com precisão? O tipo de erro ajuda a distinguir sua natureza? Essas perguntas ajudam a transformar a leitura do tratamento de falhas em revisão de arquitetura, e não apenas em observação de sintaxe."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa prática é especialmente importante porque robustez quase nunca se resume a uma construção isolada da linguagem. Ela emerge da combinação entre validação, interrupção explícita, captura disciplinada, encerramento e comunicação útil da falha."
+    },
+    {
+      "type": "paragraph",
+      "text": "Aprender tratamento de erros em JavaScript é, em grande medida, aprender a proteger o sistema contra a continuidade indevida do que já deixou de fazer sentido."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Erros comuns ao resolver estes exercícios"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir throw com simples aviso em vez de interrupção explícita do fluxo.",
+        "Aceitar mensagens vagas como se já fossem comunicação suficiente da falha.",
+        "Usar catch para esconder erro em vez de governá-lo.",
+        "Não distinguir finally como encerramento comum dos outros caminhos do fluxo.",
+        "Ignorar o valor de diferenciar semanticamente tipos de erro.",
+        "Subestimar a importância de lançar cedo e capturar no nível arquitetural adequado.",
+        "Tratar a falha apenas como evento técnico, e não como quebra relevante do contrato do comportamento."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Boas práticas para consolidar o capítulo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pergunte sempre que contrato do comportamento está sendo protegido.",
+        "Lance erro quando a continuação correta já não fizer sentido.",
+        "Use mensagens específicas e proporcionais.",
+        "Capture apenas onde houver contexto suficiente para reagir bem.",
+        "Use finally para responsabilidades de encerramento realmente comuns aos desfechos.",
+        "Diferencie tipos de falha quando isso melhorar captura e reação.",
+        "Reveja os exercícios que contrariaram sua expectativa, pois eles revelam seus pontos de maior aprendizado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "15. Checklist profissional da Parte 6"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo analisar erros em termos de contrato rompido, interrupção e reação arquitetural.",
+        "Reconheço o papel de throw, try/catch e finally dentro da mesma disciplina de robustez.",
+        "Percebo o valor de mensagens e tipos de erro mais expressivos.",
+        "Entendo a importância de falhar cedo e capturar no nível certo.",
+        "Reconheço a diferença entre capturar falha e esconder falha.",
+        "Estou preparado para encerrar o capítulo com uma consolidação final integrada na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "16. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois desta sequência de exercícios comentados, o capítulo está pronto para seu encerramento integrador. Na próxima parte, faremos a consolidação final do tratamento de erros e da programação defensiva, fechando a ponte entre limites do sistema, interrupção explícita, captura organizada e robustez arquitetural."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa etapa final será importante para transformar o tema em repertório sólido de construção profissional de software, preparando o leitor para os capítulos seguintes do livro."
+    }
+  ]
+}
