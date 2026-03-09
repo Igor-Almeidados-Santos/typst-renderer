@@ -1,0 +1,1402 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 14 — Parte 7",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 14,
+    "chapter_title": "Aplicações no navegador: storage, roteamento simples e componentes sem framework",
+    "part_number": 7,
+    "part_title": "Refatoração de apps vanilla maiores: módulos, naming, contratos e pontos de teste",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 14 — Aplicações no navegador: storage, roteamento simples e componentes sem framework"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 7 — Refatoração de apps vanilla maiores: módulos, naming, contratos e pontos de teste"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de montar telas, rotas, storage e componentes sem framework, surge a necessidade inevitável: organizar o código para continuar crescendo sem virar um amontoado de arquivos acoplados. O ponto júnior aqui é arquitetura leve: dividir por responsabilidade, nomear com intenção, definir contratos claros entre módulos e preservar pontos onde a lógica pode ser testada sem DOM. Nesta parte, você vai estudar refatorações práticas para manter um app vanilla profissional, legível e evolutivo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1) Problema real: “Meu app funciona, mas ninguém quer mexer nele”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse cenário é comum: a aplicação roda, mas o código está espalhado, com nomes vagos, funções grandes e dependências ocultas. O custo não aparece no primeiro dia; aparece no segundo mês, quando uma mudança pequena quebra três telas. A solução é explicitar fronteiras: o que cada módulo faz, o que recebe e o que devolve."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2) Dividir por responsabilidade, não por acaso"
+    },
+    {
+      "type": "list",
+      "items": [
+        "api.js: rede, fetch, timeout, parse seguro, retries.",
+        "storage.js: load/save, versionamento, migração.",
+        "router.js: leitura de rota, matching, navegação.",
+        "validators.js: normalização e validação pura.",
+        "components/: pequenas peças de UI com API mínima.",
+        "screens/: composição de telas por rota.",
+        "app.js: shell do app, estado global mínimo, montagem inicial."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3) Naming: nomes que carregam intenção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nome ruim cria dívida cognitiva. Prefira nomes que explicam papel e contrato. A pergunta prática é: alguém novo consegue prever o comportamento da função só pelo nome?"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Ruim\nfunction doIt(x) { /* ... */ }\nfunction save(data) { /* salva o quê? onde? */ }\n\n// Melhor\nfunction requestJson(url, options) { /* rede + parse */ }\nfunction saveUiPreferences(ui) { /* persiste preferências */ }\nfunction matchRoute(path) { /* converte path em rota */ }\nfunction validateSignupForm(input) { /* valida payload do form */ }",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Ruim"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "doIt"
+          },
+          {
+            "kind": "plain",
+            "text": "(x) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " ... "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "save"
+          },
+          {
+            "kind": "plain",
+            "text": "(data) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " salva o quê"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": " onde"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Melhor"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "requestJson"
+          },
+          {
+            "kind": "plain",
+            "text": "(url, options) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " rede "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " parse "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "saveUiPreferences"
+          },
+          {
+            "kind": "plain",
+            "text": "(ui) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " persiste preferências "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "matchRoute"
+          },
+          {
+            "kind": "plain",
+            "text": "(path) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " converte path em rota "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validateSignupForm"
+          },
+          {
+            "kind": "plain",
+            "text": "(input) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " valida payload "
+          },
+          {
+            "kind": "keyword",
+            "text": "do"
+          },
+          {
+            "kind": "plain",
+            "text": " form "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4) Contratos explícitos entre módulos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cada módulo deve expor uma API pequena e previsível. O chamador não precisa conhecer detalhes internos. Isso reduz acoplamento e facilita substituição ou evolução interna."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// storage.js\nexport function loadUi() { /* retorna ui normalizada */ }\nexport function saveUi(ui) { /* persiste envelope versionado */ }\n\n// router.js\nexport function getRoutePath() { /* string */ }\nexport function matchRoute(path) { /* { name, params } */ }\nexport function go(path) { /* muda hash */ }\n\n// validators.js\nexport function validateTitle(raw) { /* { ok, value/msg } */ }",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// storage.js"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "loadUi"
+          },
+          {
+            "kind": "plain",
+            "text": "() { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " retorna ui normalizada "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "saveUi"
+          },
+          {
+            "kind": "plain",
+            "text": "(ui) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " persiste envelope versionado "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// router.js"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "getRoutePath"
+          },
+          {
+            "kind": "plain",
+            "text": "() { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " string "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "matchRoute"
+          },
+          {
+            "kind": "plain",
+            "text": "(path) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " { name, params } "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "go"
+          },
+          {
+            "kind": "plain",
+            "text": "(path) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " muda hash "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// validators.js"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validateTitle"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) { "
+          },
+          {
+            "kind": "operator",
+            "text": "/*"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok, value"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "msg } "
+          },
+          {
+            "kind": "operator",
+            "text": "*/"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5) Ponto de teste: preservar lógica pura"
+    },
+    {
+      "type": "paragraph",
+      "text": "A melhor forma de manter qualidade em apps vanilla é isolar partes puras: validadores, seletores derivados, matchers de rota, normalizadores de payload. Essas funções podem ser testadas sem DOM e sem browser."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "export function selectVisibleItems(items, q) {\n  const qn = String(q ?? '').trim().toLowerCase();\n  if (!qn) return items;\n  return items.filter((it) => String(it.nome ?? '').toLowerCase().includes(qn));\n}\n\nexport function validateTitle(raw) {\n  const t = String(raw ?? '').trim().replace(/\\s+/g, ' ');\n  if (t.length < 3) return { ok: false, msg: 'título deve ter 3+ caracteres' };\n  return { ok: true, value: t };\n}\n\nconsole.log(selectVisibleItems([{ nome: 'Café' }], 'ca'));\nconsole.log(validateTitle('  oi  '));",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "selectVisibleItems"
+          },
+          {
+            "kind": "plain",
+            "text": "(items, q) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " qn "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(q "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "function",
+            "text": "toLowerCase"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "qn) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " items;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " items."
+          },
+          {
+            "kind": "function",
+            "text": "filter"
+          },
+          {
+            "kind": "plain",
+            "text": "((it) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(it.nome "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")."
+          },
+          {
+            "kind": "function",
+            "text": "toLowerCase"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "function",
+            "text": "includes"
+          },
+          {
+            "kind": "plain",
+            "text": "(qn));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "export"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "validateTitle"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " t "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(raw "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "' '"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (t.length "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", msg"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'título deve ter 3+ caracteres'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ok"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", value"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " t };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "selectVisibleItems"
+          },
+          {
+            "kind": "plain",
+            "text": "([{ nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Café'"
+          },
+          {
+            "kind": "plain",
+            "text": " }], "
+          },
+          {
+            "kind": "string",
+            "text": "'ca'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "validateTitle"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'  oi  '"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6) Evitar dependências ocultas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma dependência oculta aparece quando uma função usa variáveis globais ou DOM externo sem deixar isso claro. Prefira injeção por parâmetro. Isso torna o módulo mais previsível e mais reutilizável."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// Acoplado demais\nfunction createSettingsScreen() {\n  // usa localStorage, window.location.hash e document.body diretamente\n}\n\n// Melhor\nfunction createSettingsScreen({ getTheme, setTheme, go }) {\n  // recebe só o que precisa\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// Acoplado demais"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "createSettingsScreen"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// usa localStorage, window.location.hash e document.body diretamente"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Melhor"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "createSettingsScreen"
+          },
+          {
+            "kind": "plain",
+            "text": "({ getTheme, setTheme, go }) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "comment",
+            "text": "// recebe só o que precisa"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7) Sinais de refatoração necessária"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Função com mais de uma responsabilidade (valida, busca, renderiza e navega).",
+        "Arquivo que mistura fetch, storage, roteador e DOM sem fronteira clara.",
+        "Nomes vagos (data, item, temp, handler2) em excesso.",
+        "Mesmo bloco de tratamento de erro repetido em vários lugares.",
+        "Muitos if/else de rota ou status dentro da mesma função grande.",
+        "Necessidade de editar várias partes do código para uma mudança simples."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8) Checklist profissional (Parte 7)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo dividir o app por responsabilidade (api, storage, router, validators, components, screens).",
+        "Eu nomeio funções e módulos com intenção clara.",
+        "Eu exponho contratos pequenos e previsíveis entre módulos.",
+        "Eu preservo lógica pura para teste sem DOM.",
+        "Eu evito dependências ocultas e prefiro injeção por parâmetro.",
+        "Eu reconheço sinais de que uma função/arquivo precisa ser refatorado."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 8, você fecha o Capítulo 14 com resumo executivo, erros clássicos e checklist final, consolidando storage, roteamento e componentes sem framework."
+    }
+  ]
+}

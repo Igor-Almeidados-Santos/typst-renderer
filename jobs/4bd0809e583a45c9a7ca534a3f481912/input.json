@@ -1,0 +1,1056 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 11 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 11,
+    "chapter_title": "Assíncrono: eventos, timers e o modelo mental do JavaScript",
+    "part_number": 4,
+    "part_title": "Promises: resultado futuro, then/catch/finally e o fim do callback hell",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 11 — Assíncrono: eventos, timers e o modelo mental do JavaScript"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Promises: resultado futuro, then/catch/finally e o fim do callback hell"
+    },
+    {
+      "type": "paragraph",
+      "text": "Timers e eventos já mostraram a ideia central: algumas coisas acontecem depois. Promises são a forma padrão de representar um resultado que estará disponível no futuro: ou resolve (sucesso) ou rejeita (erro). Elas existem para organizar fluxo assíncrono sem “pirâmide de callbacks” (callback hell). Nesta parte, você vai aprender o modelo mental de Promise, encadeamento com then, tratamento de erro com catch e finalização com finally."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: callback hell (pirâmide de callbacks)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você depende de várias etapas assíncronas, o iniciante costuma aninhar callbacks, criando indentação crescente e erros difíceis de tratar. Promises permitem encadear etapas linearmente, mantendo tratamento de erro consistente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é Promise (definição operacional)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Promise é um objeto que representa um resultado futuro.",
+        "Estados: pending (pendente), fulfilled (resolvida), rejected (rejeitada).",
+        "Uma Promise resolve uma vez (valor) ou rejeita uma vez (erro).",
+        "then registra callbacks para sucesso; catch registra para erro; finally roda sempre."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Criando uma Promise (exemplo com setTimeout)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nfunction esperar(ms) {\n  return new Promise((resolve) => {\n    setTimeout(() => resolve(`esperei ${ms}ms`), ms);\n  });\n}\n\nesperar(300).then((msg) => {\n  console.log(msg);\n});",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "(ms) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Promise"
+          },
+          {
+            "kind": "plain",
+            "text": "((resolve) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`esperei ${ms}ms`"
+          },
+          {
+            "kind": "plain",
+            "text": "), ms);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "300"
+          },
+          {
+            "kind": "plain",
+            "text": ")."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((msg) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(msg);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. then encadeia etapas (cada then pode transformar o valor)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "esperar(100)\n  .then((msg) => {\n    console.log('1:', msg);\n    return esperar(100);\n  })\n  .then((msg) => {\n    console.log('2:', msg);\n    return 'fim';\n  })\n  .then((v) => {\n    console.log('3:', v);\n  });",
+      "segments": [
+        [
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((msg) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'1:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", msg);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  })"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((msg) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'2:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", msg);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'fim'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  })"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((v) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'3:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", v);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. catch: erro em qualquer ponto do chain"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se uma Promise rejeitar em qualquer ponto do encadeamento, o controle pula para o primeiro catch disponível. Isso evita espalhar tratamento de erro em cada etapa."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function podeFalhar(ok) {\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (ok) resolve('deu certo');\n      else reject(new Error('deu ruim'));\n    }, 100);\n  });\n}\n\npodeFalhar(false)\n  .then((v) => console.log('sucesso:', v))\n  .catch((err) => console.log('erro:', err.message));",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "podeFalhar"
+          },
+          {
+            "kind": "plain",
+            "text": "(ok) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Promise"
+          },
+          {
+            "kind": "plain",
+            "text": "((resolve, reject) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (ok) "
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'deu certo'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "reject"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'deu ruim'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    }, "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "podeFalhar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((v) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'sucesso:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", v))"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "((err) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'erro:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", err.message));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. finally: limpeza (sempre roda)"
+    },
+    {
+      "type": "paragraph",
+      "text": "finally é útil para “limpeza”: desligar spinner, liberar lock, fechar recursos. Ele roda em sucesso ou erro."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "podeFalhar(true)\n  .then((v) => console.log(v))\n  .catch((e) => console.log('erro', e.message))\n  .finally(() => console.log('sempre executa'));",
+      "segments": [
+        [
+          {
+            "kind": "function",
+            "text": "podeFalhar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((v) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(v))"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "((e) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'erro'"
+          },
+          {
+            "kind": "plain",
+            "text": ", e.message))"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "keyword",
+            "text": "finally"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'sempre executa'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Regras práticas que evitam bugs"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sempre retorne uma Promise dentro do then quando houver próxima etapa assíncrona (não esqueça o return).",
+        "Use um catch no final do chain para capturar erros não tratados.",
+        "Evite misturar callback estilo antigo com Promise sem adaptar (promisify).",
+        "Não trate erro com try/catch síncrono ao redor de Promise: erros assíncronos vão para catch."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Checklist profissional (Parte 4)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei explicar Promise como resultado futuro (resolve/reject).",
+        "Eu sei encadear then e retornar Promises para manter sequência.",
+        "Eu sei que catch captura rejeições em qualquer ponto do chain.",
+        "Eu uso finally para limpeza que deve acontecer sempre.",
+        "Eu evito callback hell usando encadeamento e tratamento centralizado de erros."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 5, você vai aprender Promise.all, Promise.race e padrões de concorrência: executar várias Promises em paralelo com controle e tratamento de erros."
+    }
+  ]
+}

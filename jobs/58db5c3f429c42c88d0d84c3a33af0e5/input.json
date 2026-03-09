@@ -1,0 +1,365 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 5 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 5,
+    "chapter_title": "Controle de fluxo: decisões bem feitas",
+    "part_number": 5,
+    "part_title": "Padrões de decisão: tabelas de decisão, regras explícitas e refatoração de fluxos",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Controle de fluxo: decisões bem feitas"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Padrões de decisão: tabelas de decisão, regras explícitas e refatoração de fluxos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de if/else, else if, switch e ternário, a próxima habilidade é arquitetar decisões. Em projetos reais, a dificuldade não é escrever um if — é manter regras consistentes quando elas crescem. Nesta parte, você vai aprender padrões que tornam decisões previsíveis: tabela de decisão, separação entre regras e ações, refatoração de condições longas e organização do “fluxo feliz” (happy path) sem duplicação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Minhas regras cresceram e eu não sei mais o que vale”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando regras aumentam (desconto por faixa, permissões, estados de pedido), o iniciante espalha if por todo lado. Resultado: regras duplicadas, divergentes e difíceis de testar. O júnior aprende a representar regras de forma explícita e centralizada, para que o código seja fácil de auditar."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Separar regra de ação (modelo mental)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Regra é a condição (o que precisa ser verdadeiro). Ação é o que acontece quando a regra vale. Misturar as duas coisas em blocos grandes torna difícil enxergar o que está sendo testado. Um padrão simples: extraia regras para funções booleanas com nomes claros, e deixe o fluxo de ação legível."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function isMaiorDeIdade(idade) {\n  return idade >= 18;\n}\n\nfunction podeComprar(idade, saldo) {\n  return isMaiorDeIdade(idade) && saldo >= 100;\n}\n\nif (podeComprar(idade, saldo)) {\n  comprar();\n} else {\n  negar();\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "isMaiorDeIdade"
+          },
+          {
+            "kind": "plain",
+            "text": "(idade) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " idade "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "18"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "podeComprar"
+          },
+          {
+            "kind": "plain",
+            "text": "(idade, saldo) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "isMaiorDeIdade"
+          },
+          {
+            "kind": "plain",
+            "text": "(idade) "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " saldo "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "function",
+            "text": "podeComprar"
+          },
+          {
+            "kind": "plain",
+            "text": "(idade, saldo)) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "comprar"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "negar"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    }
+  ]
+}

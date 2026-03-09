@@ -1,0 +1,530 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Escopo, contexto léxico e closures",
+    "part_number": "5",
+    "part_title": "Casos práticos em que closures aparecem",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Escopo, contexto léxico e closures"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Casos práticos em que closures aparecem"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender escopo global, de função e de bloco, estudar a cadeia de escopos, entender o contexto léxico e definir com clareza o que é closure, o estudante chega a uma pergunta decisiva: onde esse mecanismo aparece na prática. Essa pergunta é extremamente importante porque closures costumam parecer conceitualmente elegantes, mas ainda distantes da vida real do programador quando são estudadas apenas em exemplos de contador. Esta parte do capítulo existe justamente para reduzir essa distância. O objetivo agora é mostrar que closures não são uma curiosidade teórica rara. Elas aparecem em vários padrões concretos de JavaScript, muitas vezes de modo tão natural que o desenvolvedor iniciante já as utiliza sem nomeá-las."
+    },
+    {
+      "type": "paragraph",
+      "text": "O primeiro caso prático muito comum é o encapsulamento de estado privado. Esse é talvez o exemplo mais didático porque mostra com clareza a utilidade estrutural do mecanismo. Uma função externa declara uma variável que não deve ficar exposta globalmente e retorna uma função interna responsável por consultar ou alterar esse estado. O dado continua existindo e sendo manipulado, mas não está solto no escopo mais amplo do programa. A closure permite exatamente esse equilíbrio entre persistência de acesso e proteção de visibilidade. O estudante deve perceber que isso não é apenas um truque. É uma forma real de organizar estado com mais disciplina."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse padrão é útil em contadores, geradores de identificadores, acumuladores e pequenos módulos funcionais que precisam manter algum valor entre chamadas sucessivas. Em todos esses casos, o dado pertence logicamente a um comportamento específico e não deveria circular como variável global. A closure resolve isso de maneira elegante: o estado permanece acessível apenas às funções que nasceram no ambiente capaz de vê-lo. O programa ganha encapsulamento sem perder continuidade de uso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Um segundo caso prático aparece na personalização de comportamento. Imagine uma função que recebe uma configuração e retorna outra função já adaptada a essa configuração. Esse é um padrão muito poderoso. A função externa estabelece certos parâmetros iniciais do ambiente e a função interna, preservando esse contexto por closure, passa a operar de modo personalizado em chamadas futuras. O leitor deve perceber a força disso. Em vez de recalcular ou reconfigurar tudo a cada chamada, o programa pode criar funções especializadas a partir de contextos já definidos. Closure, aqui, funciona como mecanismo de especialização comportamental."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse padrão aparece, por exemplo, em funções geradoras de mensagens, validadores parametrizados, transformadores com configuração fixa, pequenos utilitários de formatação e várias outras situações em que o programador quer criar uma função sob medida a partir de certos dados iniciais. O ganho é grande porque a função resultante carrega consigo o contexto de configuração de que precisa. O estudante começa a perceber que closure não serve apenas para guardar números internos, mas também para moldar comportamentos adaptados a cenários específicos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Um terceiro caso muito importante é o uso de callbacks que acessam dados do ambiente em que foram criados. Embora o capítulo ainda não esteja aprofundando callbacks como tema central, já é extremamente valioso registrar que closures aparecem sempre que uma função é passada adiante e continua podendo usar variáveis do contexto onde nasceu. Essa é uma situação extremamente comum em JavaScript. O programador cria uma função em certo ambiente, passa essa função para outro ponto do sistema e, mesmo assim, ela continua enxergando variáveis externas relevantes do lugar original. Esse tipo de comportamento é impossível de compreender bem sem o conceito de closure."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse caso prático é especialmente importante porque ele começa a aproximar o estudante do JavaScript real, em que funções frequentemente circulam, são passadas como argumentos ou executadas em outros momentos do fluxo. A closure garante que, mesmo nessas situações, a função preserve sua relação com o ambiente léxico onde foi criada. O resultado é que o comportamento não perde seu contexto de origem só porque foi acionado em outro lugar ou mais tarde. Essa propriedade é uma das grandes forças expressivas da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro caso prático muito comum aparece em fábricas de funções. Uma fábrica de função, em termos simples, é uma função que cria e devolve outras funções. Esse padrão é central no universo do JavaScript e depende diretamente de closure para fazer sentido pleno. A função externa monta o contexto, define ou recebe certos valores e retorna uma nova função que usará essas informações posteriormente. O estudante já viu a lógica do contador e da personalização. A ideia de fábrica amplia esse raciocínio e mostra que a linguagem pode gerar comportamentos com contexto embutido."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse padrão é extremamente útil porque permite construir funções semelhantes, mas com diferenças controladas entre si. Cada função produzida pela fábrica pode carregar seu próprio contexto léxico particular. Em consequência, o programa pode ter múltiplas instâncias de comportamento relacionado, cada uma operando com seu ambiente interno específico. Esse é um passo muito importante na compreensão madura do tema, porque mostra que closures não são apenas retenção passiva de um contexto qualquer. Elas podem ser parte ativa da construção de funções configuradas e independentes entre si."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é importante observar o caso prático de encapsulamento de pequenas regras internas. Às vezes, uma função mais externa organiza um processo maior e cria dentro de si pequenas funções auxiliares que dependem de variáveis desse ambiente. Essas funções internas podem não ser retornadas para fora, mas ainda assim constituem closures enquanto operam usando o contexto léxico da função principal. Esse cenário mostra que closure não depende necessariamente de retorno da função interna ao exterior. O ponto central é a preservação e o uso do ambiente léxico relevante por uma função que foi definida ali."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse detalhe é muito importante porque evita uma simplificação equivocada do tipo closure só existe quando uma função retorna outra. Retornar uma função é um caso clássico e didático, mas não é o único. Sempre que uma função interna usa variáveis do contexto léxico em que foi criada, há uma relação de closure em jogo. Certos casos se tornam mais visíveis porque a função sobrevive ao término do fluxo externo e continua sendo chamada depois. Mas o fenômeno conceitual não precisa ser reduzido apenas a esse cenário."
+    },
+    {
+      "type": "paragraph",
+      "text": "Um outro caso prático valioso está na simulação inicial de dados privados. Antes mesmo de estudar objetos, classes ou módulos em profundidade, o estudante já pode usar closures para restringir o acesso direto a certas variáveis. Uma função externa cria o ambiente privado e retorna apenas as funções autorizadas a interagir com aquele estado. O restante do programa não acessa diretamente o valor interno. Essa técnica tem enorme valor pedagógico porque mostra como closures podem funcionar como ferramenta de encapsulamento antes de outras formas mais avançadas de organização surgirem no livro."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de padrão é muito bom para a formação porque ensina que a proteção de dados não depende apenas de convenções informais do tipo não mexa nisso. Ela pode ser organizada estruturalmente. Se o valor está em um ambiente acessível apenas pelas closures adequadas, o programa ganha uma forma concreta de limitação de acesso. Isso fortalece o raciocínio de design do estudante e o prepara para temas mais avançados de arquitetura com uma base funcional robusta."
+    },
+    {
+      "type": "paragraph",
+      "text": "Do ponto de vista da leitura de código, todos esses casos práticos ensinam a mesma pergunta central: de que contexto léxico esta função depende para funcionar. Quando o estudante encontra uma função retornada, passada como argumento ou usada como auxiliar interna, precisa investigar quais variáveis externas ela carrega consigo em termos de acesso lexical. Essa pergunta substitui explicações vagas por uma análise concreta da origem e do ambiente da função. É exatamente isso que transforma closure em conceito utilizável, e não apenas memorável."
+    },
+    {
+      "type": "paragraph",
+      "text": "No nível profissional, closures aparecem em bibliotecas, eventos, callbacks, fábricas, composição funcional, encapsulamento de estado e várias outras técnicas idiomáticas do JavaScript. O programador que não reconhece esses casos tende a ler o comportamento do código como se fosse arbitrário. Já aquele que entende closures começa a perceber padrões claros de retenção de contexto e criação de comportamento especializado. Essa diferença de leitura é enorme na prática."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em síntese, closures aparecem de forma prática em padrões como encapsulamento de estado privado, personalização de comportamento, callbacks com acesso ao ambiente de origem, fábricas de funções e organização de pequenas regras internas dependentes de contexto léxico. Compreender esses casos é essencial para tirar closure do campo do exotismo conceitual e trazê-la para o terreno da programação real em JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "O iniciante pode até entender a definição de closure, mas ainda não enxerga com clareza onde esse mecanismo aparece em código real. Como consequência, trata o tema como abstração distante ou só o reconhece em exemplos escolares de contador. O problema real é não perceber que closures sustentam vários padrões concretos de encapsulamento, personalização e retenção de contexto em JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Closures aparecem sempre que uma função mantém acesso ao ambiente léxico relevante em que foi criada e usa esse contexto em execuções posteriores ou internas. Isso se manifesta em encapsulamento de estado, funções configuradas, callbacks que dependem de variáveis externas e fábricas de funções. O mecanismo é o mesmo: preservação da relação entre a função e certos dados do seu contexto de origem."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao encontrar uma função interna, retornada ou passada como argumento, o programador deve perguntar que variáveis externas ela continua podendo acessar e por que essas variáveis pertencem ao ambiente léxico em que a função nasceu. Essa leitura aproxima a teoria da closure de padrões reais de projeto e uso no JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Estado privado: dado preservado em ambiente externo acessível apenas por funções específicas.",
+        "Função personalizada: comportamento adaptado por um contexto capturado na criação.",
+        "Callback com contexto: função usada em outro ponto do fluxo sem perder seu ambiente de origem.",
+        "Fábrica de função: função que cria e retorna outras funções com contexto próprio.",
+        "Retenção contextual: manutenção do acesso a variáveis externas relevantes.",
+        "Encapsulamento funcional: restrição estrutural de acesso a dados por meio de closures."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Exemplo prático comentado"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function criarSaudacao(saudacao) {\n  return function (nome) {\n    return saudacao + ', ' + nome + '!';\n  };\n}\n\nconst saudarFormalmente = criarSaudacao('Olá');\nconsole.log(saudarFormalmente('Marina'));",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarSaudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "(saudacao) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (nome) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " saudacao "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "', '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " nome "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'!'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " saudarFormalmente "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarSaudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Olá'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "saudarFormalmente"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Marina'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O exemplo mostra um caso prático de personalização de comportamento por closure. A função retornada continua acessando a variável saudacao do ambiente de criarSaudacao, mesmo depois da execução principal da função externa. O resultado é uma nova função já configurada para um tipo específico de mensagem. O trecho ilustra muito bem como closures aparecem na prática como mecanismo de especialização funcional."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um aluno construindo um pequeno sistema que precisa gerar validadores com regras diferentes. Em vez de reescrever cada verificação manualmente, ele cria uma função externa que recebe a regra e retorna uma função interna pronta para aplicá-la. Cada função gerada mantém acesso ao critério capturado em seu ambiente de origem. Esse caso mostra por que closures são tão úteis: elas permitem criar comportamentos reutilizáveis e personalizados sem espalhar estado ou configuração por todo o escopo global."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que closures só aparecem em exemplos artificiais e não em código real.",
+        "Reduzir closure apenas ao caso de função que retorna outra, ignorando funções internas auxiliares que também capturam contexto.",
+        "Não identificar variáveis externas relevantes usadas por uma função passada adiante.",
+        "Tratar encapsulamento com closure como mágica, e não como consequência do contexto léxico.",
+        "Confundir retorno de função com única condição de existência de closure."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Perguntar sempre de que contexto léxico a função depende para operar.",
+        "Reconhecer padrões de encapsulamento e personalização como usos práticos de closure.",
+        "Usar closures quando o estado precisa permanecer privado e acessível a comportamentos específicos.",
+        "Ler callbacks observando quais variáveis externas eles carregam lexicalmente.",
+        "Evitar explicações excessivamente abstratas quando um padrão concreto pode tornar o mecanismo visível."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Reconheço casos práticos em que closures aparecem no JavaScript.",
+        "Consigo relacionar closure a encapsulamento de estado e personalização de comportamento.",
+        "Percebo que callbacks e fábricas de funções frequentemente dependem desse mecanismo.",
+        "Entendo que retornar função é um caso importante, mas não o único cenário relevante.",
+        "Estou preparado para avançar para as vantagens e os riscos das closures."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com os casos práticos de closure já visíveis, o próximo passo será estudar suas vantagens e riscos. A próxima parte mostrará por que esse mecanismo é tão poderoso para organização e encapsulamento, mas também por que exige leitura cuidadosa para não introduzir dependências difíceis de entender ou manter."
+    }
+  ]
+}

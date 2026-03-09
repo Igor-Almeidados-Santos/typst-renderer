@@ -1,0 +1,258 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 10,
+    "chapter_title": "JSON e dados estruturados",
+    "part_number": 6,
+    "part_title": "Exercícios graduais e revisão: parse robusto, stringify e persistência versionada",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — JSON e dados estruturados"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Exercícios graduais e revisão: parse robusto, stringify e persistência versionada"
+    },
+    {
+      "type": "paragraph",
+      "text": "JSON aparece em todo lugar: APIs, logs e persistência. O objetivo desta parte é transformar conhecimento em habilidade: você vai treinar parse seguro, validação/normalização de tipos, stringify com controle (replacer) e persistência local com versionamento/migração. A regra do treino é: nenhum dado externo entra no domínio sem passar por uma fronteira (parser)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Regras do treino"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sempre trate JSON vindo de fora como não confiável: parse em try/catch.",
+        "Valide formato geral (objeto/array) antes de acessar campos (evita TypeError).",
+        "Normalize tipos (Number/Date) explicitamente.",
+        "Use contrato consistente nos parsers: { ok, value/msg }.",
+        "Ao persistir, versionar schema: { version, data } e migrar versões antigas.",
+        "Ao logar, nunca vaze segredos: use replacer para remover senha/token."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Exercícios graduais (Nível 1 → 4)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Nível 1 — JSON válido vs inválido"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Faça safeJsonParse(text) que retorna { ok:true, value } ou { ok:false, msg }.",
+        "2) Teste com JSON válido e com texto 'x'.",
+        "3) Explique por que \"{'a':1}\" é inválido em JSON.",
+        "4) Mostre que trailing comma quebra parse: '{\"a\":1,}'.",
+        "5) Faça isPlainObject(x) e use antes de acessar campos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Nível 2 — stringify e controle (replacer)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "6) Faça pretty(obj): JSON.stringify(obj, null, 2).",
+        "7) Demonstre undefined em objeto vs array ao stringify.",
+        "8) Faça replacer que remove campos 'senha' e 'token'.",
+        "9) Faça replacer que omite campos com valor null.",
+        "10) Provoque erro de ciclo e capture a mensagem com try/catch."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Nível 3 — Parser de envelope + parser de domínio"
+    },
+    {
+      "type": "list",
+      "items": [
+        "11) Implemente parseEnvelope(text) para { ok:true, data } / { ok:false, msg, code }.",
+        "12) Implemente parsePedido(data) normalizando id/total (number) e criadoEm (Date).",
+        "13) Monte getPedidoFromApiText(text) que combina os dois parsers.",
+        "14) Teste com 4 respostas: ok, erro, JSON inválido, tipos inválidos.",
+        "15) Adicione validação de enum: status em ['PAGO','PENDENTE','CANCELADO']."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Nível 4 — Persistência versionada (localStorage)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "16) Crie loadSettings/saveSettings com envelope { version, data }.",
+        "17) Faça CURRENT_VERSION=1 e salve; depois mude para 2 e implemente migração v1->v2.",
+        "18) Adicione clamp para pageSize (1..100) ao carregar e ao salvar.",
+        "19) Quando JSON estiver inválido no storage, remova a chave e volte para defaults.",
+        "20) Modele um estado de filtros (q/min/max/page) e persista entre reloads."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Mini-desafio (60–90 min): lista de pedidos persistida + migração"
+    },
+    {
+      "type": "paragraph",
+      "text": "Monte um mini-app (sem rede) que mantém uma lista de pedidos em memória e persiste no localStorage em JSON."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pedido: { id:number, status:string, total:number, criadoEm:string ISO }.",
+        "Ao carregar, ler do storage, validar e normalizar (descartar itens inválidos com log).",
+        "Version 1: pedidos sem campo 'cliente'. Version 2: adiciona 'cliente' (string). Migrar v1->v2 preenchendo cliente='(desconhecido)'.",
+        "Salvar sempre no formato v2.",
+        "Exibir no console um relatório: total de pedidos e soma do total."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Checklist profissional (Parte 6)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu faço parse seguro e não deixo exceções vazarem para o app.",
+        "Eu valido tipo de raiz (objeto/array) e campos essenciais antes de usar.",
+        "Eu normalizo tipos (number/date) explicitamente para o domínio.",
+        "Eu uso stringify com indentação para debug e replacer para remover segredos.",
+        "Eu versiono schema em persistência e sei migrar versões antigas.",
+        "Eu crio uma fronteira clara entre dados externos (JSON) e dados internos (domínio)."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 7, você fecha o capítulo com revisão e erros clássicos. Na Parte 8, você conclui o Capítulo 10 com resumo executivo + checklist final e ponte para o próximo tema."
+    }
+  ]
+}

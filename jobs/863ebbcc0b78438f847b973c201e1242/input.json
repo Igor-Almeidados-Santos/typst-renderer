@@ -1,0 +1,1276 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 4 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "4",
+    "chapter_title": "Variáveis, constantes e gerenciamento de estado",
+    "part_number": "8",
+    "part_title": "Estudo de caso: organizando estado em programas simples",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Variáveis, constantes e gerenciamento de estado"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Estudo de caso: organizando estado em programas simples"
+    },
+    {
+      "type": "paragraph",
+      "text": "Encerrar este capítulo apenas com conceitos isolados seria insuficiente. O leitor já compreendeu o que significa armazenar dados, estudou var, let e const, separou declaração, atribuição e reatribuição, construiu uma noção inicial de escopo, entendeu hoisting de forma acessível, consolidou convenções de nomenclatura e aprendeu a decidir entre let e const com base na lógica real do dado. O passo final agora é reunir esses elementos em um estudo de caso integrado, no qual o estado de um pequeno programa seja organizado com clareza desde o início. O objetivo desta parte não é apresentar complexidade artificial, mas mostrar como os fundamentos do capítulo funcionam juntos em um fluxo pequeno, inteligível e profissionalmente saudável."
+    },
+    {
+      "type": "paragraph",
+      "text": "Organizar estado em programas simples significa tomar decisões conscientes sobre quais valores precisam existir, como serão nomeados, quais devem permanecer estáveis, quais podem mudar e em que regiões do código cada um faz sentido. Mesmo em programas muito pequenos, essas decisões já fazem diferença concreta. Um exercício aparentemente trivial pode se tornar confuso se o estado for improvisado, com identificadores genéricos, mutabilidade excessiva e ausência de distinção entre o que deveria mudar e o que deveria permanecer constante. Por outro lado, o mesmo exercício pode se tornar muito mais claro quando o armazenamento é pensado como parte da modelagem do problema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste estudo de caso, imaginaremos um pequeno programa que acompanha a leitura de um curso. O programa precisa armazenar o nome do curso, a quantidade total de módulos, a etapa atual do estudante e uma mensagem derivada desse estado. Esse cenário é excelente para consolidação porque mistura dados estáveis e dados mutáveis. O nome do curso e a quantidade total de módulos tendem a permanecer estáveis no fluxo simples considerado. Já a etapa atual pode mudar conforme o progresso avança. A mensagem final, por sua vez, é um valor derivado do estado disponível em determinado momento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 1 — Identificar os dados do problema"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de escrever código, o estudante deve perguntar que informações o programa realmente precisa manter. Neste caso, quatro elementos são suficientes para começar. Primeiro, o nome do curso. Segundo, o total de módulos. Terceiro, a etapa atual. Quarto, uma mensagem de acompanhamento ao usuário. Essa decomposição já é uma forma de gerenciamento de estado. O programa ainda não foi escrito, mas o raciocínio já está organizando quais dados existem e que papel cada um exerce."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa etapa é importante porque muitos iniciantes começam escrevendo linhas diretamente sem mapear minimamente o estado necessário. Como consequência, acabam criando identificadores redundantes, genéricos ou desnecessários. Quando o problema é pequeno e os dados são explicitados com antecedência, o código ganha foco. O programa passa a armazenar apenas o que é relevante para o comportamento proposto."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 2 — Escolher nomes claros e formas de declaração coerentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com os dados identificados, o próximo passo é decidir como nomeá-los e como declará-los. NomeCurso e totalModulos podem ser declarados com const, porque neste cenário não precisam de nova atribuição. EtapaAtual, por outro lado, precisa evoluir quando o estudante avança, então faz sentido ser declarada com let. A mensagem pode ser construída a partir desses dados e armazenada em um identificador claro. Essa escolha já mostra a lógica do capítulo em ação: o código não apenas guarda valores, ele comunica a natureza do estado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const nomeCurso = 'JavaScript do Zero ao Júnior';\nconst totalModulos = 8;\nlet etapaAtual = 1;\n\nconst mensagemInicial = 'Você está iniciando o curso.';\n\nconsole.log(nomeCurso);\nconsole.log(totalModulos);\nconsole.log(etapaAtual);\nconsole.log(mensagemInicial);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nomeCurso "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'JavaScript do Zero ao Júnior'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " totalModulos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "8"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemInicial "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Você está iniciando o curso.'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(nomeCurso);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(totalModulos);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(etapaAtual);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemInicial);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse primeiro trecho, o estado foi organizado de forma limpa. Os identificadores estáveis usam const. O identificador que deverá mudar usa let. Os nomes comunicam função semântica e o console torna o estado visível. O estudante deve notar que o programa já se torna compreensível quase apenas pela leitura dos nomes e da forma de declaração. Esse é um sinal de boa modelagem inicial."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 3 — Atualizar o estado de forma explícita"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora o programa precisa representar progresso. Em vez de reescrever valores literais em diferentes pontos, o fluxo pode atualizar o estado existente. Esse é exatamente o tipo de situação em que let faz sentido. A etapa atual foi pensada para mudar, então a reatribuição passa a ser parte legítima da lógica do programa. O importante é que essa mudança seja explícita, fácil de rastrear e semanticamente coerente com o problema."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const nomeCurso = 'JavaScript do Zero ao Júnior';\nconst totalModulos = 8;\nlet etapaAtual = 1;\n\nconsole.log(etapaAtual);\n\netapaAtual = 2;\nconsole.log(etapaAtual);\n\netapaAtual = 3;\nconsole.log(etapaAtual);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nomeCurso "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'JavaScript do Zero ao Júnior'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " totalModulos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "8"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(etapaAtual);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(etapaAtual);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(etapaAtual);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse trecho permite observar com clareza a história de um identificador mutável. EtapaAtual é declarada, recebe um valor inicial e depois passa por reatribuições. O nome comunica mudança esperada. A forma de declaração permite essa mudança. O console ajuda a enxergar a transição de estados. O estudante deve perceber que o programa está organizando o tempo lógico do processo por meio do armazenamento adequado dos dados."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 4 — Produzir valores derivados a partir do estado atual"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um programa simples raramente existe apenas para guardar dados. Ele também precisa produzir novos valores a partir do estado já disponível. Neste caso, o programa pode criar uma mensagem de progresso com base no nome do curso, na etapa atual e no total de módulos. Esse valor derivado pode ser armazenado em uma constante se sua produção ocorrer para uso imediato naquele ponto do fluxo, sem necessidade de nova atribuição posterior."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const nomeCurso = 'JavaScript do Zero ao Júnior';\nconst totalModulos = 8;\nlet etapaAtual = 3;\n\nconst mensagemProgresso = 'Você está no módulo ' + etapaAtual + ' de ' + totalModulos + ' do curso ' + nomeCurso + '.';\n\nconsole.log(mensagemProgresso);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nomeCurso "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'JavaScript do Zero ao Júnior'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " totalModulos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "8"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemProgresso "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Você está no módulo '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "' de '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " totalModulos "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "' do curso '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " nomeCurso "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'.'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemProgresso);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo mostra um padrão muito importante: o estado armazenado em identificadores pode servir como matéria-prima para a criação de novos valores. A mensagemProgresso não precisou ser escrita manualmente em sua forma final. Ela foi derivada do estado atual do programa. Essa lógica de composição é central em praticamente toda programação. O armazenamento deixa de ser apenas memória estática e passa a ser base para transformação semântica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 5 — Respeitar escopo e evitar expansão desnecessária do estado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nem todo identificador precisa existir em toda parte. Um dos erros comuns em programas simples é declarar dados auxiliares em regiões amplas demais apenas por conveniência. No entanto, o escopo correto ajuda a manter o programa mais organizado. Se uma mensagem só faz sentido dentro de um bloco específico, ela pode nascer ali. Isso limita a vida do identificador ao contexto em que ele realmente é necessário e evita poluição do espaço mental do programa."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const nomeCurso = 'JavaScript do Zero ao Júnior';\nlet etapaAtual = 4;\n\nif (etapaAtual > 3) {\n  const mensagemAvanco = 'Você já passou da metade inicial do curso ' + nomeCurso + '.';\n  console.log(mensagemAvanco);\n}\n\nconsole.log(nomeCurso);\nconsole.log(etapaAtual);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nomeCurso "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'JavaScript do Zero ao Júnior'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemAvanco "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Você já passou da metade inicial do curso '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " nomeCurso "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'.'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemAvanco);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(nomeCurso);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(etapaAtual);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste trecho, mensagemAvanco só faz sentido dentro do bloco condicional que a produz. Declarar esse identificador ali é uma forma de alinhar escopo e semântica. O estudante deve perceber que organizar estado não é apenas decidir entre let e const, mas também decidir em que região o dado realmente precisa existir. Escopo e armazenamento caminham juntos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 6 — Revisar o estado pela lente da legibilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois que o programa funciona, uma revisão de legibilidade permite avaliar se o estado foi organizado de forma clara. Os nomes comunicam o problema com precisão. As declarações refletem estabilidade e mudança. As reatribuições são fáceis de localizar. Os valores derivados aparecem com função compreensível. Os dados locais ficam em escopos adequados. Essa revisão transforma um pequeno exercício em um treino real de qualidade de código. O estudante aprende não apenas a fazer funcionar, mas a fazer comunicar."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa etapa final é muito importante porque impede que o aprendizado do capítulo se reduza a memorização de palavras-chave. Variáveis, constantes, escopo e reatribuição só se tornam conhecimento sólido quando se integram em uma prática concreta de organização de estado. É isso que este estudo de caso procura demonstrar. O estado do programa não é um detalhe escondido por trás da sintaxe. Ele é uma dimensão central do raciocínio programador."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Síntese integrada do estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observando o caso como um todo, o leitor deve perceber que cada decisão local teve um fundamento. NomeCurso e totalModulos foram declarados com const porque sua atribuição não precisava mudar no fluxo. EtapaAtual usou let porque a lógica exigia reatribuição ao longo do progresso. Mensagens derivadas foram criadas a partir do estado existente, e uma mensagem específica foi mantida em escopo local ao bloco em que fazia sentido. O resultado é um programa simples, mas semanticamente organizado. Ele não apenas funciona: ele mostra com clareza onde o estado nasce, quando muda e como é usado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é exatamente o tipo de fundamento que diferencia estudo superficial de formação técnica real. O iniciante não precisa ainda lidar com arquiteturas complexas para aprender a organizar estado com qualidade. Ele pode começar em programas pequenos, desde que observe com atenção a relação entre armazenamento, nomeação, escopo, estabilidade e mudança. Quando esse padrão se torna hábito, os capítulos seguintes passam a ser muito mais fáceis de absorver, porque o leitor já sabe olhar para os dados como parte estruturada do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos iniciantes conseguem fazer pequenos programas funcionarem, mas ainda não sabem organizar o estado de forma clara. Como resultado, o código fica cheio de dados mal nomeados, mudanças pouco controladas e escopos desnecessariamente amplos. O problema real é armazenar valores sem transformar esse armazenamento em estrutura inteligível do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Organizar estado em programas simples exige identificar os dados necessários, escolher nomes claros, declarar cada identificador segundo sua estabilidade ou mutabilidade esperada, limitar seu escopo ao contexto apropriado e usar o estado armazenado como base para derivar novos valores. Esses elementos compõem a arquitetura fundamental do gerenciamento de estado em JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Modelo mental correto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Gerenciar estado não é apenas guardar valores, mas decidir conscientemente o que deve existir, como será nomeado, onde fará sentido, quando poderá mudar e como será reutilizado para produzir novos resultados. Essa organização é parte do design do programa, mesmo em exemplos muito pequenos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Estado estável: dados cuja atribuição não precisa mudar no trecho relevante.",
+        "Estado mutável: dados que evoluem ao longo do fluxo.",
+        "Valor derivado: novo resultado produzido a partir do estado existente.",
+        "Escopo adequado: região em que o identificador realmente precisa existir.",
+        "Legibilidade do estado: capacidade de ler o fluxo apenas pela qualidade dos nomes e declarações.",
+        "Revisão estrutural: etapa em que o código é avaliado não só por funcionamento, mas por clareza do gerenciamento de estado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso final da parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine dois estudantes resolvendo o mesmo problema de acompanhar o progresso de leitura de um curso. O primeiro usa nomes vagos, declara tudo com let por hábito, mistura dados auxiliares e principais no mesmo escopo e altera valores sem deixar clara a lógica do fluxo. O segundo distingue estado estável e mutável, usa const e let com intenção, nomeia bem os identificadores e limita mensagens auxiliares ao bloco em que fazem sentido. Mesmo que ambos obtenham uma saída funcional, o segundo código será muito mais fácil de compreender, depurar e expandir. Essa diferença mostra que organizar estado é uma habilidade central, não um refinamento opcional."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Declarar todos os identificadores como se tivessem o mesmo comportamento de estado.",
+        "Usar let por hábito mesmo em dados estáveis.",
+        "Criar nomes genéricos que não comunicam o papel do valor.",
+        "Manter identificadores auxiliares em escopos amplos sem necessidade.",
+        "Não perceber que valores derivados também fazem parte da organização do estado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Mapear primeiro quais dados o problema realmente exige.",
+        "Usar const para estados estáveis e let para estados que mudam de forma legítima.",
+        "Escolher nomes que expressem papel e contexto do valor.",
+        "Manter identificadores no menor escopo que faça sentido.",
+        "Produzir valores derivados com clareza a partir do estado atual.",
+        "Revisar o programa perguntando se o estado está legível, não apenas funcional."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo organizar o estado de um programa simples com mais clareza.",
+        "Sei diferenciar dados estáveis, mutáveis e derivados.",
+        "Percebo a relação entre nome, escopo e comportamento esperado do identificador.",
+        "Consigo usar let e const de forma mais intencional.",
+        "Reconheço que gerenciamento de estado é parte do design do programa."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com o próximo capítulo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com isso, o Capítulo 4 está completo. O leitor agora possui uma base sólida sobre armazenamento, declaração, reatribuição, escopo, hoisting, legibilidade e organização de estado em JavaScript. No Capítulo 5, o foco avançará para operadores e expressões — isto é, para o modo como a linguagem combina e transforma valores por meio de operações aritméticas, lógicas, comparativas e relacionais. O sumário aprovado segue integralmente coberto até este ponto."
+    }
+  ]
+}

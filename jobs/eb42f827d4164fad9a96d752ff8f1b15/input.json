@@ -1,0 +1,578 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Escopo, contexto léxico e closures",
+    "part_number": "2",
+    "part_title": "Cadeia de escopos",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Escopo, contexto léxico e closures"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Cadeia de escopos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender escopo global, escopo de função e escopo de bloco, o estudante está pronto para avançar a uma pergunta mais refinada: o que acontece quando o programa tenta acessar um nome que não está disponível no ambiente mais interno em que o código está sendo executado. É exatamente aqui que entra a ideia de cadeia de escopos. Esta parte é decisiva porque ela mostra que o JavaScript não verifica a existência de identificadores de maneira aleatória. A linguagem segue uma lógica estrutural de busca, subindo de um escopo mais interno para escopos mais externos até encontrar o nome procurado ou até constatar que ele não está disponível."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, a cadeia de escopos pode ser entendida como a sequência de ambientes que o JavaScript percorre ao tentar resolver um identificador. O processo começa no escopo mais próximo do ponto atual do código. Se o nome não for encontrado ali, a linguagem procura no escopo imediatamente externo. Se ainda não encontrar, sobe novamente. Esse movimento continua até alcançar os níveis mais externos disponíveis. Se, ao final, o identificador não for encontrado em nenhum ponto da cadeia, o acesso falha. Essa lógica de busca é uma das estruturas invisíveis mais importantes de toda a linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa noção é fundamental porque ela explica um comportamento que, para muitos iniciantes, parece intuitivo sem ser totalmente compreendido: funções internas conseguem acessar certas variáveis declaradas fora delas, desde que essas variáveis pertençam a escopos externos visíveis na cadeia correta. O estudante já viu que um nome local não é acessível em qualquer lugar. Agora precisa compreender o complemento desse raciocínio: um nome externo pode, em muitos casos, ser acessível dentro de contextos mais internos. O segredo está justamente na existência dessa cadeia organizada entre os ambientes."
+    },
+    {
+      "type": "paragraph",
+      "text": "É muito importante perceber que a cadeia de escopos não transforma o programa em espaço totalmente aberto. Ela estabelece uma direção específica de busca. O acesso tende a funcionar de dentro para fora, e não de fora para dentro. Isso significa que um bloco interno pode acessar certos nomes externos, mas o contrário não ocorre automaticamente. Uma variável criada dentro de uma função, por exemplo, não passa a existir no escopo externo apenas porque esse escopo está acima dela na estrutura do arquivo. A cadeia não apaga as fronteiras do escopo; ela apenas define o caminho que a linguagem percorre ao procurar nomes ainda não resolvidos no nível atual."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto merece grande destaque porque ele ajuda a combater dois erros conceituais comuns. O primeiro é pensar que variáveis externas nunca são visíveis em escopos internos. Isso é falso. O segundo é imaginar que a visibilidade é simétrica, como se o externo pudesse acessar o interno da mesma maneira. Isso também é falso. A cadeia de escopos tem direção. Ela favorece a busca do mais interno para o mais externo. Essa assimetria é um dos fundamentos da leitura correta de funções, blocos e closures em JavaScript."
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma função definida no escopo global e, dentro dela, outra função interna. Se a função mais interna tentar usar uma variável que não foi declarada em seu próprio corpo, a linguagem verificará primeiro o ambiente local daquela função. Se o nome não estiver ali, passará ao escopo da função externa em que ela foi criada. Se ainda não encontrar, poderá subir mais um nível, talvez até o escopo global. Esse percurso ilustra com muita clareza a ideia de cadeia: cada ambiente conhece o próximo nível externo que pode ser consultado em caso de necessidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa organização em cadeia também ajuda a entender por que nomes iguais podem coexistir em níveis diferentes sem que o programa necessariamente se confunda. Se um identificador existe no escopo interno e outro com o mesmo nome existe em um escopo externo, o mais interno tende a ser encontrado primeiro. A linguagem resolve o nome no ponto mais próximo disponível da cadeia. O estudante ainda não precisa aprofundar todo o tema de sombreamento de variáveis, mas já pode perceber que a proximidade do escopo importa diretamente na resolução dos identificadores."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse critério de proximidade torna a cadeia de escopos extremamente relevante para a leitura de código. Quando o leitor encontra um nome dentro de uma função, precisa perguntar onde esse nome foi declarado e qual caminho de escopos permite seu acesso naquele ponto. Essa pergunta substitui uma visão superficial de que o nome simplesmente está ali. Na verdade, ele está ali porque foi encontrado em certo ponto da cadeia. Essa postura analítica será indispensável para compreender closures com maturidade nas próximas partes do capítulo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é importante notar que a cadeia de escopos não depende do lugar em que a função é chamada, mas do lugar em que ela foi definida. Este ponto será aprofundado quando o capítulo entrar em contexto léxico, mas já pode ser antecipado em nível introdutório: a ligação entre um escopo interno e seus escopos externos relevantes nasce da estrutura lexical do código, isto é, de como a função foi escrita e aninhada no programa. Essa observação é muito valiosa porque impede o estudante de interpretar a busca por nomes como se ela mudasse livremente conforme o ponto de chamada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Do ponto de vista da modularidade, a cadeia de escopos ajuda a explicar como funções conseguem usar variáveis do ambiente em que foram criadas sem precisar receber tudo por parâmetro em todos os casos. Claro que parâmetros continuam sendo extremamente importantes e muitas vezes desejáveis por clareza e previsibilidade. Mas a existência da cadeia mostra que há também um mecanismo estrutural de acesso a identificadores externos visíveis. Esse mecanismo não é improvisado. Ele faz parte da própria forma como JavaScript organiza o relacionamento entre contextos de código aninhados."
+    },
+    {
+      "type": "paragraph",
+      "text": "É útil pensar na cadeia de escopos como uma espécie de trilha de consulta. O código em um bloco ou função olha primeiro para dentro de si. Se não encontra o que precisa, consulta o ambiente em que está inserido. Se ainda não encontra, sobe mais um degrau. Essa imagem ajuda bastante no início porque dá ao estudante uma intuição operacional clara. Não se trata de mágica. Trata-se de uma busca ordenada segundo a estrutura do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse modelo também ajuda a depurar erros. Quando o programa acusa que certo nome não está definido, o leitor pode perguntar em que escopo atual o acesso foi tentado e que escopos externos estavam na cadeia de busca. Talvez o identificador não tenha sido declarado em nenhum desses níveis. Talvez exista em outro trecho do programa, mas fora da cadeia relevante. Essa última possibilidade é especialmente importante porque reforça que não basta um nome existir em algum lugar do arquivo. Ele precisa existir em um ponto acessível pela cadeia de escopos correspondente ao local em que se tenta usá-lo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Do ponto de vista da escrita de código, a cadeia de escopos também convida à disciplina. Quanto mais nomes amplos e distantes forem usados indiscriminadamente, mais o leitor dependerá de subir mentalmente muitos níveis para entender de onde vem cada identificador. Em funções bem estruturadas, isso tende a ser equilibrado com parâmetros claros, variáveis locais relevantes e uso consciente dos nomes externos realmente necessários. A compreensão da cadeia não serve apenas para explicar o que a linguagem faz. Serve também para inspirar escolhas de design mais legíveis."
+    },
+    {
+      "type": "paragraph",
+      "text": "No nível profissional, esse tema é absolutamente central. Ele sustenta leitura de funções aninhadas, interpretação de variáveis capturadas, organização modular e diagnóstico de vários erros de referência. Sem compreensão de cadeia de escopos, closures parecerão misteriosas e certas dependências implícitas do código ficarão difíceis de rastrear. Por isso, esta parte do capítulo não é um detalhe teórico menor. Ela é uma ponte necessária entre a noção simples de escopo e a compreensão madura do comportamento léxico das funções em JavaScript."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em síntese, a cadeia de escopos é o percurso que o JavaScript realiza ao procurar um identificador: começa no escopo mais interno, sobe para escopos externos sucessivos e para quando encontra o nome ou esgota os ambientes disponíveis. Essa lógica explica por que contextos internos podem acessar certos nomes externos, por que a visibilidade não é simétrica e por que a posição estrutural da declaração importa tanto. Compreender esse mecanismo é essencial para avançar com segurança em contexto léxico e closures."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "O iniciante já entende que existem escopos diferentes, mas ainda pode não compreender como a linguagem encontra um identificador quando ele não está disponível no nível mais interno do código. Como consequência, interpreta certos acessos como misteriosos ou tenta usar nomes que existem no arquivo, mas não na cadeia correta de visibilidade. O problema real é não entender o caminho de busca que o JavaScript percorre ao resolver identificadores."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "A cadeia de escopos organiza a resolução de nomes do mais interno para o mais externo. Quando um identificador não é encontrado no escopo atual, a linguagem procura no escopo imediatamente externo, e assim sucessivamente. Essa busca segue a estrutura lexical do programa e explica por que funções internas conseguem acessar certos nomes externos, enquanto o movimento oposto não ocorre automaticamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao encontrar um nome em uma função ou bloco, o programador deve perguntar onde esse identificador foi declarado e em que ponto da cadeia de escopos ele foi encontrado. A existência do nome em algum lugar do arquivo não basta. Ele precisa pertencer a um ambiente alcançável a partir do escopo atual. A cadeia de escopos é, portanto, um mecanismo de resolução estruturada, e não uma abertura geral de acesso. "
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escopo atual: ambiente mais interno em que o código está sendo executado.",
+        "Busca ascendente: movimento de procura do interno para o externo.",
+        "Escopo externo imediato: próximo ambiente consultado quando o nome não está no nível atual.",
+        "Resolução de identificador: processo de encontrar a declaração correspondente a um nome usado no código.",
+        "Proximidade de escopo: prioridade do ambiente mais próximo na busca.",
+        "Assimetria de visibilidade: facilidade de acesso do interno para o externo, mas não o contrário."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Exemplo prático comentado"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const mensagemGlobal = 'Escopo global';\n\nfunction externa() {\n  const mensagemExterna = 'Escopo da função externa';\n\n  function interna() {\n    const mensagemInterna = 'Escopo da função interna';\n    console.log(mensagemInterna);\n    console.log(mensagemExterna);\n    console.log(mensagemGlobal);\n  }\n\n  interna();\n}\n\nexterna();",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemGlobal "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Escopo global'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "externa"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemExterna "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Escopo da função externa'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "interna"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemInterna "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Escopo da função interna'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemInterna);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemExterna);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemGlobal);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "interna"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "externa"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O exemplo mostra com clareza a busca em cadeia. A função interna acessa primeiro seu próprio nome local, depois um identificador da função externa e, por fim, um identificador global. O programa encontra cada nome no ponto mais próximo possível da cadeia de escopos. O trecho ajuda a visualizar concretamente que o acesso acontece por níveis estruturais, e não por mera coincidência de posição no arquivo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um aluno escrevendo uma função interna que precisa usar uma configuração definida na função mais externa e, além disso, acessar uma constante global de apoio. Se ele ainda não entende a cadeia de escopos, pode pensar que esse acesso ocorre de forma quase mágica. Quando compreende a busca do interno para o externo, percebe que a linguagem está apenas seguindo a estrutura de ambientes criada pelo código. Esse caso mostra por que a cadeia de escopos é a ponte natural entre o estudo de escopo e o entendimento mais profundo de closures."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que um nome pode ser usado apenas porque existe em algum ponto do arquivo.",
+        "Imaginar que o acesso entre escopos é simétrico em qualquer direção.",
+        "Não perceber que a busca ocorre do escopo mais interno para os externos.",
+        "Confundir proximidade estrutural com simples ordem visual do código.",
+        "Ignorar que um nome local mais próximo pode ocultar um nome externo com o mesmo identificador."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Perguntar sempre em que escopo o identificador foi declarado.",
+        "Ler funções internas observando quais nomes vêm do próprio corpo e quais vêm da cadeia externa.",
+        "Usar nomes e parâmetros claros para reduzir dependência implícita de escopos distantes.",
+        "Evitar excessos de variáveis globais que dificultem a leitura da origem dos dados.",
+        "Tratar a cadeia de escopos como parte do design do código, e não apenas como curiosidade teórica."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é a cadeia de escopos em JavaScript.",
+        "Consigo explicar como a linguagem procura identificadores do interno para o externo.",
+        "Percebo que a visibilidade entre escopos não é simétrica.",
+        "Reconheço a importância da proximidade estrutural na resolução dos nomes.",
+        "Estou preparado para avançar para o contexto léxico explicado com exemplos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com a cadeia de escopos consolidada, o próximo passo será estudar o contexto léxico com exemplos. A próxima parte mostrará de forma mais explícita por que a estrutura do código no momento da definição das funções é o que organiza os ambientes relevantes para a resolução dos identificadores em JavaScript."
+    }
+  ]
+}

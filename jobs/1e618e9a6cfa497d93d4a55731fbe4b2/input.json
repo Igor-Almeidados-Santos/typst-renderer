@@ -1,0 +1,1385 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 8 — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 8,
+    "chapter_title": "Objetos e Arrays em profundidade",
+    "part_number": 6,
+    "part_title": "Listas de objetos: find/some/every e atualização imutável por id",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 8 — Objetos e Arrays em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Listas de objetos: find/some/every e atualização imutável por id"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você trabalha com arrays de objetos (tarefas, produtos, pedidos), o desafio não é só iterar: é encontrar, validar e atualizar itens sem criar bugs de referência. Nesta parte você aprende find, some e every e um padrão profissional para atualizar por id criando um novo array (atualização imutável / copy-on-write)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1) Dados de exemplo"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nconst tarefas = [\n  { id: 1, titulo: 'Estudar JS', done: false, prioridade: 2 },\n  { id: 2, titulo: 'Exercicios', done: true, prioridade: 1 },\n  { id: 3, titulo: 'Projeto', done: false, prioridade: 3 },\n];",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Estudar JS'"
+          },
+          {
+            "kind": "plain",
+            "text": ", done"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", prioridade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Exercicios'"
+          },
+          {
+            "kind": "plain",
+            "text": ", done"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ", prioridade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ", titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Projeto'"
+          },
+          {
+            "kind": "plain",
+            "text": ", done"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ", prioridade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2) find: encontrar um item (por id)"
+    },
+    {
+      "type": "paragraph",
+      "text": "find retorna o primeiro elemento que satisfaz o predicado, ou undefined se não encontrar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const t2 = tarefas.find((t) => t.id === 2);\nconsole.log(t2);\n\nconst inexistente = tarefas.find((t) => t.id === 999);\nconsole.log(inexistente); // undefined",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " t2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas."
+          },
+          {
+            "kind": "function",
+            "text": "find"
+          },
+          {
+            "kind": "plain",
+            "text": "((t) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " t.id "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(t2);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " inexistente "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas."
+          },
+          {
+            "kind": "function",
+            "text": "find"
+          },
+          {
+            "kind": "plain",
+            "text": "((t) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " t.id "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "999"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(inexistente); "
+          },
+          {
+            "kind": "comment",
+            "text": "// undefined"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3) some e every: validar listas"
+    },
+    {
+      "type": "paragraph",
+      "text": "some responde se existe pelo menos um item que atende. every responde se todos atendem. Isso é muito útil para validação e regras de UI."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const temFeita = tarefas.some((t) => t.done);\nconsole.log(temFeita); // true\n\nconst todasFeitas = tarefas.every((t) => t.done);\nconsole.log(todasFeitas); // false\n\nconst todasComId = tarefas.every((t) => typeof t.id === 'number');\nconsole.log(todasComId); // true",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " temFeita "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas."
+          },
+          {
+            "kind": "function",
+            "text": "some"
+          },
+          {
+            "kind": "plain",
+            "text": "((t) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " t.done);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(temFeita); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " todasFeitas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas."
+          },
+          {
+            "kind": "function",
+            "text": "every"
+          },
+          {
+            "kind": "plain",
+            "text": "((t) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " t.done);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(todasFeitas); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " todasComId "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas."
+          },
+          {
+            "kind": "function",
+            "text": "every"
+          },
+          {
+            "kind": "plain",
+            "text": "((t) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " t.id "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'number'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(todasComId); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4) Atualização por id: mutável vs imutável"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mutável: você encontra o objeto e altera propriedades nele (efeito colateral). Imutável: você cria um novo array e cria um novo objeto apenas para o item alterado. Em estado de UI, o padrão imutável costuma ser mais previsível."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.1 Mutável (controle local)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function marcarFeitaMutavel(lista, id) {\n  const t = lista.find((x) => x.id === id);\n  if (!t) return false;\n  t.done = true; // muta o objeto\n  return true;\n}\n\nconst a = structuredClone(tarefas);\nmarcarFeitaMutavel(a, 1);\nconsole.log(a);",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "marcarFeitaMutavel"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista, id) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " t "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " lista."
+          },
+          {
+            "kind": "function",
+            "text": "find"
+          },
+          {
+            "kind": "plain",
+            "text": "((x) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " x.id "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " id);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "t) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  t.done "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": "; "
+          },
+          {
+            "kind": "comment",
+            "text": "// muta o objeto"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "structuredClone"
+          },
+          {
+            "kind": "plain",
+            "text": "(tarefas);"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "marcarFeitaMutavel"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "4.2 Imutável (copy-on-write)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function marcarFeitaImutavel(lista, id) {\n  return lista.map((t) => {\n    if (t.id !== id) return t;\n    return { ...t, done: true }; // novo objeto apenas aqui\n  });\n}\n\nconst b = marcarFeitaImutavel(tarefas, 1);\nconsole.log(tarefas); // original\nconsole.log(b);       // novo array\n\nconsole.log(tarefas === b); // false",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "marcarFeitaImutavel"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista, id) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " lista."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "((t) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (t.id "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " id) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " t;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { ...t, done"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": " }; "
+          },
+          {
+            "kind": "comment",
+            "text": "// novo objeto apenas aqui"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "marcarFeitaImutavel"
+          },
+          {
+            "kind": "plain",
+            "text": "(tarefas, "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(tarefas); "
+          },
+          {
+            "kind": "comment",
+            "text": "// original"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(b);       "
+          },
+          {
+            "kind": "comment",
+            "text": "// novo array"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(tarefas "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " b); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5) Padrões úteis em listas de objetos"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Buscar por id: find (ou findIndex quando precisar do índice).",
+        "Atualizar por id: map + spread (imutável).",
+        "Remover por id: filter (imutável).",
+        "Checar regras: some/every para habilitar botões, validar estado, etc."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function removerPorId(lista, id) {\n  return lista.filter((t) => t.id !== id);\n}\n\nconsole.log(removerPorId(tarefas, 2));",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "removerPorId"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista, id) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " lista."
+          },
+          {
+            "kind": "function",
+            "text": "filter"
+          },
+          {
+            "kind": "plain",
+            "text": "((t) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " t.id "
+          },
+          {
+            "kind": "operator",
+            "text": "!=="
+          },
+          {
+            "kind": "plain",
+            "text": " id);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "removerPorId"
+          },
+          {
+            "kind": "plain",
+            "text": "(tarefas, "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6) Checklist profissional (Parte 6)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei usar find para localizar um item por id e tratar undefined.",
+        "Eu sei usar some/every para validar listas e regras de UI.",
+        "Eu sei atualizar por id sem mutar o array original (map + spread).",
+        "Eu sei remover por id sem mutar (filter).",
+        "Eu escolho mutável vs imutável conscientemente, conforme o contexto."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 7, você vai aplicar isso em um mini-estudo: uma lista de tarefas com seleção por id e atualização imutável, reforçando identidade, cópia e previsibilidade."
+    }
+  ]
+}

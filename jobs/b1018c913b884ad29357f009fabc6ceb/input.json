@@ -1,0 +1,1297 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 5 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "5",
+    "chapter_title": "Estruturas condicionais e tomada de decisão",
+    "part_number": "4",
+    "part_title": "Switch e decisões com múltiplos casos",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Estruturas condicionais e tomada de decisão"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Switch e decisões com múltiplos casos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que significa tomar decisões em um programa, estudar if, else, else if e posicionar corretamente o operador ternário dentro do repertório condicional da linguagem, o leitor chega agora a outra estrutura importante para a seleção de caminhos: o switch. Essa construção é especialmente útil quando o programa precisa escolher entre vários casos bem delimitados a partir de um mesmo valor central. Em vez de testar uma sequência de condições potencialmente heterogêneas, o switch organiza o fluxo como um conjunto de possibilidades relacionadas a uma mesma referência de comparação."
+    },
+    {
+      "type": "paragraph",
+      "text": "À primeira vista, o switch pode parecer apenas uma alternativa estilística ao uso repetido de if e else if. Em alguns cenários, de fato, ele cumpre papel semelhante. No entanto, essa leitura é incompleta. O valor do switch não está apenas em “trocar uma sintaxe por outra”, mas em oferecer uma forma de organização particularmente clara quando a lógica da decisão gira em torno de múltiplas correspondências possíveis para o mesmo dado. Quando bem empregado, ele melhora a estrutura mental do leitor. Quando usado em contexto inadequado, porém, pode produzir código artificial ou menos expressivo do que outras formas condicionais."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é estudar o switch com profundidade técnica e clareza editorial. O leitor verá o problema real que essa estrutura resolve, entenderá sua sintaxe, aprenderá o papel de case, default e break, compreenderá o risco do chamado fall-through e desenvolverá critério para saber quando switch ajuda e quando if/else continua sendo melhor. Ao final, a estrutura deixará de ser percebida como curiosidade sintática e passará a integrar de forma madura o repertório de tomada de decisão em JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: vários caminhos podem depender de um mesmo valor de referência"
+    },
+    {
+      "type": "paragraph",
+      "text": "Há muitos cenários em que o programa não precisa decidir entre critérios completamente diferentes, mas sim comparar um mesmo valor com várias possibilidades conhecidas. Por exemplo, um sistema pode precisar reagir de modo diferente conforme o dia da semana, o tipo de usuário, o status de um pedido, a etapa de um processo ou a ação selecionada em um menu. Nesses casos, a lógica da decisão não gira em torno de múltiplas expressões independentes, mas de um único eixo central de comparação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que o switch resolve bem. Em vez de repetir comparações em uma cadeia extensa de if e else if, o programa pode organizar os caminhos possíveis como casos associados a um único valor observado. Isso melhora a legibilidade porque torna mais evidente que todos os caminhos pertencem à mesma família de decisão."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber, portanto, que o switch não é apenas uma forma diferente de escrever condicionais. Ele responde melhor a um tipo específico de arquitetura lógica: múltiplos casos relacionados ao mesmo ponto de referência."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é switch em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, switch é uma estrutura de decisão que compara um valor central com diferentes casos possíveis e executa o bloco correspondente ao caso que combinar com ele. Se nenhum caso corresponder e houver uma cláusula padrão, essa cláusula pode ser executada como caminho residual. O papel da estrutura é organizar claramente uma seleção entre múltiplas alternativas vinculadas ao mesmo critério básico de comparação."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const dia = \"segunda\";\n\nswitch (dia) {\n  case \"segunda\":\n    console.log(\"Início da semana.\");\n    break;\n  case \"sexta\":\n    console.log(\"Fim da semana útil.\");\n    break;\n  default:\n    console.log(\"Outro dia.\");\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " dia "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"segunda\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "switch"
+          },
+          {
+            "kind": "plain",
+            "text": " (dia) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"segunda\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Início da semana.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"sexta\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Fim da semana útil.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "default"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Outro dia.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, o valor central observado é dia. A estrutura verifica esse valor em relação aos casos especificados. Quando encontra correspondência, executa o bloco associado. Se nenhum caso combinar, o bloco default oferece uma resposta residual. Essa arquitetura torna a lógica particularmente clara quando todos os caminhos dependem do mesmo dado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O importante, neste momento, é perceber a unidade estrutural do switch: há um valor central e há diversos casos que se organizam ao redor dele."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. O papel de case"
+    },
+    {
+      "type": "paragraph",
+      "text": "Cada case representa uma possibilidade específica de correspondência para o valor central observado pelo switch. Em outras palavras, o case define um cenário possível dentro daquele conjunto de alternativas. Quando o valor comparado coincide com o valor de um case, o fluxo entra no bloco correspondente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse detalhe é importante porque ajuda a distinguir switch de if/else if. Em uma cadeia de if, cada ramo pode conter uma expressão condicional completa, potencialmente muito diferente das demais. Já no switch, os casos tendem a funcionar como variantes de uma mesma categoria de decisão. Essa unidade lógica é o que torna a estrutura interessante em seu contexto apropriado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a enxergar case não como uma simples etiqueta sintática, mas como a formalização de uma possibilidade dentro de um sistema comum de classificação ou seleção."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. O papel de default"
+    },
+    {
+      "type": "paragraph",
+      "text": "A cláusula default representa o caminho residual quando nenhum dos casos anteriores corresponde ao valor observado. Em termos conceituais, ela desempenha papel semelhante ao else em uma cadeia condicional: cobre aquilo que não foi tratado pelos critérios anteriores. O uso de default é particularmente importante quando o programador quer garantir que a estrutura sempre produza algum comportamento, mesmo diante de valores não previstos explicitamente."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const statusPedido = \"em-analise\";\n\nswitch (statusPedido) {\n  case \"aprovado\":\n    console.log(\"Pedido aprovado.\");\n    break;\n  case \"rejeitado\":\n    console.log(\"Pedido rejeitado.\");\n    break;\n  default:\n    console.log(\"Status ainda não classificado.\");\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " statusPedido "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"em-analise\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "switch"
+          },
+          {
+            "kind": "plain",
+            "text": " (statusPedido) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"aprovado\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Pedido aprovado.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"rejeitado\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Pedido rejeitado.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "default"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Status ainda não classificado.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, default cobre o caso em que o status não se encaixa em nenhuma das opções explicitamente previstas. Isso aumenta a robustez da decisão e ajuda a tornar o código mais honesto diante da possibilidade de estados imprevistos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo quando o programador acredita conhecer todos os casos possíveis, pensar sobre a necessidade ou não de default é uma forma importante de revisar a completude da lógica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. O papel de break e o fluxo entre casos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos pontos mais importantes do switch em JavaScript é o papel do break. Quando a linguagem encontra um case correspondente e entra naquele bloco, a execução pode continuar pelos casos seguintes se não houver uma interrupção explícita. O break é o mecanismo que encerra aquele caminho do switch, impedindo que o fluxo continue “caindo” nos blocos posteriores."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse comportamento é uma das fontes mais clássicas de erro para iniciantes, porque a leitura intuitiva costuma sugerir que, ao encontrar um caso correspondente, a estrutura automaticamente executaria apenas aquele bloco e encerraria o processo. Em JavaScript, não é assim por padrão em todas as situações. O break existe justamente para tornar essa interrupção explícita."
+    },
+    {
+      "type": "paragraph",
+      "text": "Compreender esse ponto é fundamental. Sem ele, o leitor pode achar que o switch se comporta de modo estranho, quando na verdade o problema está em ignorar a lógica de continuidade entre casos na ausência de break."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Fall-through: quando o fluxo continua para o próximo caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "O nome fall-through é usado para descrever o comportamento em que, após entrar em um case correspondente, a execução continua pelos casos seguintes porque não encontrou break. Em muitos contextos iniciais, isso gera bug e confusão. Ainda assim, é importante saber que esse comportamento não é necessariamente um acidente da linguagem. Em alguns cenários, ele pode ser usado intencionalmente. O problema é que, quando não é intencional, torna o código difícil de interpretar e pode produzir saídas inesperadas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const nivel = 1;\n\nswitch (nivel) {\n  case 1:\n    console.log(\"Nível 1\");\n  case 2:\n    console.log(\"Nível 2\");\n  default:\n    console.log(\"Fim\");\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nivel "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "switch"
+          },
+          {
+            "kind": "plain",
+            "text": " (nivel) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Nível 1\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Nível 2\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "default"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Fim\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, sem break, o fluxo pode continuar imprimindo mensagens que o leitor talvez não esperasse se pensasse no switch como escolha automática de apenas um bloco. O estudo desse caso é essencial para corrigir o modelo mental inadequado. A estrutura precisa ser lida segundo as regras da linguagem, não segundo a suposição intuitiva do programador."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao mesmo tempo, esse exemplo ensina uma regra prática valiosa: quando o fall-through não for intencional, use break de forma disciplinada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Quando o fall-through pode ser intencional"
+    },
+    {
+      "type": "paragraph",
+      "text": "Embora muitas vezes o fall-through seja um erro, há cenários em que o programador deseja deliberadamente que mais de um case compartilhe o mesmo bloco ou que a execução passe por caminhos agrupados. Um exemplo comum é quando diferentes casos devem produzir a mesma resposta. Nesses contextos, o uso consciente da continuidade pode economizar repetição e manter a lógica agrupada."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const dia = \"sabado\";\n\nswitch (dia) {\n  case \"sabado\":\n  case \"domingo\":\n    console.log(\"Fim de semana\");\n    break;\n  default:\n    console.log(\"Dia útil\");\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " dia "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"sabado\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "switch"
+          },
+          {
+            "kind": "plain",
+            "text": " (dia) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"sabado\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"domingo\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Fim de semana\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "default"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Dia útil\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Aqui, sabado e domingo convergem para a mesma resposta. O código usa a continuidade entre casos de maneira intencional e legível. Esse tipo de construção mostra que o problema não está no fall-through em si, mas na falta de clareza sobre quando ele é desejado e quando é acidental."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa é uma lição profissional importante: conhecer um comportamento interno da estrutura permite tanto evitar erros quanto usá-lo com precisão quando ele realmente ajuda a modelar o problema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Quando switch costuma ser melhor do que if/else if"
+    },
+    {
+      "type": "paragraph",
+      "text": "Switch costuma ser especialmente útil quando há muitos casos discretos relacionados ao mesmo valor central e quando essa organização por casos melhora a leitura mais do que uma cadeia longa de if/else if. Isso acontece, por exemplo, em classificações por status, menus de ação, mapeamento de códigos conhecidos, dias da semana, níveis de acesso previamente categorizados e outros contextos semelhantes."
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesses cenários, o switch torna mais visível que todas as alternativas pertencem a um mesmo eixo de decisão. Em vez de repetir a mesma variável ou expressão em várias comparações, o código centraliza o valor e distribui os casos em blocos organizados. Isso produz clareza estrutural."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve perceber, porém, que essa vantagem depende do contexto. Se as condições são heterogêneas, compostas ou dependem de expressões mais complexas do que simples comparação com um mesmo valor, if/else if pode continuar sendo superior."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Quando if/else continua sendo melhor do que switch"
+    },
+    {
+      "type": "paragraph",
+      "text": "If/else continua sendo melhor quando a decisão depende de expressões mais ricas, comparações relacionais, combinações lógicas ou critérios que não se reduzem bem a uma lista de casos associados a um único valor. Nesses cenários, forçar switch pode tornar o código artificial ou menos direto do que a estrutura condicional tradicional."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque evita o erro de tratar switch como ferramenta superior por definição. Ele não é “mais avançado” do que if/else. Ele é mais apropriado para um tipo específico de problema. O programador maduro não pergunta qual estrutura parece mais sofisticada, mas qual delas representa melhor a lógica real da decisão."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa forma de pensar mantém o repertório técnico a serviço da clareza, e não da vaidade sintática."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Estudo de caso: classificação de etapa de processo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um sistema que precisa reagir a etapas bem definidas de um fluxo: iniciado, em-analise, aprovado, rejeitado e concluido. Todas essas opções pertencem à mesma categoria lógica: o estado da etapa atual. Nesse cenário, switch pode organizar muito bem a leitura, porque cada case se torna um caso reconhecível do mesmo eixo de classificação. Em uma cadeia longa de if/else if, a lógica poderia continuar funcionando, mas talvez ficasse menos evidente que todas as decisões giram em torno do mesmo dado central."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso mostra o ponto forte do switch: transformar uma família de possibilidades discretas em estrutura visualmente organizada. Ao mesmo tempo, ele mostra a necessidade de break e de default bem pensados, para que o fluxo permaneça seguro e claro."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é direta: switch brilha quando a decisão é uma classificação de múltiplos casos pertencentes ao mesmo universo de referência."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tratar switch como mera troca de sintaxe sem entender o tipo de problema para o qual ele é mais adequado.",
+        "Esquecer break e interpretar o fall-through como comportamento inexplicável da linguagem.",
+        "Usar switch em contextos em que as condições são heterogêneas demais para se beneficiarem dele.",
+        "Ignorar a importância de default como cobertura residual do fluxo.",
+        "Achar que switch é automaticamente melhor do que if/else por parecer mais “organizado”.",
+        "Não perceber quando o fall-through foi usado de forma intencional para agrupar casos equivalentes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use switch quando houver muitos casos ligados ao mesmo valor central.",
+        "Empregue break com disciplina, exceto quando o fall-through for deliberado e claro.",
+        "Pense em default como revisão da completude da lógica, e não apenas como obrigação sintática.",
+        "Compare versões em if/else if e switch para entender qual estrutura comunica melhor a decisão.",
+        "Evite usar switch por vaidade sintática; use-o quando ele realmente organizar melhor o fluxo.",
+        "Teste exemplos pequenos no console para observar concretamente o efeito da ausência ou presença de break."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 4"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o papel do switch como estrutura de seleção entre múltiplos casos ligados a um mesmo valor.",
+        "Reconheço a função de case, default e break.",
+        "Percebo o que é fall-through e por que ele pode gerar bugs quando não é intencional.",
+        "Entendo que switch não substitui if/else em qualquer contexto.",
+        "Consigo identificar cenários em que switch comunica melhor a lógica da decisão.",
+        "Estou preparado para estudar guard clauses e simplificação de fluxo condicional na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o repertório básico de estruturas condicionais foi ampliado com switch, o próximo passo é estudar uma estratégia muito importante de clareza de fluxo: guard clauses e simplificação de decisões. Na próxima parte, veremos como evitar aninhamento excessivo e como organizar saídas antecipadas para tornar o raciocínio condicional mais limpo e legível."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa continuidade é especialmente importante porque, à medida que o programa cresce, o problema deixa de ser apenas escolher a estrutura certa e passa a ser também escrever decisões de forma sustentável. Guard clauses serão um passo decisivo nessa direção."
+    }
+  ]
+}

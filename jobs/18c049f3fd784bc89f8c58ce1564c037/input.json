@@ -1,0 +1,917 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 7 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 7,
+    "chapter_title": "Funções: reutilização, clareza e composição",
+    "part_number": 8,
+    "part_title": "Fechamento do Capítulo 7: resumo executivo, erros clássicos e checklist final",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 7 — Funções: reutilização, clareza e composição"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Fechamento do Capítulo 7: resumo executivo, erros clássicos e checklist final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o capítulo que marca o salto de ‘escrever scripts’ para ‘construir software’. Funções são a unidade básica de organização em JavaScript: elas encapsulam regras, criam contratos, permitem reutilização e viabilizam composição. Se você domina este capítulo, você consegue manter o código legível quando cresce, isolar bugs e evoluir funcionalidades sem duplicação. Nesta parte final, você vai revisar o essencial, reconhecer erros clássicos rapidamente e fechar com um checklist final — seu sinal verde para o Capítulo 8 (objetos e arrays em profundidade), onde funções aparecem como métodos e callbacks o tempo todo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Resumo executivo (o que você deve levar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Função é contrato: entradas (parâmetros), saída (return) e efeitos colaterais.",
+        "Sem return explícito, a função retorna undefined.",
+        "Prefira funções puras para regras de negócio; isole efeitos colaterais (DOM/log/rede).",
+        "Use guard clauses para validar entradas e manter o happy path curto.",
+        "Formas de função: declaration (hoisted), expression/arrow (não hoisted como valor).",
+        "Arrow function não tem this e arguments próprios; captura do contexto externo (lexical).",
+        "Use default parameters em vez de || para não derrubar 0/''; use ?? para tratar null/undefined como ausência.",
+        "Use rest parameters (...args) em vez de arguments.",
+        "Closures: funções capturam variáveis do escopo léxico; base de callbacks e estado privado.",
+        "Composição: decompor problema em etapas pequenas e orquestrar com clareza."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Erros clássicos (e a causa real)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Default errado com || (derrubando 0/'' )"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function f(pct) {\n  const x = pct || 10;\n  return x;\n}\n\nconsole.log(f(0)); // 10 (pegadinha)\n\nfunction g(pct = 10) {\n  return pct;\n}\nconsole.log(g(0)); // 0 (correto)",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "f"
+          },
+          {
+            "kind": "plain",
+            "text": "(pct) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " x "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " pct "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " x;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "f"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 10 (pegadinha)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "g"
+          },
+          {
+            "kind": "plain",
+            "text": "(pct "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " pct;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "g"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0 (correto)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Chamar function expression antes (hoisting/TDZ)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// console.log(soma2(2,3)); // ReferenceError\nconst soma2 = (a, b) => a + b;\nconsole.log(soma2(2,3));",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// console.log(soma2(2,3)); // ReferenceError"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " soma2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " (a, b) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "soma2"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.3 Confusão com this em arrow"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: arrow não cria this próprio. Para métodos que dependem de this, prefira método/funcão tradicional."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const obj = {\n  nome: 'Ana',\n  mostrar() {\n    return this.nome;\n  },\n};\nconsole.log(obj.mostrar());",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " obj "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Ana'"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "mostrar"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "this"
+          },
+          {
+            "kind": "plain",
+            "text": ".nome;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(obj."
+          },
+          {
+            "kind": "function",
+            "text": "mostrar"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.4 Bug var + callbacks (closure em loop)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// BUG (var): geralmente imprime 3,3,3\nfor (var i = 0; i < 3; i = i + 1) {\n  setTimeout(() => console.log(i), 0);\n}\n\n// CORRETO (let): imprime 0,1,2\nfor (let j = 0; j < 3; j = j + 1) {\n  setTimeout(() => console.log(j), 0);\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// BUG (var): geralmente imprime 3,3,3"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(i), "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// CORRETO (let): imprime 0,1,2"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " j "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; j "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "; j "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " j "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(j), "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Padrões recomendados (jeito júnior)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escreva contrato antes: o que entra, o que sai, como sinaliza erro.",
+        "Retorne formatos consistentes (ex.: { ok, value/msg }) para facilitar fluxo.",
+        "Mantenha funções pequenas e nomeadas; extraia etapas para funções puras.",
+        "Separe: normalizar → validar → calcular → formatar → render.",
+        "Use objeto de opções quando a função tem muitos parâmetros.",
+        "Evite duplicação: se colou o mesmo bloco duas vezes, provavelmente merece uma função.",
+        "Use closure para estado privado quando fizer sentido, sem recorrer a globais."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Checklist final do Capítulo 7 (sinal verde)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo explicar função como contrato (inputs/outputs/efeitos).",
+        "Eu sei que sem return explícito o resultado é undefined e não dependo disso por acidente.",
+        "Eu valido entradas com guard clauses e retorno erros previsíveis.",
+        "Eu escolho conscientemente entre declaration/expression/arrow e entendo hoisting o suficiente.",
+        "Eu sei que arrow não tem this/arguments próprios e uso isso com intenção.",
+        "Eu uso default parameters e ?? corretamente para defaults.",
+        "Eu uso ...args em vez de arguments.",
+        "Eu entendo closure e consigo criar estado privado (contador/carrinho) sem globais.",
+        "Eu componho funções pequenas em um fluxo legível e testável.",
+        "Eu separo regra (pura) de renderização (efeito colateral) em mini-projetos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Conexão com o Capítulo 8"
+    },
+    {
+      "type": "paragraph",
+      "text": "No Capítulo 8, você entra em objetos e arrays em profundidade: propriedades, métodos, mutabilidade, cópias, iteração, e métodos de array. Funções aparecem o tempo todo como métodos e callbacks. O domínio que você construiu aqui vai tornar esse próximo capítulo muito mais fácil, porque você já sabe escrever contratos, decompor problemas e manter o código organizado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o Capítulo 7 com todas as 8 partes previstas. Próximo passo: Capítulo 8 — Parte 1."
+    }
+  ]
+}

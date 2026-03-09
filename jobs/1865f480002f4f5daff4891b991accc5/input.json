@@ -1,0 +1,1077 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 3 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "3",
+    "chapter_title": "Valores, tipos de dados e operações fundamentais",
+    "part_number": "5",
+    "part_title": "Precedência de operadores e avaliação de expressões",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 3 — Valores, tipos de dados e operações fundamentais"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Precedência de operadores e avaliação de expressões"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender os principais grupos de operadores em JavaScript, o estudante chega a uma pergunta que parece simples, mas se revela decisiva para a leitura correta do código: quando há mais de um operador em uma mesma expressão, em que ordem a linguagem decide o que avaliar primeiro? Essa questão é central porque um programa não interpreta expressões compostas do mesmo modo intuitivo com que um iniciante, às vezes, as lê pela primeira vez. Há regras de precedência e de agrupamento que orientam o processo de avaliação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta parte existe para construir esse entendimento com clareza. Saber o que faz cada operador isoladamente é importante, mas insuficiente. Em programas reais, operadores raramente aparecem sozinhos o tempo todo. Eles costumam se combinar em expressões maiores, envolvendo cálculos, comparações, verificações lógicas e agrupamentos. Se o estudante não souber como a linguagem decide a ordem dessas operações, começará a interpretar resultados de forma errada, atribuindo à linguagem um comportamento aparentemente estranho quando, na verdade, o problema está na leitura da expressão."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo aqui, portanto, é apresentar a ideia de precedência de operadores e de avaliação de expressões de modo didático e funcional. Não vamos transformar o capítulo em uma tabela decorada de prioridades abstratas. O foco será entender o princípio, observar exemplos concretos, aprender o papel dos parênteses como recurso de clareza e desenvolver a capacidade de ler expressões compostas com muito mais precisão."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: expressões maiores nem sempre são lidas corretamente pelo iniciante"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando alguém começa a programar, é comum olhar para uma expressão composta e interpretá-la quase como se a linguagem lesse tudo de forma linear, da esquerda para a direita, sem hierarquia interna relevante. Essa percepção é insuficiente. Assim como na matemática básica existem convenções que determinam o que é resolvido primeiro em uma expressão, em JavaScript também existem regras que orientam a ordem de avaliação de operadores e subexpressões."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse problema se torna evidente quando o estudante encontra resultados que não correspondem à sua expectativa inicial. Em muitos casos, o código está correto segundo as regras da linguagem, mas o leitor o interpretou de forma equivocada. A consequência é perigosa: o aluno começa a desconfiar da coerência da linguagem quando, na realidade, ainda não compreendeu a lógica da avaliação interna da expressão."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, estudar precedência não é decorar curiosidades. É aprender a ler melhor. E ler melhor é uma das competências centrais da programação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é uma expressão em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de falar em precedência, vale fixar a noção de expressão. Em termos introdutórios, uma expressão é um trecho de código que pode ser avaliado pela linguagem para produzir um valor. Esse valor pode ser numérico, lógico, textual ou de outra categoria, dependendo do conteúdo da expressão. Quando escrevemos 2 + 3, por exemplo, estamos criando uma expressão cujo resultado é um valor numérico. Quando escrevemos 10 > 5, temos uma expressão cujo resultado é um valor booleano."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa definição é importante porque mostra que a linguagem não vê esses trechos apenas como um arranjo visual de símbolos. Ela os avalia segundo regras, produzindo um resultado. O estudo da precedência entra justamente nesse ponto: quando uma expressão contém múltiplas partes e múltiplos operadores, a linguagem precisa seguir um critério para determinar como chegar ao valor final."
+    },
+    {
+      "type": "paragraph",
+      "text": "Compreender o que é uma expressão ajuda o estudante a deixar de enxergar o código como sequência estática de símbolos e passar a vê-lo como estrutura avaliável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. O que significa precedência de operadores"
+    },
+    {
+      "type": "paragraph",
+      "text": "Precedência de operadores é o conjunto de regras que determina quais operadores devem ser avaliados antes de outros quando aparecem na mesma expressão, sem que haja parênteses alterando explicitamente a ordem. Em outras palavras, quando o programador não especifica agrupamento manual, a linguagem aplica sua própria hierarquia interna para decidir por onde começar."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa ideia não deve ser confundida com capricho arbitrário da linguagem. Toda linguagem precisa de regras de interpretação para expressões compostas. Sem isso, a avaliação seria ambígua e os resultados dependeriam de suposições frágeis do leitor ou da implementação. A precedência existe para garantir que a expressão tenha interpretação consistente."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor não precisa decorar imediatamente uma lista longa de prioridades. O mais importante, neste momento, é entender que essa hierarquia existe e que ela influencia diretamente o resultado final de muitas expressões aparentemente simples."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Um primeiro exemplo clássico de precedência"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere a expressão abaixo:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(2 + 3 * 4);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Um iniciante pode ser tentado a ler a expressão de maneira estritamente linear e imaginar que a linguagem faria 2 + 3 primeiro, chegando a 5, para depois multiplicar por 4 e produzir 20. Contudo, não é isso que acontece. A multiplicação possui precedência sobre a adição. Por isso, a linguagem avalia primeiro 3 * 4, obtém 12, e só então realiza a soma com 2, resultando em 14."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é didaticamente muito importante porque mostra duas coisas ao mesmo tempo. Primeiro, que a linguagem não avalia tudo de forma puramente sequencial e ingênua. Segundo, que uma leitura correta depende do conhecimento das relações de precedência entre operadores."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a ver esse tipo de exemplo como treino de leitura, e não apenas como truque de prova."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. O papel dos parênteses na clareza da expressão"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se a precedência define a ordem padrão da linguagem, os parênteses permitem ao programador explicitar agrupamentos e, quando necessário, alterar a ordem natural de avaliação. Eles funcionam como uma forma de dizer à linguagem: resolva primeiro esta parte. Além disso, mesmo quando a ordem natural já produziria o resultado correto, os parênteses podem ser usados para tornar a leitura humana mais clara."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log((2 + 3) * 4);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora a situação muda. Os parênteses forçam a soma a ser avaliada antes da multiplicação. O resultado passa a ser 20, porque a linguagem resolve primeiro 2 + 3 e depois multiplica o resultado por 4. Esse contraste com o exemplo anterior mostra com grande clareza a importância do agrupamento explícito."
+    },
+    {
+      "type": "paragraph",
+      "text": "Para o iniciante, a grande lição é esta: quando houver risco de ambiguidade na leitura, use parênteses para tornar a intenção clara. Programar bem não é apenas confiar que a linguagem sabe a ordem. É também escrever de forma que os seres humanos consigam ler com segurança."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Avaliação de expressões relacionais e lógicas"
+    },
+    {
+      "type": "paragraph",
+      "text": "A questão da precedência não se limita a cálculos aritméticos. Ela também aparece quando comparações e operações lógicas entram em cena. Expressões que combinam verificações relacionais com operadores lógicos podem produzir leituras equivocadas se o estudante não compreender que certas partes serão avaliadas antes de outras."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(10 > 5 && 3 < 4);\nconsole.log(10 > 20 || 2 + 2 === 4);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "20"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesses exemplos, comparações relacionais produzem valores booleanos, e depois operadores lógicos combinam esses resultados. O importante, neste momento, é perceber que a expressão pode ter múltiplas etapas internas. Primeiro certas partes são avaliadas, gerando booleanos intermediários. Depois esses booleanos entram na lógica composta. Em outras palavras, a linguagem não vê a expressão como bloco único sem estrutura. Ela a percorre conforme regras de avaliação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Isso reforça a ideia central da parte: ler bem uma expressão é enxergar sua arquitetura interna."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. A diferença entre conhecer operadores e ler expressões"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos estudantes acreditam que já entenderam operadores porque sabem o nome do símbolo e conseguem explicar seu uso básico isoladamente. No entanto, a verdadeira dificuldade costuma aparecer quando esses operadores se encontram em expressões maiores. Saber que + soma, que > compara e que && combina condições é importante, mas ainda não garante que o leitor consiga interpretar corretamente uma expressão composta por tudo isso ao mesmo tempo."
+    },
+    {
+      "type": "paragraph",
+      "text": "É aqui que o estudo da avaliação de expressões mostra seu valor. Ele transforma conhecimento pontual em leitura integrada. Em vez de conhecer peças isoladas, o aluno aprende a acompanhar a ordem em que a linguagem articula essas peças para chegar a um resultado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa habilidade será decisiva para todos os tópicos posteriores do livro, especialmente quando chegarmos a condições mais complexas, funções, callbacks e estruturas com múltiplos níveis de lógica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Clareza humana vale mais do que confiança cega na precedência"
+    },
+    {
+      "type": "paragraph",
+      "text": "Embora a linguagem possua regras próprias de precedência, um erro comum entre programadores iniciantes e até intermediários é confiar demais que o leitor humano sempre entenderá a expressão do mesmo modo que a engine. Nem sempre isso acontece. Expressões corretas para a linguagem podem ser difíceis de ler rapidamente por outra pessoa — ou até pelo próprio autor algum tempo depois."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, uma boa prática profissional é usar parênteses não apenas quando estritamente necessários para alterar o resultado, mas também quando eles ajudam a explicitar a intenção lógica. A clareza humana tem valor técnico. Código legível é mais fácil de revisar, depurar e manter."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa orientação é especialmente útil em JavaScript, onde a mistura de operadores aritméticos, relacionais e lógicos pode gerar expressões visualmente densas. Em situações assim, explicitar agrupamentos é sinal de maturidade, não de fraqueza técnica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: uma expressão correta, mas mal lida"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma expressão em que o estudante mistura soma, comparação e operador lógico em uma mesma linha. É possível que a linguagem a avalie corretamente, mas que o programador faça uma leitura imprecisa sobre o caminho interno que levou ao resultado. Se ele então usar esse valor em uma condição maior, o programa pode parecer surpreendente ou “estranho”, quando na verdade o problema estava na interpretação inicial da expressão."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é importante porque mostra que muitos erros não nascem da execução em si, mas da leitura humana inadequada do que foi escrito. Em outras palavras, um programa pode estar funcionando exatamente como a linguagem determina, e ainda assim parecer errado para o autor porque a expressão foi mentalmente agrupada de forma incorreta."
+    },
+    {
+      "type": "paragraph",
+      "text": "A solução para esse tipo de problema não é decorar cada caso isolado, mas fortalecer a capacidade de enxergar precedência, avaliar por etapas e usar parênteses com intenção clara."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O papel da experimentação no entendimento da precedência"
+    },
+    {
+      "type": "paragraph",
+      "text": "Como em outros temas do livro, o console é um excelente aliado aqui. O estudante pode escrever pequenas expressões, prever resultados e verificar como a linguagem realmente as avalia. Comparar versões com e sem parênteses é especialmente útil, porque torna visível o papel do agrupamento. Esse tipo de prática é muito mais eficaz do que tentar memorizar abstratamente uma lista de prioridades sem observação concreta."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(2 + 3 * 4);\nconsole.log((2 + 3) * 4);\nconsole.log(10 > 5 && 2 < 1);\nconsole.log((10 > 5) && (2 < 1));",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao comparar essas expressões, o aluno percebe que os parênteses podem, em alguns casos, mudar o resultado, e em outros apenas tornar a estrutura mais legível. Ambas as funções são importantes. O experimento ajuda a consolidar a ideia de que a linguagem tem uma ordem interna de avaliação, mas o programador pode e deve explicitar agrupamentos quando isso favorece entendimento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse uso do console reforça uma postura metodológica importante: compreender a linguagem por observação disciplinada, e não apenas por intuição."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ler expressões compostas como se tudo fosse avaliado estritamente da esquerda para a direita.",
+        "Achar que conhecer um operador isoladamente já basta para entender expressões maiores.",
+        "Ignorar a existência de precedência entre operadores.",
+        "Usar parênteses apenas quando a linguagem obriga, e nunca para clareza humana.",
+        "Interpretar resultados inesperados como incoerência da linguagem, em vez de revisar a leitura da expressão.",
+        "Misturar cálculos, comparações e lógica sem perceber as etapas internas de avaliação."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Teste expressões compostas no console e compare sua expectativa com o resultado real.",
+        "Use parênteses para explicitar intenção sempre que houver risco de leitura confusa.",
+        "Leia expressões por etapas, identificando subpartes antes do resultado final.",
+        "Associe operadores à hierarquia de avaliação, não apenas ao símbolo isolado.",
+        "Evite escrever expressões densas demais sem necessidade.",
+        "Considere precedência e legibilidade como partes complementares da boa escrita."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é uma expressão em nível introdutório.",
+        "Reconheço que operadores possuem regras de precedência quando aparecem juntos.",
+        "Sei que parênteses podem alterar ou explicitar a ordem de avaliação.",
+        "Percebo que comparações e lógica composta também dependem de avaliação por etapas.",
+        "Entendo que clareza humana é tão importante quanto correção formal da expressão.",
+        "Estou preparado para avançar para o estudo de conversão implícita e conversão explícita de tipos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender como expressões são avaliadas, o próximo passo é estudar um tema central para o comportamento do JavaScript: a conversão de tipos. Na próxima parte, veremos o que acontece quando valores de categorias diferentes entram em operações ou contextos que exigem certa adaptação, distinguindo conversão implícita e conversão explícita."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa continuidade é muito importante. A precedência mostra como a linguagem organiza a avaliação. A conversão de tipos mostrará como a linguagem lida com diferenças entre os próprios valores envolvidos nessa avaliação. Juntos, esses temas explicam muitos dos comportamentos que mais surpreendem quem está começando."
+    }
+  ]
+}

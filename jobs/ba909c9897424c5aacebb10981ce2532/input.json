@@ -1,0 +1,1329 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 7 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 7,
+    "chapter_title": "Funções: reutilização, clareza e composição",
+    "part_number": 3,
+    "part_title": "Escopo de função e closures: como funções capturam variáveis (base de callbacks)",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 7 — Funções: reutilização, clareza e composição"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Escopo de função e closures: como funções capturam variáveis (base de callbacks)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Closure é o mecanismo que permite que uma função mantenha acesso a variáveis do lugar onde foi criada, mesmo quando ela roda depois. Isso explica callbacks, eventos, timers, módulos e grande parte do JavaScript moderno. Aqui você vai construir um modelo mental previsível: escopo léxico, ambiente e captura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Modelo mental: escopo léxico e captura"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escopo léxico: definido por onde o código está escrito (aninhamento).",
+        "Ambiente léxico: conjunto de bindings disponíveis naquele ponto.",
+        "Closure: função + referência ao(s) ambiente(s) léxico(s) que ela captura."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Exemplo clássico: contador com estado privado"
+    },
+    {
+      "type": "paragraph",
+      "text": "A variável contador não fica global. Ela vive dentro da função fábrica. A função interna captura esse binding e consegue ler e atualizar depois."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nfunction criarContador() {\n  let contador = 0;\n\n  return function incrementar() {\n    contador = contador + 1;\n    return contador;\n  };\n}\n\nconst c1 = criarContador();\nconsole.log(c1()); // 1\nconsole.log(c1()); // 2\n\nconst c2 = criarContador();\nconsole.log(c2()); // 1\nconsole.log(c1()); // 3",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarContador"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "incrementar"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " contador;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " c1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarContador"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "c1"
+          },
+          {
+            "kind": "plain",
+            "text": "()); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 1"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "c1"
+          },
+          {
+            "kind": "plain",
+            "text": "()); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 2"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " c2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarContador"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "c2"
+          },
+          {
+            "kind": "plain",
+            "text": "()); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 1"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "c1"
+          },
+          {
+            "kind": "plain",
+            "text": "()); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 3"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Por que funciona (em 4 pontos)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "criarContador executa e cria o binding contador.",
+        "A função incrementar nasce dentro desse escopo e captura contador.",
+        "Quando criarContador termina, contador não é destruído porque a closure ainda referencia o ambiente.",
+        "Cada chamada cria um novo ambiente, então c1 e c2 não compartilham estado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Closures e callbacks: roda depois, mas lê o ambiente de antes"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function agendarLog(mensagem) {\n  setTimeout(() => {\n    console.log('Depois:', mensagem);\n  }, 300);\n}\n\nagendarLog('Olá');",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "agendarLog"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagem) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Depois:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", mensagem);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }, "
+          },
+          {
+            "kind": "number",
+            "text": "300"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "agendarLog"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Olá'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Armadilha clássica: var em loop com setTimeout"
+    },
+    {
+      "type": "paragraph",
+      "text": "var tem escopo de função. Em callbacks, isso aparece como bug: todas as funções capturam o mesmo i final. let cria um binding por iteração no for, então cada callback captura um valor diferente."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "// BUG (var): geralmente imprime 3, 3, 3\nfor (var i = 0; i < 3; i = i + 1) {\n  setTimeout(() => console.log('var i =', i), 0);\n}\n\n// CORRETO (let): imprime 0, 1, 2\nfor (let j = 0; j < 3; j = j + 1) {\n  setTimeout(() => console.log('let j =', j), 0);\n}",
+      "segments": [
+        [
+          {
+            "kind": "comment",
+            "text": "// BUG (var): geralmente imprime 3, 3, 3"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'var i ='"
+          },
+          {
+            "kind": "plain",
+            "text": ", i), "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// CORRETO (let): imprime 0, 1, 2"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " j "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; j "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "; j "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " j "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'let j ='"
+          },
+          {
+            "kind": "plain",
+            "text": ", j), "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Encapsulamento: closures como mini-módulo (API + estado privado)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function criarCarrinho() {\n  const itens = [];\n\n  function adicionar(nome, qtd) {\n    itens.push({ nome, qtd });\n  }\n\n  function totalItens() {\n    let t = 0;\n    for (const it of itens) {\n      t = t + it.qtd;\n    }\n    return t;\n  }\n\n  return { adicionar, totalItens };\n}\n\nconst carrinho = criarCarrinho();\ncarrinho.adicionar('Arroz', 2);\ncarrinho.adicionar('Café', 1);\nconsole.log(carrinho.totalItens()); // 3",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarCarrinho"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " itens "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " [];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "adicionar"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome, qtd) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    itens."
+          },
+          {
+            "kind": "function",
+            "text": "push"
+          },
+          {
+            "kind": "plain",
+            "text": "({ nome, qtd });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "totalItens"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " t "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " it of itens) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      t "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " t "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " it.qtd;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " t;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { adicionar, totalItens };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " carrinho "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarCarrinho"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "carrinho."
+          },
+          {
+            "kind": "function",
+            "text": "adicionar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Arroz'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "carrinho."
+          },
+          {
+            "kind": "function",
+            "text": "adicionar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Café'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(carrinho."
+          },
+          {
+            "kind": "function",
+            "text": "totalItens"
+          },
+          {
+            "kind": "plain",
+            "text": "()); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 3"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Boas práticas (nível júnior)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Prefira let/const (evite var), especialmente com callbacks e loops.",
+        "Use closure para encapsular estado e expor uma API pequena e clara.",
+        "Mantenha o estado privado (não global) quando for detalhe interno.",
+        "Separe regra (função pura) de efeito colateral (DOM/log) sempre que possível."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Exercícios"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Crie criarSequencia(inicio) que retorna uma função proximo() e incrementa o valor internamente.",
+        "2) Reproduza o bug do var no loop e corrija com let.",
+        "3) Faça criarCofre(senha) com métodos abrir(senhaTentativa) e guardar(valor) usando estado privado.",
+        "4) Crie um botão no DOM e use um handler que incrementa um contador via closure.",
+        "5) Explique em uma frase: por que c1 e c2 não compartilham contador?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Checklist profissional (Parte 3)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei definir closure como função + ambiente capturado.",
+        "Eu sei explicar por que uma função pode acessar variáveis após o escopo externo terminar.",
+        "Eu sei por que var em loops causa bug com callbacks e por que let corrige.",
+        "Eu sei usar closure para criar estado privado com uma API pequena.",
+        "Eu consigo usar closures conscientemente em callbacks e eventos."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 4, você vai aprofundar parâmetros (default, rest), arguments, e padrões de API para funções utilitárias e callbacks."
+    }
+  ]
+}

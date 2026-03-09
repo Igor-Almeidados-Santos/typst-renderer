@@ -1,0 +1,1018 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 6 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "6",
+    "chapter_title": "Conversão de tipos e coerção",
+    "part_number": "8",
+    "part_title": "Estudo de caso: previsibilidade em comparações e condições",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 6 — Conversão de tipos e coerção"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Estudo de caso: previsibilidade em comparações e condições"
+    },
+    {
+      "type": "paragraph",
+      "text": "Encerrar este capítulo apenas com conceitos e listas de exemplos seria insuficiente. O leitor já distinguiu conversão explícita e implícita, estudou passagens entre string, number e boolean, aprofundou truthy e falsy, revisitou igualdade frouxa e estrita, analisou casos clássicos de coerção e organizou padrões seguros de escrita. O passo final agora é integrar tudo isso em um estudo de caso orientado por um objetivo muito prático: alcançar previsibilidade em comparações e condições. Essa expressão precisa ser entendida com precisão. Previsibilidade, aqui, significa escrever código em que o leitor consiga antecipar o comportamento lógico das expressões sem depender de sorte, adivinhação ou coincidências felizes de coerção."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse objetivo é especialmente importante porque grande parte dos problemas iniciais em JavaScript não nasce da dificuldade de criar uma condição, mas da dificuldade de confiar nela. O estudante escreve uma comparação, mistura entrada textual com número, usa uma condição aparentemente curta e funcional, e por algum tempo tudo parece aceitável. Depois um caso levemente diferente aparece e o comportamento muda de forma surpreendente. O problema real não é apenas a condição dar errado em um caso. É o programador não ter critérios suficientemente claros para prever se ela deveria ou não dar certo. Este estudo de caso existe justamente para mostrar como tornar o fluxo condicional mais confiável."
+    },
+    {
+      "type": "paragraph",
+      "text": "Imaginemos um pequeno programa de inscrição em curso. O sistema recebe a idade do usuário por meio de uma entrada textual. Também recebe uma informação textual sobre aceitação dos termos. A regra do sistema é simples: a inscrição só será liberada se a idade for pelo menos dezoito e se os termos tiverem sido aceitos corretamente. Esse exemplo é didaticamente excelente porque reúne vários temas do capítulo. Há entrada textual, necessidade de conversão, comparação numérica, comparação de igualdade, condição composta e risco real de coerção confusa caso o fluxo seja escrito sem critério."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 1 — O fluxo ingênuo e sua fragilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de escrever a solução mais segura, vale observar uma forma frágil de montar o problema. Um iniciante poderia manter os dados exatamente como chegaram, comparar a idade textual com o número 18 em contexto frouxo ou depender de interpretação truthy para a aceitação dos termos. À primeira vista, alguns testes poderiam até parecer funcionar. No entanto, o código ficaria vulnerável a ambiguidade de tipo, leitura booleana indevida e comparações pouco transparentes."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const idadeTexto = '18';\nconst aceitouTermosTexto = 'false';\n\nconst inscricaoLiberada = idadeTexto >= 18 && aceitouTermosTexto;\nconsole.log(inscricaoLiberada);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " idadeTexto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'18'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermosTexto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'false'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " inscricaoLiberada "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " idadeTexto "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "18"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermosTexto;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(inscricaoLiberada);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse trecho é didaticamente valioso porque mostra como a fragilidade pode se esconder atrás de uma aparência de simplicidade. A comparação idadeTexto >= 18 já depende de coerção numérica implícita. Mais grave ainda, aceitouTermosTexto contém a string 'false', que é não vazia e, portanto, truthy em contexto lógico. O estudante que lê apenas o conteúdo humano da palavra pode imaginar que o resultado expressa recusa dos termos, mas a linguagem está lendo a string como valor textual presente. Aqui, a condição começa a se tornar semanticamente enganosa. O código não é apenas tecnicamente arriscado; ele comunica mal o problema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 2 — Tornar o tipo da idade previsível"
+    },
+    {
+      "type": "paragraph",
+      "text": "A primeira correção segura é alinhar explicitamente a idade ao contexto numérico que a regra exige. Em vez de deixar a comparação >= assumir esse papel por coerção implícita, o programador pode converter a entrada logo no início do fluxo. Essa escolha reduz ambiguidade e ajuda o leitor a entender que, dali em diante, a variável representa idade como quantidade numérica real dentro do sistema."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const idadeTexto = '18';\nconst idade = Number(idadeTexto);\n\nconsole.log(idade);\nconsole.log(typeof idade);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " idadeTexto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'18'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " idade "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(idadeTexto);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(idade);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " idade);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora o fluxo fica muito mais honesto. A transformação do tipo saiu do comportamento implícito do operador e entrou em uma decisão visível do código. O leitor pode verificar o valor convertido, observar seu tipo e seguir a lógica numérica com muito menos ruído. Mesmo antes de chegar à condição final, a previsibilidade do programa já aumentou de forma clara."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 3 — Tratar a aceitação de termos sem confiar no conteúdo aparente da string"
+    },
+    {
+      "type": "paragraph",
+      "text": "A segunda fragilidade estava na leitura do texto 'false' como se ele fosse um boolean false. Aqui, o ponto mais importante é não projetar linguagem humana diretamente sobre a coerção do JavaScript. Uma string não vazia é truthy, independentemente de seu conteúdo textual parecer afirmar o contrário. Por isso, o sistema precisa definir com mais clareza o critério de aceitação. Neste estudo de caso, adotaremos uma regra simples: os termos só são considerados aceitos se o texto recebido for exatamente 'true'."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const aceitouTermosTexto = 'false';\nconst aceitouTermos = aceitouTermosTexto === 'true';\n\nconsole.log(aceitouTermos);\nconsole.log(typeof aceitouTermos);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermosTexto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'false'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermosTexto "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'true'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(aceitouTermos);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermos);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse passo é extremamente importante porque troca uma leitura truthy genérica por uma regra semântica explícita. O programa deixa de depender do fato de a string ser vazia ou não e passa a perguntar pelo valor textual exato que representa aceitação. A comparação estrita aqui reforça a previsibilidade do fluxo. O leitor sabe exatamente qual conteúdo textual libera a decisão lógica, e qualquer outro conteúdo produzirá false de forma transparente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 4 — Construir a condição final com tipos alinhados"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com a idade convertida explicitamente para number e a aceitação dos termos transformada em boolean de forma semântica clara, o sistema está pronto para montar a condição final. Nesse ponto, a expressão composta deixa de depender de coerções escondidas e passa a operar com dados mais alinhados ao que a regra realmente quer comparar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const idadeTexto = '18';\nconst aceitouTermosTexto = 'true';\n\nconst idade = Number(idadeTexto);\nconst aceitouTermos = aceitouTermosTexto === 'true';\nconst inscricaoLiberada = idade >= 18 && aceitouTermos;\n\nconsole.log(inscricaoLiberada);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " idadeTexto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'18'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermosTexto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'true'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " idade "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Number"
+          },
+          {
+            "kind": "plain",
+            "text": "(idadeTexto);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermosTexto "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'true'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " inscricaoLiberada "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " idade "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "18"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " aceitouTermos;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(inscricaoLiberada);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O trecho agora é previsível por construção. Idade >= 18 é uma comparação numérica clara. AceitouTermos já é um boolean gerado por comparação estrita. O operador && combina duas condições semanticamente bem definidas. O estudante consegue ler essa lógica como regra do problema, não como tentativa de domar efeitos implícitos da linguagem. Essa é a essência da previsibilidade buscada no capítulo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 5 — Observar o comportamento diante de entradas diferentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma lógica previsível não precisa funcionar apenas em um caso favorável. Ela deve continuar compreensível quando as entradas mudam. Se idadeTexto vier como '16', a comparação numérica deve falhar claramente. Se aceitouTermosTexto vier como 'false', a comparação estrita com 'true' deve produzir false. Se a idade vier com conteúdo inadequado para conversão numérica, o fluxo deve tornar esse problema mais fácil de localizar, porque a etapa de conversão está visível. O sistema não se torna infalível magicamente, mas se torna muito mais rastreável."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é um dos ganhos mais importantes do estudo de caso. O programador iniciante começa a perceber que previsibilidade não significa ausência completa de problemas, mas facilidade maior para entender por que um problema aconteceu e em que etapa ele surgiu. Quando o fluxo depende de coerção silenciosa, os erros parecem surgir em qualquer lugar. Quando as transformações estão nomeadas e separadas, cada fase do processo pode ser observada e corrigida com mais precisão."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 6 — Comparar a solução previsível com a solução frágil"
+    },
+    {
+      "type": "paragraph",
+      "text": "A diferença entre a solução ingênua e a solução mais segura é mais conceitual do que sintática. Ambas podem parecer curtas. Ambas produzem algum resultado. O que muda é o grau de controle sobre a semântica da regra. Na forma frágil, a idade textual entra diretamente em uma comparação numérica e a aceitação dos termos depende de truthy sem distinguir o conteúdo textual real da string. Na forma previsível, a idade é alinhada explicitamente ao contexto numérico e a aceitação é definida por critério claro de igualdade estrita. O programa passa a dizer o que quer dizer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa diferença é o verdadeiro encerramento do capítulo. Coerção não desaparece da linguagem. O que desaparece, progressivamente, é a ingenuidade do leitor diante dela. O estudante deixa de confiar em coincidências felizes e passa a construir comparações e condições cujo sentido pode ser explicado antes mesmo da execução. Esse é um marco importante na formação técnica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Síntese integrada do estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao observar o caso completo, o leitor deve perceber que previsibilidade nasce da cooperação entre vários princípios do capítulo. Conversão explícita torna a leitura do tipo mais clara. Igualdade estrita reduz compatibilizações silenciosas. Truthy e falsy deixam de ser usados ingenuamente como substitutos universais de semântica de negócio. A condição final passa a operar sobre dados preparados para o papel que desempenharão. Em vez de depender da boa vontade implícita da linguagem, o programa conduz conscientemente a transformação dos valores até a regra decisional."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é um aprendizado profundo. O aluno não precisa abandonar a flexibilidade do JavaScript, mas precisa parar de tratá-la como muleta inconsciente. O código mais seguro não é necessariamente o mais longo, e sim o mais honesto quanto ao caminho percorrido pelos dados. Quando o tipo, a comparação e a condição estão alinhados ao problema, a coerção deixa de ser fonte de pânico e passa a ser um fenômeno compreensível, administrável e, muitas vezes, evitável nos pontos mais importantes da lógica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos iniciantes escrevem comparações e condições que parecem funcionar, mas dependem silenciosamente de entradas textuais, leitura truthy inadequada ou igualdade frouxa mal compreendida. Isso torna o comportamento do programa difícil de prever quando as entradas mudam ligeiramente. O problema real é montar regras condicionais sem alinhar explicitamente os tipos ao significado do problema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Previsibilidade em comparações e condições surge quando os dados são preparados antes da regra principal. Isso envolve conversão explícita no ponto certo, comparação mais alinhada à semântica desejada, uso consciente de truthy e falsy e separação entre conteúdo textual e significado lógico. O resultado é uma expressão condicional que depende menos de mediações implícitas da linguagem e mais de intenções visíveis no código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Modelo mental correto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de escrever a condição final, o programador deve perguntar se cada valor já está no tipo e no significado adequados para participar dessa decisão. Quando a resposta for não, o fluxo precisa corrigir isso antes da comparação principal. Previsibilidade não nasce na última linha da condição, mas na preparação correta dos dados que entram nela."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entrada bruta: valor recebido do exterior em formato ainda inadequado ao uso final.",
+        "Conversão explícita: alinhamento visível do valor ao contexto da regra.",
+        "Semântica booleana clara: definição objetiva do que conta como aceitação ou recusa.",
+        "Comparação previsível: uso de operadores compatíveis com a intenção do problema.",
+        "Condição composta confiável: combinação lógica construída sobre valores já preparados.",
+        "Rastreabilidade do fluxo: capacidade de localizar facilmente onde um dado foi transformado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso final da parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine dois estudantes implementando a inscrição em um curso com base em idade mínima e aceite dos termos. O primeiro mantém a idade como texto, confia em coerção numérica implícita e usa a string 'false' como se ela bastasse para negar os termos em contexto lógico. O segundo converte explicitamente a idade, transforma a aceitação em boolean com comparação estrita e só então monta a condição final. Ambos escrevem JavaScript, mas apenas o segundo realmente controla o sentido da regra. Esse contraste mostra por que coerção deve ser compreendida não apenas para ser tolerada, mas para que o programador decida conscientemente onde aceitá-la e onde substituí-la por fluxo mais claro."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Comparar diretamente entradas textuais com números sem alinhar o tipo do dado.",
+        "Confiar em string não vazia para representar aceitação lógica de um estado.",
+        "Usar truthy como substituto de regra semântica explícita.",
+        "Misturar preparação do dado e decisão final em uma única expressão densa.",
+        "Assumir que um caso favorável prova que a condição é robusta e previsível."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Converter explicitamente a entrada antes de cálculos e comparações importantes.",
+        "Definir regras booleanas de negócio com critérios claros, e não apenas com truthy genérico.",
+        "Preferir comparação estrita quando a lógica exigir maior previsibilidade.",
+        "Separar preparação do dado e condição final em etapas legíveis.",
+        "Testar no console valores intermediários para confirmar tipo e comportamento antes da decisão final.",
+        "Ler a condição em linguagem natural para verificar se ela realmente representa a regra do problema."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo tornar comparações e condições mais previsíveis em JavaScript.",
+        "Sei preparar os dados antes de montar a regra lógica principal.",
+        "Reconheço quando truthy e falsy são insuficientes para representar o significado real do problema.",
+        "Percebo o valor da comparação estrita na redução de ambiguidade.",
+        "Entendo que previsibilidade nasce da preparação do fluxo, e não apenas da condição final isolada."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com o próximo capítulo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com isso, o Capítulo 6 está completo. O leitor agora possui uma base sólida sobre conversão de tipos, coerção, truthy e falsy, igualdade frouxa e estrita, casos clássicos e padrões de previsibilidade em JavaScript. No Capítulo 7, o foco avançará para estruturas condicionais — isto é, para o momento em que esses valores booleanos e comparações passam a controlar explicitamente os caminhos que o programa seguirá. O sumário aprovado segue integralmente coberto até este ponto."
+    }
+  ]
+}

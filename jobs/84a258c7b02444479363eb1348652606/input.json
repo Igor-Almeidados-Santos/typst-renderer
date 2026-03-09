@@ -1,0 +1,549 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 4 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "4",
+    "chapter_title": "Variáveis, constantes e gerenciamento de estado",
+    "part_number": "4",
+    "part_title": "Hoisting e comportamento interno das declarações",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Variáveis, constantes e gerenciamento de estado"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Hoisting e comportamento interno das declarações"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que significa armazenar informação, estudar var, let e const em profundidade e organizar as ideias de escopo, tempo de vida e reatribuição, o leitor está pronto para enfrentar um dos temas mais conhecidos — e mais mal interpretados — do JavaScript: hoisting. Esse termo aparece com frequência em discussões sobre a linguagem porque ajuda a explicar por que certos identificadores parecem existir antes do ponto em que o programador os vê declarados no código-fonte. Para quem está começando, isso pode soar misterioso ou até ilógico. Na verdade, trata-se de um efeito do modo como a linguagem organiza internamente a leitura e a preparação do código antes da execução efetiva de certas partes."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta parte existe para corrigir leituras simplistas e construir um modelo mental mais preciso. Hoisting não significa que a linha de código literalmente se move para cima do arquivo. Também não significa que tudo fica magicamente disponível em qualquer momento. O que acontece é que o processo interno de preparação do contexto de execução trata declarações de forma que afeta a disponibilidade de nomes antes da linha em que a atribuição aparece visualmente. Entender isso é decisivo para interpretar corretamente o comportamento de var, let, const e de outras formas de declaração no ecossistema da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo aqui é tornar esse assunto claro sem torná-lo esotérico. O leitor compreenderá o problema real que hoisting procura descrever, verá por que a ordem visual do código nem sempre basta para explicar o comportamento da execução e entenderá como essa noção se conecta à previsibilidade do código moderno. Ao final, o tema deixará de parecer uma pegadinha e passará a funcionar como parte coerente do modelo interno da linguagem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: a ordem visual do código nem sempre explica a disponibilidade dos nomes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos hábitos mais naturais de quem começa a programar é supor que o código será lido e disponibilizado exatamente na mesma ordem em que aparece visualmente no arquivo, sem nenhuma preparação interna mais relevante. Essa ideia funciona em muitos casos superficiais, mas falha quando tentamos explicar por que certas declarações podem ser referenciadas antes da linha em que a atribuição aparece ou por que alguns acessos produzem undefined, enquanto outros produzem erro. Se a ordem visual fosse a explicação completa, muitos desses comportamentos pareceriam contraditórios."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que leva ao tema do hoisting. A linguagem não começa a executar tudo sem antes organizar internamente certos elementos do contexto. Durante essa preparação, identificadores declarados podem ser registrados de maneira que afeta sua disponibilidade posterior. Em outras palavras, a execução de um trecho depende não apenas da linha atual, mas também de como o contexto foi montado antes que a execução efetiva chegasse àquela linha."
+    },
+    {
+      "type": "paragraph",
+      "text": "Compreender esse ponto ajuda o estudante a abandonar a visão ingênua de execução como mera leitura linear do texto e a começar a pensar em termos de preparação e uso do contexto."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é hoisting em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, hoisting é uma forma de descrever o efeito pelo qual certas declarações influenciam o contexto de execução antes do ponto visual em que aparecem no código. A palavra é útil como rótulo didático, mas precisa ser usada com cuidado. Não se trata de um “movimento físico” das linhas para o topo do arquivo. Trata-se da forma como a engine registra e organiza certas declarações durante a preparação do contexto antes da execução das instruções propriamente ditas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa definição é importante porque evita uma metáfora perigosa. Se o estudante imagina que o código realmente foi reescrito linha por linha em outra posição, pode acabar construindo uma imagem mental equivocada. O melhor é pensar em hoisting como efeito de disponibilidade ou registro antecipado de nomes, e não como mudança literal de posição do texto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Assim, quando se diz que algo “sofre hoisting”, o que se está dizendo de forma simplificada é que a declaração participa da preparação do contexto antes de a execução chegar à linha da atribuição ou do uso explícito no arquivo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. O caso clássico de var e o resultado undefined"
+    },
+    {
+      "type": "paragraph",
+      "text": "O exemplo mais conhecido de hoisting aparece com var. Considere o seguinte código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(nome);\nvar nome = \"Ana\";",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "var"
+          },
+          {
+            "kind": "plain",
+            "text": " nome "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Para muitos iniciantes, esse comportamento parece estranho. A expectativa intuitiva costuma ser: se nome ainda não apareceu visualmente, o acesso deveria simplesmente falhar como se o nome não existisse. No entanto, em casos como este, o identificador declarado com var participa da preparação do contexto, de forma que o nome já é conhecido quando a execução chega à primeira linha. O que ainda não ocorreu naquele ponto é a atribuição do valor \"Ana\". Por isso, o resultado observado tende a ser undefined, e não imediatamente o valor atribuído mais abaixo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é extremamente didático porque mostra com clareza a diferença entre declaração e atribuição. O nome existe no contexto preparado, mas ainda não recebeu o valor que visualmente só será atribuído depois. Essa distinção é central para entender hoisting."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Declaração e atribuição não são a mesma coisa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das maiores contribuições do tema do hoisting para a formação do iniciante é obrigá-lo a separar duas ideias que, no início, parecem uma coisa só: declarar e atribuir. Declarar é introduzir o identificador no contexto da linguagem. Atribuir é associar a ele um valor concreto em determinado ponto da execução. Em muitos exemplos simples, essas duas ações aparecem na mesma linha, o que facilita confusão. Porém, do ponto de vista do comportamento da linguagem, elas podem participar de momentos conceitualmente distintos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o leitor entende isso, vários comportamentos antes misteriosos começam a fazer sentido. Um nome pode existir no contexto antes de receber seu valor final. O problema deixa de ser “por que JavaScript faz algo ilógico?” e passa a ser “como a linguagem preparou esse contexto antes da execução daquela linha?”. Essa mudança de pergunta é extremamente importante para a maturidade técnica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em todo o restante do livro, essa distinção entre presença do identificador e disponibilidade do valor continuará sendo muito útil."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Let e const: por que o comportamento parece diferente"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao encontrar let e const, o estudante percebe rapidamente que a mesma leitura feita com var nem sempre produz o mesmo tipo de resultado. Considere, por exemplo, um acesso tentado antes da declaração com let ou const. A linguagem não se comporta da mesma forma que no caso clássico de var com undefined. Isso mostra que o processo interno de preparação do contexto não deve ser interpretado como “tudo fica simplesmente acessível do mesmo jeito”. Há diferenças importantes entre as formas de declaração."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log(idade);\nlet idade = 18;",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(idade);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " idade "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "18"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Em casos como esse, o acesso antecipado não produz o mesmo tipo de comportamento associado a var. Isso acontece porque let e const participam da preparação do contexto de forma diferente em termos de disponibilidade efetiva para uso antes da linha de inicialização. O estudante não precisa, neste momento, mergulhar em todos os detalhes formais avançados, mas precisa compreender o princípio geral: var, let e const não apenas têm sintaxes diferentes; elas também se inserem de maneira diferente na lógica de preparação do contexto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa diferença é uma das razões pelas quais let e const tendem a favorecer leitura mais previsível e segura em muitos contextos modernos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. A importância pedagógica da zona de indisponibilidade inicial"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma forma didática de entender o comportamento de let e const é perceber que, embora seus identificadores participem da preparação do contexto, o uso antes da inicialização não é tratado da mesma forma que em var. Esse detalhe produz uma espécie de zona de indisponibilidade inicial entre o começo do escopo e o ponto da inicialização visualmente escrita. O leitor encontrará em materiais mais avançados um nome técnico específico para essa situação, mas o essencial aqui é o efeito prático: o programador não deve confiar em acesso antecipado como se a declaração já estivesse plenamente utilizável antes da linha correspondente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Do ponto de vista pedagógico, isso é extremamente valioso. Em vez de estimular um estilo de código que depende de comportamentos pouco claros, a linguagem moderna favorece uma relação mais explícita entre o ponto da declaração e o ponto do uso. Isso melhora legibilidade e reduz armadilhas ligadas à aparência visual do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve perceber, portanto, que a diferença entre var e as formas modernas não é apenas preferência de estilo. Ela está ligada ao modelo de previsibilidade que a linguagem moderna busca reforçar."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Hoisting não é licença para usar antes de declarar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro comum entre iniciantes é ouvir sobre hoisting e concluir que, então, não importa muito a ordem das declarações no código porque a linguagem “dá um jeito”. Essa conclusão é perigosa. Mesmo quando a preparação do contexto torna certos nomes conhecidos antecipadamente, depender desse comportamento torna o código menos claro, mais difícil de ler e mais sujeito a mal-entendidos. Em código bem escrito, a ordem visual deve ajudar o leitor humano, e não exigir que ele reconstrua constantemente o comportamento interno da linguagem para entender o que está acontecendo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, conhecer hoisting é importante para interpretar o comportamento da linguagem e evitar erros. Mas esse conhecimento não deve ser usado como justificativa para escrever código desorganizado ou dependente de efeitos implícitos pouco legíveis. O entendimento técnico serve para reforçar clareza, não para enfraquecê-la."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa é uma lição editorial e profissional muito importante: dominar um comportamento interno da linguagem não significa que ele deva ser explorado indiscriminadamente na escrita cotidiana."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: o mesmo nome, comportamentos diferentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere três cenários paralelos em que o programador tenta acessar um identificador antes da linha de declaração: um com var, um com let e um com const. A semelhança visual entre os exemplos pode sugerir que a linguagem deveria reagir do mesmo modo em todos. No entanto, o comportamento muda. Isso mostra que o que está em jogo não é apenas “o nome apareceu ou não apareceu no texto”, mas a forma específica como cada tipo de declaração participa da preparação do contexto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso ajuda o leitor a abandonar explicações simplistas. A ordem visual importa, mas não é a única camada do comportamento. Há uma arquitetura interna de preparação que precisa ser levada em conta. Ao mesmo tempo, a existência dessa arquitetura não elimina a responsabilidade do programador de escrever em ordem clara e previsível."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é dupla: a linguagem tem um comportamento interno mais sofisticado do que a aparência do código sugere, e justamente por isso a clareza da escrita continua sendo essencial."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Hoisting e leitura de funções em visão introdutória"
+    },
+    {
+      "type": "paragraph",
+      "text": "Embora o foco desta parte esteja nas declarações ligadas a variáveis e constantes, vale registrar que a noção de hoisting também aparece quando estudamos funções, o que será aprofundado em capítulos posteriores. Isso é importante para que o leitor perceba que o tema não pertence apenas a um detalhe isolado de var. Ele faz parte de uma discussão mais ampla sobre preparação do contexto de execução e disponibilidade de certos elementos antes da linha de uso visual."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por enquanto, o estudante não precisa antecipar todos os comportamentos das funções. Basta compreender que hoisting é um conceito de arquitetura interna da execução, não uma curiosidade pontual. Esse entendimento mais amplo será muito útil adiante, quando a linguagem começar a organizar blocos maiores de comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa antecipação ajuda a integrar o tema atual ao restante do livro, em vez de tratá-lo como excentricidade local."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Clareza moderna: declarar antes de usar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma boa prática extremamente importante em JavaScript moderno é declarar antes de usar. Essa orientação parece simples, mas carrega enorme valor técnico. Ela reduz dependência de efeitos implícitos, alinha melhor a leitura humana com o comportamento do programa e torna o fluxo mais fácil de seguir. Mesmo entendendo hoisting, o programador continua ganhando muito ao escrever em ordem visual coerente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa prática é especialmente valiosa para iniciantes, porque reduz a quantidade de fatores invisíveis que precisam ser mantidos na cabeça ao ler o código. Em vez de depender de reconstruções internas complexas, o estudante vê a informação surgir antes de ser usada. Isso fortalece o modelo mental correto e melhora a capacidade de depuração."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em outras palavras, conhecer hoisting é importante; depender dele como estilo de escrita é geralmente um mau negócio para clareza."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Imaginar que hoisting significa que o código se move fisicamente para cima do arquivo.",
+        "Confundir declaração com atribuição como se fossem o mesmo evento lógico.",
+        "Achar que var, let e const se comportam do mesmo modo diante de acesso antecipado.",
+        "Usar o conhecimento sobre hoisting como justificativa para escrever código fora de ordem.",
+        "Interpretar undefined em casos com var como prova de que o valor já havia sido atribuído.",
+        "Ignorar que a linguagem prepara contexto antes da execução efetiva de certas instruções."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pense em hoisting como efeito de preparação do contexto, não como movimento literal das linhas.",
+        "Separe mentalmente declaração e atribuição em todos os exemplos que analisar.",
+        "Compare cuidadosamente o comportamento de var com o de let e const em acessos antecipados.",
+        "Use o console para testar exemplos pequenos e observar as diferenças reais.",
+        "Mantenha a prática de declarar antes de usar, mesmo entendendo a arquitetura interna da linguagem.",
+        "Associe este tema à ideia maior de que aparência visual do código nem sempre esgota seu comportamento interno."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 4"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que hoisting descreve em nível introdutório.",
+        "Reconheço que declaração e atribuição não são a mesma coisa.",
+        "Percebo por que var pode produzir undefined em acessos antes da atribuição.",
+        "Entendo que let e const não se comportam da mesma forma nesses casos.",
+        "Reconheço que conhecer hoisting não substitui a boa prática de declarar antes de usar.",
+        "Estou preparado para avançar para boas práticas de nomeação e legibilidade na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender como a linguagem organiza internamente as declarações, o próximo passo é voltar o olhar para a superfície mais humana do código: como nomear bem e escrever com legibilidade. Na próxima parte, estudaremos boas práticas de nomeação e clareza, conectando o gerenciamento técnico do estado à qualidade editorial da leitura do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é importante porque o capítulo não trata apenas do comportamento interno das declarações, mas também da forma como o programador comunica intenção por meio delas. É nesse ponto que a técnica encontra a escrita profissional."
+    }
+  ]
+}

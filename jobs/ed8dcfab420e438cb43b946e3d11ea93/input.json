@@ -1,0 +1,1386 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 10,
+    "chapter_title": "JSON e dados estruturados",
+    "part_number": 2,
+    "part_title": "Serialização na prática: stringify com espaços, replacer/reviver e riscos comuns",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — JSON e dados estruturados"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Serialização na prática: stringify com espaços, replacer/reviver e riscos comuns"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora vamos para o outro lado do fluxo: produzir JSON. Você vai aprender a usar JSON.stringify para gerar texto legível (pretty print), controlar o que é serializado (replacer) e reconstruir tipos após o parse (reviver). Você também vai ver riscos comuns: datas virando string, perda de undefined e ciclos que quebram a serialização."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1) Pretty print: JSON.stringify com indentação"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nconst data = {\n  nome: 'Ana',\n  idade: 20,\n  tags: ['js', 'web'],\n  prefs: { tema: 'dark', lang: 'pt-BR' },\n};\n\nconsole.log(JSON.stringify(data));\nconsole.log(JSON.stringify(data, null, 2)); // indentação de 2 espaços",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " data "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Ana'"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  idade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "20"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  tags"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "'js'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'web'"
+          },
+          {
+            "kind": "plain",
+            "text": "],"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  prefs"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " { tema"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'dark'"
+          },
+          {
+            "kind": "plain",
+            "text": ", lang"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'pt-BR'"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(JSON."
+          },
+          {
+            "kind": "function",
+            "text": "stringify"
+          },
+          {
+            "kind": "plain",
+            "text": "(data));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(JSON."
+          },
+          {
+            "kind": "function",
+            "text": "stringify"
+          },
+          {
+            "kind": "plain",
+            "text": "(data, "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// indentação de 2 espaços"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2) Replacer: controlar o que vai para o JSON"
+    },
+    {
+      "type": "paragraph",
+      "text": "O replacer pode ser: (a) um array de chaves permitidas, ou (b) uma função que recebe (key, value) e devolve o valor serializado — ou undefined para omitir."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  id: 1,\n  nome: 'Ana',\n  senha: 'segredo',\n  token: 'abc',\n};\n\n// (a) Lista de campos permitidos\nconsole.log(JSON.stringify(usuario, ['id', 'nome'], 2));\n\n// (b) Função: remove campos sensíveis\nfunction semSegredos(key, value) {\n  if (key === 'senha' || key === 'token') return undefined;\n  return value;\n}\n\nconsole.log(JSON.stringify(usuario, semSegredos, 2));",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Ana'"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  senha"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'segredo'"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  token"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'abc'"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// (a) Lista de campos permitidos"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(JSON."
+          },
+          {
+            "kind": "function",
+            "text": "stringify"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario, ["
+          },
+          {
+            "kind": "string",
+            "text": "'id'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'nome'"
+          },
+          {
+            "kind": "plain",
+            "text": "], "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// (b) Função: remove campos sensíveis"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "semSegredos"
+          },
+          {
+            "kind": "plain",
+            "text": "(key, value) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (key "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'senha'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " key "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'token'"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " undefined;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " value;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(JSON."
+          },
+          {
+            "kind": "function",
+            "text": "stringify"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario, semSegredos, "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3) Riscos comuns: undefined, funções e ciclos"
+    },
+    {
+      "type": "paragraph",
+      "text": "stringify só representa tipos suportados pelo JSON. undefined em objeto some; em array vira null. Funções são omitidas. E ciclos (objeto que referencia ele mesmo) causam erro."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const obj = { a: 1, b: undefined, c: () => 'x' };\nconsole.log(JSON.stringify(obj)); // {\"a\":1}\n\nconst arr = [1, undefined, 2];\nconsole.log(JSON.stringify(arr)); // [1,null,2]\n\nconst ciclo = { nome: 'x' };\nciclo.self = ciclo;\ntry {\n  JSON.stringify(ciclo);\n} catch (e) {\n  console.log('ciclo:', e.message);\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " obj "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { a"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", b"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " undefined, c"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'x'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(JSON."
+          },
+          {
+            "kind": "function",
+            "text": "stringify"
+          },
+          {
+            "kind": "plain",
+            "text": "(obj)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// {\"a\":1}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " arr "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", undefined, "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(JSON."
+          },
+          {
+            "kind": "function",
+            "text": "stringify"
+          },
+          {
+            "kind": "plain",
+            "text": "(arr)); "
+          },
+          {
+            "kind": "comment",
+            "text": "// [1,null,2]"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ciclo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'x'"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "ciclo.self "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ciclo;"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "try"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  JSON."
+          },
+          {
+            "kind": "function",
+            "text": "stringify"
+          },
+          {
+            "kind": "plain",
+            "text": "(ciclo);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": " (e) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ciclo:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", e.message);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4) Reviver: reconstruir tipos no JSON.parse"
+    },
+    {
+      "type": "paragraph",
+      "text": "parse aceita um reviver(key, value) que transforma valores enquanto o objeto é construído. Um uso comum é converter strings ISO para Date (quando você controla o formato)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const json = '{\"nome\":\"Ana\",\"criadoEm\":\"2026-01-01T10:00:00Z\"}';\n\nfunction reviverISO(key, value) {\n  if (typeof value === 'string' && /^\\d{4}-\\d{2}-\\d{2}T/.test(value)) {\n    const d = new Date(value);\n    if (!Number.isNaN(d.getTime())) return d;\n  }\n  return value;\n}\n\nconst parsed = JSON.parse(json, reviverISO);\nconsole.log(parsed.criadoEm instanceof Date); // true",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " json "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'{\"nome\":\"Ana\",\"criadoEm\":\"2026-01-01T10:00:00Z\"}'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "reviverISO"
+          },
+          {
+            "kind": "plain",
+            "text": "(key, value) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "typeof"
+          },
+          {
+            "kind": "plain",
+            "text": " value "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'string'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/^"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d{"
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": "}"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d{"
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "}"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d{"
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "}T"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "function",
+            "text": "test"
+          },
+          {
+            "kind": "plain",
+            "text": "(value)) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " d "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Date"
+          },
+          {
+            "kind": "plain",
+            "text": "(value);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "Number."
+          },
+          {
+            "kind": "function",
+            "text": "isNaN"
+          },
+          {
+            "kind": "plain",
+            "text": "(d."
+          },
+          {
+            "kind": "function",
+            "text": "getTime"
+          },
+          {
+            "kind": "plain",
+            "text": "())) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " d;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " value;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " parsed "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " JSON."
+          },
+          {
+            "kind": "function",
+            "text": "parse"
+          },
+          {
+            "kind": "plain",
+            "text": "(json, reviverISO);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(parsed.criadoEm "
+          },
+          {
+            "kind": "keyword",
+            "text": "instanceof"
+          },
+          {
+            "kind": "plain",
+            "text": " Date); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5) Boas práticas (nível júnior)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use pretty print para logs/debug e arquivos de config legíveis.",
+        "Use replacer para não vazar dados sensíveis (senha, token) em logs e payloads.",
+        "Lembre que JSON não carrega Date: serialize como string ISO e, se necessário, reconstrua com reviver.",
+        "Não confie no parse: valide e normalize campos essenciais antes de usar.",
+        "Evite serializar objetos com ciclos; modele dados de forma serializável para persistência/transportes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6) Exercícios rápidos"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Gere JSON formatado (2 espaços) de um objeto com 3 níveis.",
+        "2) Use replacer para remover 'senha' e 'token' de um objeto usuário.",
+        "3) Demonstre undefined em objeto vs array ao stringify.",
+        "4) Faça um reviver que converta strings numéricas para number apenas em campos específicos (ex.: 'idade').",
+        "5) Provoque erro de ciclo e explique a mensagem."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 3, você vai construir um mini-projeto de persistência local (localStorage) com JSON: salvar/ler estado, versionar schema e lidar com migração simples."
+    }
+  ]
+}

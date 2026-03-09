@@ -1,0 +1,1035 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 7 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "7",
+    "chapter_title": "Arrays e coleções lineares",
+    "part_number": "4",
+    "part_title": "Adicionar, remover e reorganizar elementos",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 7 — Arrays e coleções lineares"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Adicionar, remover e reorganizar elementos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é um array, estudar índices, acesso posicional, atualização de elementos e a importância da propriedade length para percursos iterativos, o leitor está pronto para entrar em uma camada muito prática da manipulação de coleções: adicionar, remover e reorganizar elementos. Até aqui, o array já foi compreendido como estrutura linear ordenada, acessível por posição e percorrível com laços. Agora ele começará a ser visto também como uma coleção viva, capaz de crescer, encolher e mudar de forma ao longo da execução do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é um passo decisivo porque listas reais raramente permanecem estáticas. Um carrinho de compras recebe novos itens e perde outros. Uma lista de tarefas cresce quando o usuário cria algo e encolhe quando uma tarefa é removida. Uma fila muda de ordem de processamento. Um conjunto de resultados pode precisar ser reorganizado. Em todos esses casos, o programa não está apenas lendo a coleção. Está alterando sua composição interna. Por isso, compreender operações fundamentais de modificação é parte essencial da alfabetização em arrays."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é apresentar essas operações de forma conceitualmente sólida e editorialmente clara. O leitor compreenderá o que significa adicionar e remover elementos em pontos comuns da coleção, por que a posição dos itens pode mudar quando a estrutura é modificada e como essas transformações afetam a leitura do array como coleção linear. Ao final, a estrutura deixará de parecer apenas recipiente observável e passará a ser entendida como organismo mutável dentro do fluxo do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: coleções reais quase nunca ficam paradas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o estudante vê arrays pela primeira vez, é comum que os exemplos mostrem listas fixas, escritas diretamente no código e apenas consultadas ou percorridas. Essa abordagem é útil para introdução, mas não representa bem o comportamento de muitas coleções em programas reais. Em software de verdade, listas tendem a mudar. Itens são inseridos, removidos, substituídos, deslocados ou reorganizados conforme interações do usuário, regras de negócio ou resultados de processamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que as operações fundamentais sobre arrays resolvem. Elas permitem ao programa tratar a coleção como estrutura dinâmica, ajustando seu conteúdo conforme a necessidade do fluxo. Em vez de considerar o array algo fechado e permanente, o programador passa a vê-lo como algo que participa do estado mutável da aplicação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa mudança de perspectiva é muito importante. Um array maduro em JavaScript não é apenas uma lista declarada; é uma coleção que frequentemente será transformada ao longo da execução."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Adicionar elementos no final da coleção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das operações mais comuns sobre arrays é adicionar um novo elemento ao final da sequência. Em JavaScript, isso é frequentemente feito com push. Do ponto de vista conceitual, o que importa agora é perceber que a coleção cresce e que o novo elemento passa a ocupar a última posição disponível após os itens que já existiam."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const tarefas = [\"estudar\", \"revisar\"];\n\ntarefas.push(\"praticar\");\nconsole.log(tarefas);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "\"estudar\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"revisar\""
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "tarefas."
+          },
+          {
+            "kind": "function",
+            "text": "push"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"praticar\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(tarefas);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, o array tarefas começa com dois elementos. Depois da operação, passa a ter três. O novo item é anexado ao final da coleção. Essa é uma das formas mais naturais de crescimento linear de um array e aparece com enorme frequência em código real."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar esse tipo de operação à ideia de expansão ordenada da coleção: os elementos antigos permanecem em suas posições, e um novo valor é incorporado ao fim da sequência."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Remover o último elemento da coleção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se push adiciona ao final, uma operação complementar muito importante é remover o último elemento. Em JavaScript, isso costuma ser feito com pop. Em nível conceitual, o ponto central é que a coleção encolhe pela extremidade final, perdendo o item mais recente daquela ponta."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const tarefas = [\"estudar\", \"revisar\", \"praticar\"];\n\ntarefas.pop();\nconsole.log(tarefas);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "\"estudar\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"revisar\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"praticar\""
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "tarefas."
+          },
+          {
+            "kind": "function",
+            "text": "pop"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(tarefas);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, o array tinha três itens e volta a ter dois depois da remoção do último. Essa operação é muito útil em cenários em que a coleção funciona como uma sequência à qual itens são anexados e removidos pela mesma extremidade. Mesmo sem entrar ainda em modelos formais como pilhas, o estudante já pode perceber a lógica estrutural desse comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição importante é que arrays não apenas guardam elementos: eles também podem perder elementos de maneira controlada, alterando seu tamanho e seu conteúdo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Adicionar elementos no início da coleção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nem toda modificação relevante acontece no final do array. Em alguns contextos, o programa precisa inserir um item no começo da sequência. Em JavaScript, uma operação comum para isso é unshift. Do ponto de vista conceitual, essa ação é diferente de simplesmente anexar ao final, porque ela desloca a coleção a partir da frente, reposicionando os elementos que já existiam."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const tarefas = [\"revisar\", \"praticar\"];\n\ntarefas.unshift(\"estudar\");\nconsole.log(tarefas);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "\"revisar\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"praticar\""
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "tarefas."
+          },
+          {
+            "kind": "function",
+            "text": "unshift"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"estudar\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(tarefas);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao inserir um novo item no começo, o array não apenas cresce. Ele também reorganiza as posições dos elementos seguintes. Isso é muito importante para a leitura do estado da coleção, porque mostra que posição e conteúdo podem se mover juntos quando há modificações estruturais."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber, portanto, que inserir na frente costuma ter impacto mais visível sobre os índices do que adicionar ao final."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Remover o primeiro elemento da coleção"
+    },
+    {
+      "type": "paragraph",
+      "text": "De modo complementar, JavaScript também permite remover o primeiro elemento do array. Uma operação comum para isso é shift. Em termos conceituais, isso significa que a coleção perde o elemento inicial e os demais tendem a assumir posições anteriores, reorganizando a sequência."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const tarefas = [\"estudar\", \"revisar\", \"praticar\"];\n\ntarefas.shift();\nconsole.log(tarefas);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " tarefas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "\"estudar\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"revisar\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"praticar\""
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "tarefas."
+          },
+          {
+            "kind": "function",
+            "text": "shift"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(tarefas);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa operação é muito importante porque mostra com clareza que a coleção linear não é apenas uma série de valores estáticos. Quando o primeiro elemento sai, os demais não continuam exatamente como antes em termos de índice. A estrutura se reacomoda. Esse comportamento afeta diretamente qualquer lógica que dependa da posição dos elementos."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura aqui exige recordar que arrays são coleções ordenadas por posição. Alterar a frente da coleção altera a estrutura de posicionamento da sequência."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Crescimento, encolhimento e length"
+    },
+    {
+      "type": "paragraph",
+      "text": "Toda vez que um elemento é adicionado ou removido, o tamanho do array muda. Isso significa que a propriedade length acompanha essas alterações. Esse ponto é muito importante porque conecta diretamente a modificação estrutural da coleção à forma como o programa calcula seus limites de percurso e compreensão do estado atual do array."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const numeros = [10, 20];\nconsole.log(numeros.length);\n\nnumeros.push(30);\nconsole.log(numeros.length);\n\nnumeros.pop();\nconsole.log(numeros.length);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " numeros "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "20"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(numeros.length);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "numeros."
+          },
+          {
+            "kind": "function",
+            "text": "push"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "30"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(numeros.length);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "numeros."
+          },
+          {
+            "kind": "function",
+            "text": "pop"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(numeros.length);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, o tamanho da coleção muda conforme ela cresce e encolhe. Isso reforça uma ideia central: arrays participam do estado dinâmico do programa. O comprimento não é uma informação fixa decorada de antemão. Ele evolui com a própria estrutura."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve se acostumar a ver length como fotografia atual do tamanho do array, e não como valor imutável associado ao seu primeiro estado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Reorganizar é também mudar significado posicional"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sempre que elementos entram ou saem do início da coleção, ou quando a sequência é reordenada de algum modo, a posição relativa dos itens muda. Isso é um ponto muito importante para a maturidade em arrays, porque mostra que índice não é atributo absoluto do valor. O índice é atributo do valor dentro daquela coleção naquele estado atual. Se a coleção muda, a posição do elemento pode mudar junto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação ajuda a evitar um erro conceitual comum: imaginar que determinado valor “é” o índice 2 como se isso fosse uma propriedade permanente. Na verdade, ele está no índice 2 naquele arranjo atual da estrutura. Se a coleção for reorganizada, esse lugar pode mudar."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa consciência será especialmente importante quando o livro avançar para percursos, inserções e transformações mais ricas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Operações estruturais e intenção do problema"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um bom programador não escolhe uma operação de array apenas porque ela existe, mas porque ela representa melhor a lógica do problema. Adicionar ao final e adicionar ao início são ações estruturalmente diferentes. Remover do final e remover do início também. Cada escolha comunica algo sobre a forma como a coleção está sendo usada no programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por exemplo, uma lista de histórico recente pode crescer no topo, enquanto um registro de eventos pode ser anexado ao final. Um carrinho de compras pode remover um item específico por critério futuro mais complexo, enquanto uma fila de atendimento pode consumir primeiro o elemento inicial. Mesmo antes de estudar métodos mais avançados, o leitor já pode perceber que arrays participam de modelos de uso diferentes conforme o tipo de operação escolhido."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é que operar sobre a coleção é também modelar o comportamento do domínio representado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: lista de tarefas em mudança"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma lista de tarefas em que o usuário adiciona novas atividades ao final durante o dia e remove a primeira tarefa ao concluí-la porque ela era a próxima da sequência. Esse caso mostra com clareza como arrays participam do fluxo do programa como estruturas vivas. A coleção não está só armazenando tarefas. Está refletindo a dinâmica do trabalho em andamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é muito valioso porque aproxima as operações do uso real. O leitor percebe que push, pop, shift e unshift não são meros nomes de métodos para decorar. Eles representam movimentos estruturais sobre uma coleção linear. Quando esse entendimento se consolida, a sintaxe deixa de parecer arbitrária e passa a se conectar ao problema que está sendo modelado."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é simples: aprender arrays é aprender também como o programa lida com listas que mudam no tempo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O valor editorial de tornar a modificação da coleção legível"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando uma coleção é modificada, o leitor do código precisa conseguir perceber rapidamente o que mudou e em que direção a estrutura foi alterada. Por isso, a legibilidade da operação importa muito. Um nome claro para o array, uma posição coerente da instrução no fluxo e uma boa correspondência entre operação e problema ajudam a tornar a transformação compreensível."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto reforça um princípio recorrente do livro: não basta que o código seja funcional. É desejável que ele comunique a intenção da mudança. Quando alguém lê tarefas.push(\"praticar\"), já consegue inferir a ampliação da lista no final. Quando lê tarefas.shift(), pode entender que o primeiro item foi retirado. Essa relação entre sintaxe e intenção fortalece muito a manutenção futura."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em coleções mutáveis, clareza sobre o tipo de mudança é parte essencial da qualidade do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tratar arrays como se fossem estruturas fixas, esquecendo que podem crescer e encolher.",
+        "Não perceber que adicionar ou remover no início da coleção altera as posições dos demais elementos.",
+        "Confundir operações de final com operações de início.",
+        "Esquecer que length muda quando a coleção é modificada.",
+        "Usar métodos de adição e remoção sem relacioná-los ao comportamento real do problema.",
+        "Subestimar o impacto estrutural de reorganizar uma coleção linear."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe cada operação a um movimento estrutural claro sobre a coleção.",
+        "Observe sempre como a modificação afeta o tamanho do array e a posição dos elementos.",
+        "Relacione push e pop ao final da sequência, e unshift e shift ao início.",
+        "Pense menos em decorar nomes isolados e mais em entender o que acontece com a estrutura.",
+        "Use exemplos concretos de listas do cotidiano para fixar o comportamento das operações.",
+        "Prepare-se para combinar essas operações com percursos e métodos mais ricos nas próximas partes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 4"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo que arrays podem crescer e encolher ao longo da execução.",
+        "Consigo reconhecer a diferença entre adicionar ou remover no início e no final da coleção.",
+        "Percebo que mudanças estruturais afetam length e a posição relativa dos elementos.",
+        "Entendo que operar sobre arrays é parte do gerenciamento de estado do programa.",
+        "Reconheço que a escolha da operação deve refletir a lógica do problema modelado.",
+        "Estou preparado para estudar busca, inclusão e transformação elementar sobre arrays na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende como arrays podem crescer, encolher e reorganizar sua estrutura básica, o próximo passo é estudar formas de localizar elementos e verificar presença dentro da coleção, além de preparar o terreno para transformações mais ricas. Na próxima parte, entraremos em busca, verificação e leitura orientada sobre arrays."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa continuidade é essencial porque coleções não são apenas modificadas; elas também precisam ser consultadas com inteligência. É exatamente essa camada de uso que o próximo conteúdo aprofundará."
+    }
+  ]
+}

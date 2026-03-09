@@ -1,0 +1,1471 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 9 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 9,
+    "chapter_title": "Strings e texto: trabalhando com dados do mundo real",
+    "part_number": 4,
+    "part_title": "Regex sem trauma: fundamentos, leitura e padrões práticos",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 9 — Strings e texto: trabalhando com dados do mundo real"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Regex sem trauma: fundamentos, leitura e padrões práticos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Regex (expressões regulares) é poderosa para buscar, validar e transformar texto. O risco é usar como “feitiço” copiado: você não entende, não ajusta e não confia. Aqui o foco é pragmático: aprender a ler padrões pequenos, usar âncoras para validação e aplicar regex onde ela realmente ajuda — sem virar regex monstro."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1) Onde regex ajuda (e onde atrapalha)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ajuda: validar formato simples, extrair números/partes, substituir padrões repetidos, limpar entrada.",
+        "Atrapalha: tentar validar padrões complexos universais (ex.: email RFC) só com regex.",
+        "Regra: se você não consegue explicar a regex em voz alta, não use."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2) O básico que você precisa saber"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Literais: /abc/ casa 'abc'.",
+        "Meta: . qualquer; \\\\d dígito; \\\\w letra/dígito/_; \\\\s espaço.",
+        "Âncoras: ^ início; $ fim (essenciais para validação).",
+        "Classes: [abc], [0-9], [^...] (negação).",
+        "Quantificadores: ?, *, +, {m,n}.",
+        "Grupos: ( ) captura; (?: ) não captura; a|b alternância."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3) Âncoras: busca vs validação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sem ^ e $, a regex pode casar no meio do texto (busca). Em validação, quase sempre você quer casar o texto inteiro."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nconsole.log(/\\d+/.test('abc123xyz'));   // true (achou no meio)\nconsole.log(/^\\d+$/.test('abc123xyz')); // false\nconsole.log(/^\\d+$/.test('123'));       // true",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "function",
+            "text": "test"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'abc123xyz'"
+          },
+          {
+            "kind": "plain",
+            "text": "));   "
+          },
+          {
+            "kind": "comment",
+            "text": "// true (achou no meio)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/^"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d"
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": "$"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "function",
+            "text": "test"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'abc123xyz'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/^"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d"
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": "$"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "function",
+            "text": "test"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'123'"
+          },
+          {
+            "kind": "plain",
+            "text": "));       "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4) test, match e replace"
+    },
+    {
+      "type": "list",
+      "items": [
+        "test: true/false (validação).",
+        "match: extrai detalhes (capturas).",
+        "replace/replaceAll: transforma texto por padrão."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const s = 'pedido #123';\nconsole.log(/\\d+/.test(s));     // true\nconsole.log(s.match(/\\d+/));    // ['123']\nconsole.log(s.replace(/\\d+/, '999')); // 'pedido #999'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " s "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'pedido #123'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "function",
+            "text": "test"
+          },
+          {
+            "kind": "plain",
+            "text": "(s));     "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s."
+          },
+          {
+            "kind": "function",
+            "text": "match"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": "));    "
+          },
+          {
+            "kind": "comment",
+            "text": "// ['123']"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(s."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'999'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'pedido #999'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5) Captura por grupos (extração simples)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Grupos com parênteses permitem extrair partes do texto. Aqui usamos um formato de telefone apenas para demonstrar captura (não é validador universal)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const tel = '(11) 98888-7777';\nconst m = tel.match(/^\\((\\d{2})\\)\\s*(\\d{4,5})-(\\d{4})$/);\n\nif (!m) {\n  console.log('formato inesperado');\n} else {\n  console.log({ ddd: m[1], parte1: m[2], parte2: m[3] });\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " tel "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'(11) 98888-7777'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " m "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " tel."
+          },
+          {
+            "kind": "function",
+            "text": "match"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/^"
+          },
+          {
+            "kind": "plain",
+            "text": "\\((\\d{"
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "})\\)\\s"
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": "(\\d{"
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "})"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "(\\d{"
+          },
+          {
+            "kind": "number",
+            "text": "4"
+          },
+          {
+            "kind": "plain",
+            "text": "})$"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "m) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'formato inesperado'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "({ ddd"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " m["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "], parte1"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " m["
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "], parte2"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " m["
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "] });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6) Padrões práticos (para usar no dia a dia)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.1 Somente dígitos (texto inteiro)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function soDigitos(x) {\n  return /^\\d+$/.test(String(x ?? '').trim());\n}\n\nconsole.log(soDigitos('123'));  // true\nconsole.log(soDigitos('12a'));  // false",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "soDigitos"
+          },
+          {
+            "kind": "plain",
+            "text": "(x) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/^"
+          },
+          {
+            "kind": "plain",
+            "text": "\\d"
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": "$"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "function",
+            "text": "test"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(x "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "soDigitos"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'123'"
+          },
+          {
+            "kind": "plain",
+            "text": "));  "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "soDigitos"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'12a'"
+          },
+          {
+            "kind": "plain",
+            "text": "));  "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.2 Slug já pronto (a-z, 0-9 e hífen)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function isSlug(s) {\n  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(s ?? '').trim());\n}\n\nconsole.log(isSlug('cafe-com-leite')); // true\nconsole.log(isSlug('cafe--leite'));    // false\nconsole.log(isSlug('-cafe'));          // false",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "isSlug"
+          },
+          {
+            "kind": "plain",
+            "text": "(s) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "/^"
+          },
+          {
+            "kind": "plain",
+            "text": "[a"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "z0"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "number",
+            "text": "9"
+          },
+          {
+            "kind": "plain",
+            "text": "]"
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "?:-"
+          },
+          {
+            "kind": "plain",
+            "text": "[a"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "z0"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "number",
+            "text": "9"
+          },
+          {
+            "kind": "plain",
+            "text": "]"
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": "$"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "function",
+            "text": "test"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(s "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "isSlug"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'cafe-com-leite'"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "isSlug"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'cafe--leite'"
+          },
+          {
+            "kind": "plain",
+            "text": "));    "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "isSlug"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'-cafe'"
+          },
+          {
+            "kind": "plain",
+            "text": "));          "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "6.3 Compactar espaços (limpeza)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function compactarEspacos(s) {\n  return String(s ?? '').trim().replace(/\\s+/g, ' ');\n}\n\nconsole.log(compactarEspacos('  Ana\\n\\tMaria   ')); // 'Ana Maria'",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "compactarEspacos"
+          },
+          {
+            "kind": "plain",
+            "text": "(s) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(s "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ")."
+          },
+          {
+            "kind": "function",
+            "text": "trim"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "function",
+            "text": "replace"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "\\s"
+          },
+          {
+            "kind": "operator",
+            "text": "+/"
+          },
+          {
+            "kind": "plain",
+            "text": "g, "
+          },
+          {
+            "kind": "string",
+            "text": "' '"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "compactarEspacos"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'  Ana\\n\\tMaria   '"
+          },
+          {
+            "kind": "plain",
+            "text": ")); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'Ana Maria'"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7) Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Esquecer ^ e $ e validar “qualquer coisa que contenha”.",
+        "Usar .* demais e deixar o padrão permissivo demais.",
+        "Confiar em regex gigante para padrões complexos; prefira validação por etapas.",
+        "Esquecer que replace com string troca só a primeira ocorrência (use replaceAll ou /g)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8) Exercícios"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1) Escreva uma regex que valide exatamente 4 dígitos (ex.: '2026').",
+        "2) Faça uma função isHex que aceite apenas 0-9 e a-f (minúsculo) com 6 caracteres.",
+        "3) Use replace para trocar todos os espaços por '-' (use /\\s+/g).",
+        "4) Extraia DDD e número de '(21) 3333-4444' com grupos.",
+        "5) Crie isUserName: letras, números e '_' com 3 a 16 caracteres."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 5, você vai trabalhar com strings em cenários de dados: parse de query string, montagem de URLs e serialização simples com encode/decode."
+    }
+  ]
+}

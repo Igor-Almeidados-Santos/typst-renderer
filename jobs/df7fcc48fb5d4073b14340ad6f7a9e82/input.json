@@ -1,0 +1,1299 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 7 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "7",
+    "chapter_title": "Estruturas condicionais e tomada de decisão",
+    "part_number": "8",
+    "part_title": "Estudo de caso: modelando regras de negócio simples",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 7 — Estruturas condicionais e tomada de decisão"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Estudo de caso: modelando regras de negócio simples"
+    },
+    {
+      "type": "paragraph",
+      "text": "Encerrar este capítulo apenas com explicações sobre if, else, else if, switch, ternário, condições compostas, legibilidade e erros comuns seria insuficiente. O leitor já possui os elementos conceituais necessários, mas agora precisa observá-los funcionando de forma integrada em uma situação concreta. Esta parte final tem exatamente esse objetivo: mostrar como estruturas condicionais servem para modelar regras de negócio simples de forma clara e previsível. O foco aqui não é criar um sistema complexo, mas demonstrar como decisões bem organizadas tornam o algoritmo mais fiel ao problema e mais fácil de revisar."
+    },
+    {
+      "type": "paragraph",
+      "text": "Regra de negócio é uma expressão importante no universo do software. Em termos introdutórios, ela pode ser entendida como um critério do domínio do problema que determina o comportamento do sistema. Não se trata apenas de cálculo ou armazenamento de dados, mas de uma orientação concreta sobre o que pode, deve ou não deve acontecer em determinada situação. Exemplos simples incluem conceder desconto, liberar acesso, classificar um aluno, aceitar ou rejeitar um pedido, exibir uma mensagem específica ou exigir etapas extras em certos casos. Quando o programador modela regras de negócio, ele transforma essas exigências em condições e caminhos de execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste estudo de caso, trabalharemos com um cenário bastante didático: a liberação de desconto em uma loja virtual. A regra será a seguinte. O cliente recebe desconto se cumprir dois critérios principais: estar ativo no sistema e atingir um valor mínimo de compra. Além disso, clientes premium recebem um benefício especial mesmo quando o valor total ainda não atingiu o mínimo padrão. Esse cenário é muito útil pedagogicamente porque reúne elementos centrais do capítulo. Há uma decisão principal, há critérios simultâneos, há uma exceção controlada e há a necessidade de organizar bem a ordem da lógica para que a regra fique clara."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 1 — Ler a regra antes da sintaxe"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de escrever qualquer if, o estudante precisa decompor semanticamente o problema. Quem pode receber desconto. Clientes ativos que atingiram o valor mínimo. Quem mais pode receber. Clientes premium, mesmo abaixo desse valor, desde que permaneçam ativos. Quem não recebe. Os demais casos. Esse primeiro movimento é essencial porque ele mostra que a estrutura condicional não nasce da linguagem, mas da leitura da regra. Se o programador pula essa etapa e vai direto para os operadores, corre o risco de construir uma condição formalmente válida, porém semanticamente imprecisa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa prática de decomposição é um dos hábitos mais importantes da escrita profissional. O algoritmo não deve ser a primeira formulação da regra, mas a sua formalização depois que o problema já foi lido com cuidado. Quando o estudante aprende isso cedo, deixa de usar estruturas condicionais como tentativa de adivinhar a lógica durante a codificação e passa a usá-las como tradução disciplinada de uma regra já compreendida."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 2 — Nomear os dados relevantes do problema"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com a regra compreendida, o próximo passo é identificar e nomear os dados relevantes. Neste caso, três informações bastam para começar: valorTotalCompra, clienteAtivo e clientePremium. Esses nomes já comunicam muito da semântica do sistema. O estudante deve notar que boa parte da legibilidade da decisão futura depende da qualidade desses identificadores. Se os nomes fossem genéricos ou confusos, toda a condição perderia clareza, ainda que a lógica formal continuasse correta."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const valorTotalCompra = 120;\nconst clienteAtivo = true;\nconst clientePremium = false;",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " valorTotalCompra "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "120"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " clienteAtivo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " clientePremium "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse trecho ainda não toma decisão alguma, mas já organiza o domínio do problema dentro do programa. Os dados foram identificados e colocados sob nomes semanticamente úteis. Esse é um passo importante porque decisões boas dependem de estados bem representados. O algoritmo precisa saber o que observar antes de poder escolher um caminho."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 3 — Modelar a regra principal com condição composta"
+    },
+    {
+      "type": "paragraph",
+      "text": "A regra principal diz que o desconto é liberado se o cliente estiver ativo e tiver atingido o valor mínimo de compra. Isso significa que há simultaneidade entre dois critérios. A estrutura da condição, portanto, deve refletir essa exigência com clareza."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const valorTotalCompra = 120;\nconst clienteAtivo = true;\n\nif (clienteAtivo && valorTotalCompra >= 100) {\n  console.log('Desconto liberado pela regra padrão');\n} else {\n  console.log('Desconto não liberado pela regra padrão');\n}",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " valorTotalCompra "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "120"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " clienteAtivo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (clienteAtivo "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " valorTotalCompra "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Desconto liberado pela regra padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Desconto não liberado pela regra padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse primeiro bloco já mostra uma regra de negócio simples funcionando. A condição composta traduz diretamente a lógica do problema: o cliente precisa estar ativo e atingir o valor mínimo. O if e o else organizam os dois caminhos possíveis do fluxo. O leitor consegue traduzir essa decisão em linguagem natural sem grande esforço, e isso é um excelente sinal de boa modelagem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 4 — Incluir a exceção de negócio com else if"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora a regra fica um pouco mais rica. Clientes premium também podem receber desconto mesmo que não tenham atingido o valor mínimo padrão, desde que estejam ativos. Nesse ponto, o problema deixa de ser puramente binário simples e passa a exigir uma alternativa adicional. O else if se encaixa bem aqui porque permite organizar um segundo caminho específico antes do tratamento residual do else."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const valorTotalCompra = 80;\nconst clienteAtivo = true;\nconst clientePremium = true;\n\nif (clienteAtivo && valorTotalCompra >= 100) {\n  console.log('Desconto liberado pela regra padrão');\n} else if (clienteAtivo && clientePremium) {\n  console.log('Desconto liberado pela regra premium');\n} else {\n  console.log('Desconto não liberado');\n}",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " valorTotalCompra "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "80"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " clienteAtivo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " clientePremium "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (clienteAtivo "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " valorTotalCompra "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Desconto liberado pela regra padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (clienteAtivo "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " clientePremium) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Desconto liberado pela regra premium'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Desconto não liberado'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse trecho é especialmente importante porque mostra como a estrutura condicional pode modelar regra principal e exceção de forma ordenada. O primeiro ramo representa a regra geral. O segundo representa a exceção legítima. O else final cobre o restante. O estudante deve observar que a ordem dos testes importa. Primeiro vem a regra padrão, depois a exceção controlada, e por fim o cenário residual. Essa organização torna o fluxo fiel ao problema e fácil de ler."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 5 — Melhorar a leitura com subcondições nomeadas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Embora o exemplo anterior já esteja correto, ele ainda pode ganhar mais clareza ao nomear partes da regra. Esse refinamento é importante porque mostra ao estudante que estruturas condicionais podem ser boas, mas ainda assim melhoráveis do ponto de vista da leitura. Em vez de repetir os critérios diretamente nos ramos, é possível nomear os estados booleanos que representam a lógica do domínio."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const valorTotalCompra = 80;\nconst clienteAtivo = true;\nconst clientePremium = true;\n\nconst atingiuValorMinimo = valorTotalCompra >= 100;\nconst podeReceberDescontoPadrao = clienteAtivo && atingiuValorMinimo;\nconst podeReceberDescontoPremium = clienteAtivo && clientePremium;\n\nif (podeReceberDescontoPadrao) {\n  console.log('Desconto liberado pela regra padrão');\n} else if (podeReceberDescontoPremium) {\n  console.log('Desconto liberado pela regra premium');\n} else {\n  console.log('Desconto não liberado');\n}",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " valorTotalCompra "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "80"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " clienteAtivo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " clientePremium "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " atingiuValorMinimo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " valorTotalCompra "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " podeReceberDescontoPadrao "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " clienteAtivo "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " atingiuValorMinimo;"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " podeReceberDescontoPremium "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " clienteAtivo "
+          },
+          {
+            "kind": "operator",
+            "text": "&&"
+          },
+          {
+            "kind": "plain",
+            "text": " clientePremium;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (podeReceberDescontoPadrao) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Desconto liberado pela regra padrão'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (podeReceberDescontoPremium) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Desconto liberado pela regra premium'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Desconto não liberado'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O ganho aqui é expressivo. A condição deixa de ser apenas combinação de operadores e passa a se aproximar de uma frase técnica sobre o domínio do problema. O leitor entende melhor o significado de cada etapa, e o fluxo se torna mais revisável. Esse é exatamente o tipo de refinamento que distingue um código apenas funcional de um código editorialmente bem estruturado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 6 — Pensar nos cenários alternativos e na cobertura"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma regra de negócio bem modelada não considera apenas o caso em que tudo dá certo. Ela também precisa deixar claro o que acontece nos demais cenários. E se o cliente não estiver ativo. E se o valor for insuficiente e ele também não for premium. E se ele for premium, mas estiver inativo. O else final do exemplo cobre esses casos em bloco, mas o programador ainda deve pensar conscientemente neles. Esse exercício é fundamental porque evita a ilusão de que uma condição está completa apenas por parecer convincente no cenário principal."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa etapa reforça um ponto central do capítulo: estruturas condicionais são instrumentos de cobertura de cenários. Quando o programador não pensa nos estados alternativos, corre o risco de produzir decisões boas apenas no caminho feliz. O estudo de caso mostra que modelar regra de negócio não é só acertar o if principal, mas organizar também o espaço dos casos não atendidos pela regra padrão ou pela exceção prevista."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 7 — Comparar uma modelagem frágil com uma modelagem clara"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vale a pena imaginar uma versão pior da mesma regra. Um iniciante poderia escrever algo como if (valorTotalCompra >= 100 || clientePremium && clienteAtivo), sem refletir claramente sobre agrupamento, prioridade e leitura humana. Dependendo do leitor, essa condição já exigiria mais esforço para ser entendida, mesmo que o comportamento técnico pudesse até estar correto em vários cenários. A versão com subcondições nomeadas e ramos bem organizados comunica melhor a regra de negócio e reduz o risco de modificação equivocada no futuro. Esse contraste mostra que modelar bem não é apenas acertar o resultado da expressão, mas tornar a decisão explicável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Síntese integrada do estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observando o caso completo, o leitor deve perceber que a modelagem de regras de negócio simples depende da cooperação entre vários elementos estudados neste capítulo. É preciso compreender a decisão como desvio controlado de fluxo. Escolher a estrutura adequada entre if, else e else if. Combinar critérios corretamente em condições compostas. Organizar a ordem dos ramos com coerência semântica. Nomear subcondições quando a leitura exigir mais clareza. E pensar nos cenários alternativos, não apenas no caso principal. O estudo de caso funciona justamente para mostrar que estruturas condicionais não são apenas ferramentas isoladas, mas instrumentos coordenados de representação lógica do problema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é um ponto de grande valor formativo. O estudante começa a perceber que escrever decisões em JavaScript não é apenas saber onde colocar parênteses e chaves. É aprender a raciocinar como modelador de regras. O software observa estados do sistema, compara esses estados com critérios definidos e escolhe comportamentos correspondentes. Quando essa lógica é escrita com clareza, o código se torna mais previsível, mais confiável e mais fácil de manter. Esse é o verdadeiro resultado esperado ao final do capítulo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos iniciantes conseguem escrever condições isoladas, mas ainda encontram dificuldade quando precisam transformar uma regra de negócio completa em fluxo de decisão bem organizado. Como resultado, o código até reage a alguns cenários, mas fica confuso, incompleto ou difícil de revisar. O problema real é não enxergar estruturas condicionais como instrumentos de modelagem explícita do domínio do problema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Modelar regras de negócio simples com estruturas condicionais exige decompor a regra em critérios, identificar estados relevantes, escolher a estrutura mais adequada, combinar subcondições com operadores corretos e organizar os ramos de decisão em ordem coerente. O resultado não deve ser apenas uma condição executável, mas uma representação fiel e legível do comportamento que o sistema precisa adotar diante de cenários distintos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Modelo mental correto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de escrever a estrutura condicional, o programador deve perguntar quais critérios compõem a regra, quais cenários existem, que exceções precisam ser tratadas e como tornar isso visível no fluxo. A decisão não é a descoberta da regra durante a escrita; é a formalização de uma regra já compreendida com clareza."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Regra principal: critério central do comportamento esperado.",
+        "Exceção controlada: cenário legítimo que altera a aplicação da regra padrão.",
+        "Cenário residual: caso restante tratado no fluxo alternativo.",
+        "Subcondição nomeada: parte da regra tornada legível por meio de variável booleana.",
+        "Cobertura de cenários: atenção aos casos principais, alternativos e residuais.",
+        "Modelagem de negócio: tradução de critérios do domínio para estruturas condicionais do programa."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso final da parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine dois estudantes implementando a liberação de desconto em uma loja virtual. O primeiro escreve uma condição compacta, misturando os critérios da regra principal e da exceção premium sem nomear as partes nem deixar clara a ordem do raciocínio. O segundo lê a regra antes da sintaxe, identifica os dados do domínio, nomeia subcondições importantes e organiza if, else if e else de modo coerente com os cenários do problema. Mesmo que ambos obtenham um resultado funcional em alguns testes, o segundo código será muito mais fácil de revisar, ajustar e explicar. Esse contraste mostra que estruturas condicionais bem usadas não apenas controlam o fluxo: elas tornam explícita a lógica de negócio do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escrever a condição antes de compreender claramente a regra do problema.",
+        "Misturar regra principal e exceção sem organização semântica.",
+        "Ignorar cenários alternativos ou residuais importantes.",
+        "Manter tudo em uma condição opaca quando o problema já exigia subcondições nomeadas.",
+        "Confundir sintaxe válida com modelagem correta da regra de negócio."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ler e decompor a regra em linguagem natural antes de escrever o código.",
+        "Identificar os dados relevantes do domínio com nomes claros.",
+        "Modelar regra principal, exceções e cenário residual de forma explícita.",
+        "Extrair subcondições quando isso melhorar a leitura da decisão.",
+        "Revisar a estrutura perguntando se ela cobre adequadamente os cenários do problema.",
+        "Preferir clareza de modelagem a compactação excessiva da lógica."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo modelar regras de negócio simples com estruturas condicionais.",
+        "Entendo a diferença entre regra principal, exceção e cenário residual.",
+        "Sei quando vale a pena nomear subcondições para melhorar leitura.",
+        "Percebo que a ordem dos ramos faz parte da lógica do domínio.",
+        "Reconheço que estruturas condicionais são ferramentas de representação do problema, não apenas de sintaxe."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com o próximo capítulo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com isso, o Capítulo 7 está completo. O leitor agora possui uma base sólida sobre tomada de decisão, if, else, else if, switch, operador ternário, condições compostas, legibilidade de regras e modelagem de decisões em JavaScript. No Capítulo 8, o foco avançará para laços de repetição — isto é, para o momento em que o programa deixa de apenas escolher caminhos e passa também a repetir ações de forma controlada conforme critérios definidos. O sumário aprovado segue integralmente coberto até este ponto."
+    }
+  ]
+}

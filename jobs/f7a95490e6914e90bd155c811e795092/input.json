@@ -1,0 +1,655 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 7",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Escopo, contexto léxico e closures",
+    "part_number": "7",
+    "part_title": "Erros comuns ao capturar variáveis",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Escopo, contexto léxico e closures"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 7 — Erros comuns ao capturar variáveis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender escopo global, de função e de bloco, estudar a cadeia de escopos, entender o contexto léxico, definir closure com clareza e avaliar suas vantagens e riscos, o estudante chega a um dos pontos mais práticos e mais importantes do capítulo: os erros comuns ao capturar variáveis. Esta parte é decisiva porque closures deixam de ser apenas um mecanismo elegante de retenção de contexto e passam a mostrar também suas armadilhas. Em JavaScript, vários comportamentos que surpreendem iniciantes — especialmente em laços, funções internas e callbacks — decorrem não de capricho da linguagem, mas da forma como variáveis são capturadas e preservadas pelo contexto léxico. Entender esses erros é essencial para transformar closure em ferramenta confiável, e não em fonte recorrente de confusão."
+    },
+    {
+      "type": "paragraph",
+      "text": "O primeiro erro clássico é imaginar que a função interna captura uma fotografia congelada do valor externo no momento em que foi criada, quando na verdade o que importa é a ligação com a variável do ambiente léxico relevante. Essa diferença conceitual é muito importante. Se o estudante pensa em closure como simples cópia do valor, começa a prever o comportamento de modo incorreto em vários cenários. O modelo mais preciso é outro: a função mantém acesso ao identificador no ambiente capturado. Isso significa que, se o valor associado a esse identificador mudar antes da leitura posterior da função interna, o que será observado é o estado atual daquela variável naquele contexto preservado, e não necessariamente um retrato imutável do momento inicial."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse erro aparece de forma especialmente visível em laços. Um caso clássico envolve criar várias funções dentro de um loop e esperar que cada uma delas preserve o valor correspondente à iteração em que foi criada. Quando a variável de controle do laço é compartilhada de forma inadequada, as funções podem acabar observando o mesmo identificador já modificado ao final do processo. O estudante, então, se surpreende porque imaginava que cada função tinha guardado um valor independente. Na realidade, o que foi preservado foi a ligação com a variável do ambiente, e não uma série automática de cópias isoladas em cada caso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é um dos mais importantes de todo o tema de closure. Sem compreendê-lo, o aluno interpreta o comportamento como bug da linguagem, quando na verdade o problema está em seu modelo mental. A closure não prometeu congelar todos os valores externos em versões separadas por iteração. Ela manteve acesso a um contexto. Se esse contexto contém uma variável cujo valor evolui, a leitura posterior refletirá essa evolução. Esse é o motivo pelo qual a captura de variáveis em laços exige tanta atenção."
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro erro muito comum é não perceber a diferença prática entre var e let em contextos de repetição e captura. Embora esta obra ainda trate esse ponto com caráter introdutório, ele já precisa aparecer aqui porque está entre as causas mais clássicas de comportamento inesperado. Variáveis declaradas com let em laços modernos tendem a criar uma associação mais adequada à iteração em certos cenários, enquanto var possui regras de escopo de função que historicamente causaram inúmeras confusões quando funções internas eram criadas dentro de loops. O estudante não precisa decorar casos isolados sem entendimento. Precisa perceber que a forma da declaração afeta o ambiente em que a captura acontece."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é um excelente exemplo de como escopo e closure se encontram na prática. O problema não é simplesmente a palavra-chave usada. O problema é o tipo de ambiente que ela produz e como a função interna se liga a esse ambiente. Quando o estudante compreende isso, deixa de decorar lendas sobre var e let e passa a raciocinar em termos de escopo de bloco, variável por iteração e contexto capturado. Essa mudança de leitura é muito mais poderosa do que qualquer coleção de pegadinhas memorizadas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Um terceiro erro comum é capturar contexto demais sem perceber. Às vezes, a função interna usa uma variável principal de que realmente precisa, mas também passa a depender de outros nomes externos por conveniência, mistura de lógica ou nomeação pobre. O resultado é uma closure mais opaca, mais acoplada e mais difícil de entender. O estudante pode achar que o problema está apenas no valor final observado, quando na verdade o risco estrutural está no número e no tipo de dependências capturadas. Quanto mais contexto a função arrasta sem clareza, maior a chance de comportamento surpreendente e manutenção difícil."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse erro é especialmente relevante porque nem sempre gera falha imediata. Muitas vezes, o código funciona, mas se torna difícil de ler. Uma função aparentemente simples passa a depender de um conjunto externo de nomes que o leitor precisa rastrear mentalmente. Quando o programa muda, essas dependências implícitas se tornam pontos frágeis. Closure mal usada não falha apenas por produzir resultado errado. Ela também pode falhar por comprometer a inteligibilidade da relação entre função e contexto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro erro frequente é alterar uma variável externa capturada em lugares demais, tornando o estado difícil de rastrear. Quando uma closure depende de um identificador que pode ser modificado por múltiplas partes do código, o valor observado em cada chamada pode se tornar menos previsível para quem lê superficialmente. O problema aqui não é que a linguagem esteja errada, mas que o design do estado ficou disperso demais. Quanto mais uma variável capturada muda em lugares diferentes, mais o programador precisa acompanhar temporalmente o histórico dessas mudanças para entender o comportamento da função interna."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é importante porque closures lidam com estado, e estado sempre exige disciplina. Um estudante pode se encantar com a ideia de manter dados privados em uma função externa, mas se depois várias closures modificam esse mesmo estado sem clareza de papéis, o resultado pode se tornar confuso. O valor não está apenas em capturar uma variável, mas em ter um modelo claro de quem a lê, quem a altera e sob que regras isso acontece. Sem esse controle, a closure deixa de encapsular bem e começa a ocultar complexidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é muito comum interpretar erroneamente o momento em que a leitura da variável acontece. Em vários cenários, o iniciante pensa que a função interna avaliou o valor da variável externa no momento da criação, quando na verdade a leitura relevante ocorrerá apenas quando a função for executada mais tarde. Essa diferença temporal é absolutamente central. A criação da closure preserva o acesso ao contexto. A observação do valor pode ocorrer em outro momento do fluxo. Se o valor mudou nesse intervalo, o resultado percebido na execução refletirá essa nova situação. Entender esse deslocamento temporal é uma das chaves para evitar muitos erros de previsão."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse problema aparece com força em callbacks e funções executadas depois. A função foi criada em certo momento, mas será chamada apenas mais tarde. O programador precisa então separar criação do vínculo léxico e leitura efetiva do valor. Essa distinção evita uma das ilusões mais comuns do início: achar que a função já levou consigo o resultado final que usará, quando na verdade levou o acesso ao ambiente de onde esse resultado será obtido no momento oportuno."
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro erro importante está em misturar closure com falta de clareza semântica. Às vezes, o problema não é a captura em si, mas nomes ruins, funções grandes demais e ausência de estrutura no código. O estudante percebe um comportamento confuso e culpa closure como conceito, quando na verdade a dificuldade de leitura nasceu do desenho pobre da função e do ambiente externo. Esse diagnóstico equivocado é perigoso porque leva a rejeitar um recurso útil em vez de corrigir a forma como ele está sendo usado. O mecanismo não deve ser confundido com um design mal feito que apenas o utiliza de maneira obscura."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também vale mencionar o erro de usar closure quando parâmetros explícitos resolveriam o problema de forma mais transparente. Em alguns cenários, o programador captura contexto porque pode, não porque isso seja a escolha mais clara. O resultado é uma função cuja dependência de dados fica menos visível do que seria se esses dados aparecessem diretamente na interface da função. Esse tipo de escolha torna o comportamento mais implícito do que o necessário. O estudante precisa perceber que closure é ferramenta adequada para certos casos, não substituta universal de parâmetros, retornos e contratos explícitos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Do ponto de vista da depuração, a resposta madura a erros de captura de variáveis é sempre reconstruir o ambiente léxico da função. Quais nomes externos ela usa. Em que escopo esses nomes foram declarados. Quando o valor foi alterado. A leitura relevante acontece na criação ou na execução posterior. Há uma variável compartilhada entre múltiplas closures. O laço criou um novo ambiente por iteração ou todos os casos estão olhando para a mesma variável. Esse tipo de pergunta transforma um comportamento aparentemente estranho em consequência compreensível da estrutura do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "No nível profissional, erros de captura de variáveis aparecem em loops, callbacks, fábricas de função, estados privados e funções retornadas. Eles raramente são resolvidos bem por tentativa e erro cega. Exigem leitura estrutural de escopo, tempo e contexto. O programador que domina esse raciocínio deixa de tratar closures como terreno obscuro e passa a usá-las com segurança. Esse é o objetivo formativo central desta parte do capítulo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em síntese, os erros mais comuns ao capturar variáveis surgem quando o programador confunde acesso lexical com cópia de valor, não considera corretamente o momento da leitura, ignora a diferença entre tipos de escopo em laços, captura contexto demais ou usa closures onde parâmetros explícitos seriam mais claros. Reconhecer esses padrões é essencial para prever corretamente o comportamento das funções internas e usar o mecanismo de closure com precisão, e não com superstição."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "O iniciante aprende o conceito de closure, mas ainda pode prever seu comportamento com base em modelos mentais incorretos, como a ideia de cópia automática do valor externo ou a confusão entre criação da função e leitura posterior da variável. Como consequência, encontra resultados surpreendentes em laços, callbacks e funções retornadas. O problema real é não ler a captura de variáveis como ligação estrutural com um ambiente léxico cujo estado pode continuar evoluindo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Closures preservam acesso a variáveis de um ambiente léxico relevante, mas isso não equivale, em geral, a congelar uma fotografia imutável dos valores. A função permanece ligada ao identificador no contexto capturado e poderá observar o valor correspondente no momento em que for executada. Erros surgem quando o programador ignora esse caráter dinâmico da leitura, confunde escopos em laços ou depende de contexto demais sem clareza suficiente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao revisar uma closure, o programador deve perguntar que variável foi capturada, em que ambiente ela vive, quando será lida, se esse valor pode mudar antes da execução e se o contexto capturado é realmente o necessário. Essas perguntas tornam previsível um comportamento que, sem modelo correto, pareceria arbitrário."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Captura de variável: preservação do acesso lexical a um identificador externo.",
+        "Leitura tardia: observação do valor em momento posterior à criação da função.",
+        "Modelo de cópia equivocada: erro de imaginar congelamento automático do valor externo.",
+        "Contexto excessivo: captura de mais dependências do que a função realmente precisa.",
+        "Estado compartilhado: variável externa acessada e eventualmente alterada por múltiplas closures.",
+        "Clareza de contrato: decisão entre capturar por closure e explicitar por parâmetros."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Exemplo prático comentado"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function criarFuncoes() {\n  const funcoes = [];\n\n  for (let i = 1; i <= 3; i = i + 1) {\n    funcoes.push(function () {\n      return i;\n    });\n  }\n\n  return funcoes;\n}\n\nconst lista = criarFuncoes();\nconsole.log(lista[0]());\nconsole.log(lista[1]());\nconsole.log(lista[2]());",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarFuncoes"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " funcoes "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " [];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    funcoes."
+          },
+          {
+            "kind": "function",
+            "text": "push"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " i;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " funcoes;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " lista "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarFuncoes"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista["
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "]());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "]());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista["
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": "]());"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O exemplo é didático porque mostra a relação entre laço, ambiente de iteração e captura. A leitura correta depende de observar que as funções internas retornam o valor de i a partir do contexto léxico em que foram criadas. Esse tipo de cenário revela com clareza por que o modelo mental de captura de variáveis precisa ser preciso e por que a escolha do tipo de declaração no laço influencia o comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um aluno criando uma lista de funções para representar etapas numeradas de um processo. Ele espera que cada função preserve o número correspondente ao momento em que foi criada. Se seu modelo mental estiver baseado em cópia automática de valor, ficará confuso quando o comportamento observado não corresponder à sua expectativa em certos arranjos de escopo. Quando compreende que a função preserva acesso ao ambiente léxico relevante e que a leitura do valor ocorre no momento da execução, sua interpretação do resultado se torna muito mais estável. Esse caso mostra por que erros de captura são, acima de tudo, erros de modelo mental sobre escopo e tempo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que closure sempre congela o valor externo em vez de preservar acesso ao identificador.",
+        "Confundir o momento da criação da função com o momento da leitura efetiva da variável capturada.",
+        "Ignorar o impacto do tipo de escopo em laços ao criar funções internas.",
+        "Capturar contexto demais e dificultar a leitura das dependências da função.",
+        "Usar closures onde parâmetros explícitos tornariam a dependência mais visível e previsível."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ler closures em termos de ambiente capturado, e não de fotografia fixa do valor.",
+        "Perguntar sempre quando a variável será efetivamente lida pela função.",
+        "Usar estruturas de escopo adequadas em laços para evitar captura confusa do estado.",
+        "Manter pequeno e claro o conjunto de dependências externas da closure.",
+        "Preferir parâmetros explícitos quando isso tornar a função mais fácil de entender e testar.",
+        "Depurar reconstruindo o ambiente léxico e o histórico de mudanças da variável capturada."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Reconheço os principais erros ao capturar variáveis em closures.",
+        "Consigo distinguir captura lexical de cópia automática de valor.",
+        "Percebo a importância do momento da leitura da variável capturada.",
+        "Entendo por que laços e funções internas exigem atenção especial nesse tema.",
+        "Estou preparado para concluir o capítulo com um estudo de caso sobre encapsulamento com funções."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com os erros comuns ao capturar variáveis já mapeados, o próximo passo será concluir o capítulo com um estudo de caso integrado. A próxima parte mostrará como o encapsulamento com funções usa escopo, contexto léxico e closures de maneira organizada para proteger estado e estruturar comportamento em JavaScript."
+    }
+  ]
+}

@@ -1,0 +1,1226 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Escopo, contexto léxico e closures",
+    "part_number": "8",
+    "part_title": "Estudo de caso: encapsulamento com funções",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Escopo, contexto léxico e closures"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Estudo de caso: encapsulamento com funções"
+    },
+    {
+      "type": "paragraph",
+      "text": "Encerrar este capítulo apenas com definições sobre escopo, cadeia de escopos, contexto léxico e closure seria insuficiente. O leitor já possui a base conceitual necessária, mas agora precisa ver como esses elementos cooperam em um problema concreto. Esta parte final tem exatamente esse objetivo: mostrar como o encapsulamento com funções surge como consequência prática do que foi estudado ao longo do capítulo. O foco não será apenas explicar que closures preservam acesso a um ambiente léxico, mas demonstrar como esse mecanismo pode ser usado para proteger estado, restringir acesso direto a variáveis e estruturar melhor o comportamento do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "A palavra encapsulamento deve ser entendida com precisão neste contexto. Em termos introdutórios, encapsular significa manter certos dados e comportamentos organizados em uma unidade que controla o modo como o restante do programa interage com eles. O ponto central não é esconder informação por esconder, mas impedir que o estado importante fique totalmente solto e exposto em escopos amplos demais. Quando o estudante usa escopo e closures para manter um dado interno acessível apenas por funções específicas, ele começa a construir uma forma inicial e poderosa de encapsulamento funcional."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso será baseado em um cenário simples e altamente didático: a criação de um contador privado. O sistema precisará manter um número interno, permitir sua leitura e alteração por funções autorizadas e impedir que esse valor seja manipulado diretamente por qualquer outro trecho do programa. Esse exemplo é excelente porque reúne os principais temas do capítulo. Há escopo de função, cadeia de escopos, contexto léxico, closure, retenção de estado e distinção clara entre o que está acessível por fora e o que permanece protegido dentro do ambiente encapsulado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 1 — Observar o problema sem encapsulamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de construir a solução com funções, vale observar uma forma frágil de organizar o estado. Um iniciante poderia declarar o contador em escopo global e criar funções soltas que o leem e modificam. Em termos funcionais, isso pode até parecer suficiente em um exemplo muito pequeno. Contudo, o desenho estrutural fica pobre, porque o dado principal do problema permanece amplamente exposto. Qualquer parte do programa pode alterá-lo diretamente, o que reduz controle e dificulta a leitura da responsabilidade real sobre aquele estado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let contador = 0;\n\nfunction incrementar() {\n  contador = contador + 1;\n}\n\nfunction exibirContador() {\n  console.log(contador);\n}\n\nincrementar();\nexibirContador();",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "incrementar"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exibirContador"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(contador);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "incrementar"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "exibirContador"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O problema desse desenho não está apenas na existência de uma variável global. O problema está no fato de que o estado central do contador não pertence estruturalmente a uma unidade bem protegida. As funções incrementar e exibirContador dependem dele, mas ele também continua disponível de forma ampla para outros trechos. O estudante deve perceber que isso reduz o valor do encapsulamento. O dado existe, mas não está de fato guardado dentro de um ambiente controlado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 2 — Criar o ambiente encapsulado com função externa"
+    },
+    {
+      "type": "paragraph",
+      "text": "O próximo passo é reorganizar o problema. Em vez de declarar o contador em escopo global, o programa pode criá-lo dentro de uma função externa que servirá como ambiente encapsulador. Essa função não expõe diretamente a variável. Em vez disso, retorna funções internas autorizadas a interagir com o estado. Esse é o ponto em que a teoria do capítulo começa a se materializar com clareza."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function criarContador() {\n  let contador = 0;\n\n  function incrementar() {\n    contador = contador + 1;\n    return contador;\n  }\n\n  function obterValor() {\n    return contador;\n  }\n\n  return {\n    incrementar,\n    obterValor\n  };\n}\n\nconst meuContador = criarContador();",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarContador"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "incrementar"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " contador;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "obterValor"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " contador;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    incrementar,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    obterValor"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " meuContador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarContador"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse trecho representa uma mudança estrutural profunda. Agora, contador foi declarado em escopo de função, dentro de criarContador. As funções internas incrementar e obterValor foram definidas nesse ambiente e mantêm acesso a ele por contexto léxico. Quando a função externa termina, esse acesso continua possível por closure. O estado não desaparece, mas também não fica acessível diretamente pelo restante do programa. O leitor deve perceber que este é exatamente o tipo de encapsulamento funcional que o capítulo vinha preparando."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 3 — Usar a interface externa sem expor o estado interno"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com o contador encapsulado, o programa passa a interagir com ele de maneira mais disciplinada. O estado não é alterado diretamente. O acesso acontece por meio das funções devolvidas pela fábrica. Essa organização torna o uso do contador muito mais claro e mais seguro do ponto de vista estrutural."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function criarContador() {\n  let contador = 0;\n\n  function incrementar() {\n    contador = contador + 1;\n    return contador;\n  }\n\n  function obterValor() {\n    return contador;\n  }\n\n  return {\n    incrementar,\n    obterValor\n  };\n}\n\nconst meuContador = criarContador();\n\nconsole.log(meuContador.obterValor());\nconsole.log(meuContador.incrementar());\nconsole.log(meuContador.incrementar());\nconsole.log(meuContador.obterValor());",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarContador"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "incrementar"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " contador;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "obterValor"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " contador;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    incrementar,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    obterValor"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " meuContador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarContador"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(meuContador."
+          },
+          {
+            "kind": "function",
+            "text": "obterValor"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(meuContador."
+          },
+          {
+            "kind": "function",
+            "text": "incrementar"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(meuContador."
+          },
+          {
+            "kind": "function",
+            "text": "incrementar"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(meuContador."
+          },
+          {
+            "kind": "function",
+            "text": "obterValor"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse uso deixa muito claro o valor da closure. O objeto retornado oferece uma pequena interface pública, enquanto o estado contador continua privado ao ambiente léxico de criarContador. O restante do programa consegue ler e atualizar o contador apenas pelos comportamentos autorizados. O dado central do sistema já não está solto no escopo global. Ele vive em um contexto mais controlado, o que melhora muito a organização."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 4 — Relacionar o comportamento ao contexto léxico"
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste ponto, é essencial ligar explicitamente a prática à teoria. As funções incrementar e obterValor conseguem acessar contador porque foram definidas no mesmo ambiente léxico em que contador foi declarado. Quando criarContador termina sua execução principal, o que permanece não é apenas uma cópia do valor, mas a ligação estrutural dessas funções com o ambiente relevante. Essa é a essência da closure aplicada ao encapsulamento. O estudante deve perceber que não há mágica. Há escopo de função, cadeia de escopos, contexto léxico e retenção de acesso ao ambiente preservado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o momento em que o capítulo se fecha conceitualmente. O que antes parecia apenas teoria de regiões de visibilidade agora se revela como fundamento de uma técnica concreta de organização de estado. Escopo não era apenas uma regra sobre onde variáveis podem ser vistas. Era também a base para decidir onde certos dados devem viver. Closure não era apenas um fenômeno curioso. Era o mecanismo que permitiria a certas funções continuar operando sobre esse estado protegido."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 5 — Mostrar o ganho de encapsulamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "A principal vantagem dessa estrutura é que o estado fica protegido de acesso direto indiscriminado. O programa não consegue fazer algo como contador = 100 a partir de fora, porque esse identificador não está em escopo global nem foi exposto pela interface retornada. Toda alteração precisa passar pela função apropriada. Essa limitação é extremamente valiosa porque concentra a responsabilidade de modificação do estado em pontos específicos e semânticos do código. O dado deixa de ser apenas existente e passa a ser governado por uma política de acesso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ganho melhora também a legibilidade. O leitor sabe que o contador pertence à unidade criada por criarContador. Sabe também que as formas legítimas de interação passam por incrementar e obterValor. O código começa a comunicar melhor sua arquitetura interna. O estado tem dono estrutural. As ações sobre ele têm nomes claros. A função externa deixa de ser apenas fábrica arbitrária e passa a representar um pequeno espaço encapsulado de comportamento e dados."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 6 — Comparar a solução encapsulada com a solução exposta"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comparar as duas versões do problema torna o aprendizado muito mais nítido. Na versão global, o contador existe em alcance amplo e qualquer trecho pode alterá-lo diretamente. Na versão encapsulada, o estado vive dentro de um ambiente local preservado por closures, e o restante do programa interage com ele por uma interface controlada. A diferença não é apenas de estilo. É uma diferença de disciplina estrutural. O segundo desenho protege melhor o dado, favorece manutenção e torna mais claro o papel de cada função."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse contraste mostra que encapsulamento com funções não é teoria ornamental. É uma forma concreta de organizar dados e comportamento com base em escopo e contexto léxico. O estudante começa a perceber, assim, que JavaScript oferece mecanismos poderosos para estruturar estado mesmo antes de entrar em ferramentas mais avançadas de abstração. Essa percepção fortalece muito a confiança no raciocínio funcional da linguagem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Síntese integrada do estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observando o caso completo, o leitor deve perceber que encapsulamento com funções depende da cooperação entre vários conceitos do capítulo. O escopo de função delimita o ambiente interno em que o estado viverá. A cadeia de escopos permite que funções internas encontrem esse estado. O contexto léxico explica por que esse ambiente é o relevante para as funções definidas ali. A closure torna possível que essas funções continuem acessando o estado mesmo após o término do fluxo principal da função externa. O resultado é uma pequena estrutura encapsulada em que dados privados e funções públicas convivem de forma organizada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o verdadeiro fechamento do capítulo. O estudante deixa de ver escopo, contexto léxico e closure como ideias separadas e passa a enxergá-los como componentes de um mesmo mecanismo estrutural. Juntos, eles permitem organizar o acesso a dados, proteger estado, criar comportamentos persistentes e melhorar o design do programa. Essa visão integrada é um dos marcos mais importantes da formação em JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos iniciantes entendem closures em exemplos isolados, mas ainda não percebem como esse mecanismo pode ser usado para organizar e proteger estado no programa. Como consequência, mantêm dados importantes em escopos amplos demais ou usam funções internas sem aproveitar seu potencial de encapsulamento. O problema real é não transformar a teoria de escopo e contexto léxico em uma estratégia concreta de design funcional."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Encapsulamento com funções usa escopo de função para criar um ambiente local de dados, contexto léxico para ligar funções internas a esse ambiente e closures para preservar o acesso a ele ao longo do tempo. Em vez de expor diretamente a variável ao restante do programa, a função externa devolve apenas os comportamentos autorizados a interagir com esse estado. O resultado é uma forma funcional de restringir acesso e organizar responsabilidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao analisar um caso de encapsulamento com funções, o programador deve perguntar onde o estado foi declarado, quais funções internas dependem dele, por que essas funções continuam acessando esse estado depois da execução da função externa e que interface pública o restante do programa realmente recebe. Essa leitura mostra que encapsulamento funcional é consequência direta da arquitetura lexical do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Estado privado: dado mantido em escopo interno não exposto diretamente.",
+        "Função encapsuladora: função externa que cria o ambiente de dados.",
+        "Interface pública: conjunto de funções retornadas para interação autorizada com o estado.",
+        "Preservação lexical: manutenção do acesso ao ambiente de origem por closure.",
+        "Controle de acesso: limitação estrutural do modo como o estado pode ser lido ou alterado.",
+        "Unidade funcional encapsulada: combinação entre dado protegido e comportamentos autorizados."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso final da parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine dois estudantes construindo um contador. O primeiro declara a variável em escopo global e cria funções soltas para manipulá-la. O segundo define uma função encapsuladora que cria o estado internamente e retorna apenas as operações necessárias para interagir com ele. Ambos conseguem incrementar números, mas apenas o segundo realmente usa escopo, contexto léxico e closures para transformar esse comportamento em uma unidade funcional protegida. Esse contraste mostra por que o capítulo não tratou desses conceitos apenas como teoria: eles são ferramentas concretas de design."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Declarar o estado em escopo global mesmo quando ele pertence logicamente a um comportamento local.",
+        "Retornar funções sem perceber que o valor real da técnica está na preservação do ambiente privado.",
+        "Expor dados diretamente quando poderia expor apenas funções controladas.",
+        "Confundir encapsulamento com mera ocultação estética sem ganho estrutural.",
+        "Não relacionar a prática do exemplo à teoria de escopo e contexto léxico estudada antes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Declarar o estado o mais perto possível da unidade funcional a que ele pertence.",
+        "Retornar apenas funções que representem interações legítimas com o estado encapsulado.",
+        "Usar nomes claros para a função encapsuladora e para a interface pública devolvida.",
+        "Ler closures como mecanismo de preservação de acesso e não como mágica ou cópia de valor.",
+        "Comparar sempre soluções expostas e encapsuladas para avaliar o ganho estrutural real."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo explicar como escopo, contexto léxico e closure cooperam no encapsulamento funcional.",
+        "Entendo a diferença entre estado global exposto e estado local encapsulado.",
+        "Reconheço o valor de retornar apenas funções autorizadas para interagir com dados internos.",
+        "Percebo que closure permite persistência de acesso sem exposição ampla do estado.",
+        "Entendo que o capítulo foi integralmente consolidado em um caso prático de design em JavaScript."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com o próximo capítulo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com isso, o Capítulo 10 está completo. O leitor agora possui uma base sólida sobre escopo, cadeia de escopos, contexto léxico, closures, riscos de captura e encapsulamento funcional em JavaScript. No Capítulo 11, o foco avançará para arrays e objetos — isto é, para as estruturas de dados fundamentais com as quais o programa passa a organizar, agrupar e manipular coleções e registros de informação. O sumário aprovado segue integralmente coberto até este ponto."
+    }
+  ]
+}

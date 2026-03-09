@@ -1,0 +1,1847 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Callbacks e composição inicial de comportamento",
+    "part_number": "5",
+    "part_title": "Exercícios comentados sobre callbacks e composição",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Callbacks e composição inicial de comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Exercícios comentados sobre callbacks e composição"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta parte do capítulo foi concebida para consolidar, por meio de exercícios comentados, tudo o que foi estudado sobre callbacks até aqui. Ao longo das partes anteriores, o leitor compreendeu o que é um callback, por que ele existe como comportamento entregue a outro contexto, como aparece em métodos de array, em mecanismos genéricos de composição e em contextos de eventos e temporização. Também viu que callbacks trazem grande poder de flexibilidade, mas exigem cuidado para não tornar o fluxo confuso. Agora é o momento de observar esse repertório em ação e transformá-lo em leitura mais segura do comportamento delegado em JavaScript."
+    },
+    {
+      "type": "paragraph",
+      "text": "Exercícios comentados têm valor especial neste capítulo porque callbacks costumam enganar o iniciante de uma forma muito específica. O estudante reconhece a função passada como argumento, mas ainda pode não perceber quem a executará, quando ela será chamada, quais dados receberá ou por que ela foi colocada ali em vez de ser escrita diretamente no corpo principal do processo. Essa camada de entendimento estrutural é exatamente o que os exercícios a seguir pretendem fortalecer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Cada exemplo foi escolhido para reforçar um ponto central do capítulo: callback como função passada, callback como customização de lógica, callback em métodos de array, callback em reação a tempo ou evento e callback como ferramenta poderosa que pode tanto clarear quanto obscurecer o fluxo dependendo do desenho adotado. Em todos os casos, o objetivo não é apenas identificar o resultado final, mas explicar o papel arquitetural do callback dentro do processo maior."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Como trabalhar estes exercícios"
+    },
+    {
+      "type": "paragraph",
+      "text": "A melhor forma de usar esta parte é prever primeiro o papel do callback no trecho antes de ler o comentário. Pergunte a si mesmo: quem está recebendo essa função, quando ela será chamada e com qual objetivo? Em seguida, compare sua leitura com a explicação. Se acertar, ótimo: isso fortalece sua fluência no desenho do fluxo. Se errar, melhor ainda do ponto de vista pedagógico, porque o exercício revelou uma zona importante em que seu modelo mental ainda precisava de ajuste."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é recomendável executar os exemplos sempre que possível. No caso de temporizadores e callbacks em coleções, ver o comportamento acontecendo ajuda bastante a visualizar a diferença entre função registrada, função executada e contexto controlador do processo. O estudante deve prestar atenção especial à distinção entre mecanismo principal e lógica específica delegada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por fim, vale reforçar: o foco não é decorar trechos típicos, e sim aprender a reconhecer callbacks como padrão estrutural de composição."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Exercício 1 — Callback como função passada para outro contexto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function executarAcao(acao) {\n  acao();\n}\n\nexecutarAcao(function () {\n  console.log(\"Ação executada.\");\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "executarAcao"
+          },
+          {
+            "kind": "plain",
+            "text": "(acao) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "acao"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "executarAcao"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Ação executada.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício consolida a definição mais básica de callback. A função anônima foi passada como argumento para executarAcao e chamada dentro desse contexto. O trecho é importante porque mostra com nitidez a separação entre mecanismo principal e comportamento entregue. O leitor deve perceber que a função externa não executa diretamente o conteúdo do callback; ela o recebe e o dispara segundo sua própria lógica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: callback é comportamento fornecido a outro contexto para ser chamado por esse contexto."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Exercício 2 — Mecanismo de percurso com ação parametrizada"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function percorrerLista(lista, acao) {\n  for (let i = 0; i < lista.length; i = i + 1) {\n    acao(lista[i]);\n  }\n}\n\npercorrerLista([1, 2, 3], function (item) {\n  console.log(item);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "percorrerLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista, acao) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " lista.length; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "acao"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista[i]);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "percorrerLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "], "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (item) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(item);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: aqui o mecanismo principal é o percurso da lista. A lógica específica foi deixada em aberto e recebida como callback. O exercício reforça a ideia de que o mesmo mecanismo poderia ser reutilizado com comportamentos diferentes, bastando trocar a função passada em acao. Isso mostra a força dos callbacks como ponto de extensão controlada do comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: callbacks permitem customizar o que acontece dentro de um processo geral sem reescrever sua estrutura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Exercício 3 — O contexto receptor fornece dados ao callback"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function percorrerLista(lista, acao) {\n  for (let i = 0; i < lista.length; i = i + 1) {\n    acao(lista[i]);\n  }\n}\n\npercorrerLista([10, 20, 30], function (valor) {\n  console.log(\"Recebido:\", valor);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "percorrerLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista, acao) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " lista.length; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "acao"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista[i]);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "percorrerLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "20"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "30"
+          },
+          {
+            "kind": "plain",
+            "text": "], "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (valor) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Recebido:\""
+          },
+          {
+            "kind": "plain",
+            "text": ", valor);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício mostra uma nuance importante. O callback não é apenas chamado; ele é chamado com um dado fornecido pelo contexto principal. O valor chega ao callback a partir da lógica interna do percurso. Isso conecta callbacks diretamente ao que foi estudado sobre parâmetros e argumentos: a função passada também recebe entradas, mas essas entradas são fornecidas pelo mecanismo que a executa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: callbacks frequentemente recebem dados relevantes do contexto que os chama."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Exercício 4 — Reconhecendo callback em método de array"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const numeros = [1, 2, 3];\n\nnumeros.forEach(function (numero) {\n  console.log(numero);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " numeros "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "numeros."
+          },
+          {
+            "kind": "function",
+            "text": "forEach"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (numero) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(numero);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício é muito importante porque torna explícito algo que muitas vezes o estudante já viu sem nomear. A função passada para forEach é um callback. O método do array é quem decide chamá-la uma vez para cada elemento. O trecho reforça a ideia de que callbacks já estavam presentes em ferramentas familiares do JavaScript, especialmente na iteração declarativa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: métodos de array são grandes exemplos práticos de uso maduro de callbacks."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Exercício 5 — Callback de transformação"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function transformarLista(lista, transformacao) {\n  const resultado = [];\n\n  for (let i = 0; i < lista.length; i = i + 1) {\n    resultado.push(transformacao(lista[i]));\n  }\n\n  return resultado;\n}\n\nconst dobrados = transformarLista([1, 2, 3], function (numero) {\n  return numero * 2;\n});\n\nconsole.log(dobrados);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "transformarLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista, transformacao) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " [];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " lista.length; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    resultado."
+          },
+          {
+            "kind": "function",
+            "text": "push"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "transformacao"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista[i]));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " dobrados "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "transformarLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "], "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (numero) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " numero "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(dobrados);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: aqui o callback não serve apenas para agir sobre o item; ele serve para transformá-lo em outro valor. O mecanismo principal continua responsável por percorrer a lista e organizar a coleção final. O callback transformacao define a regra específica de conversão de cada elemento. O exercício mostra com muita clareza a separação entre infraestrutura do processo e lógica de transformação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: callbacks podem parametrizar não apenas ações, mas também regras de transformação dentro de processos genéricos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Exercício 6 — Callback em temporização não executa no momento do registro"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "setTimeout(function () {\n  console.log(\"Executado depois do tempo definido.\");\n}, 1000);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Executado depois do tempo definido.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}, "
+          },
+          {
+            "kind": "number",
+            "text": "1000"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício é essencial para corrigir uma confusão clássica. A função foi registrada como callback do temporizador, mas não é executada no instante em que é escrita como argumento. O mecanismo de temporização é quem controlará o momento da chamada. O trecho reforça a diferença entre fornecer comportamento e acioná-lo imediatamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: em temporização, o callback é resposta registrada para execução posterior, e não ação já realizada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Exercício 7 — Callback em evento como reação registrada"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "botao.addEventListener(\"click\", function () {\n  console.log(\"Botão clicado.\");\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "botao."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"click\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Botão clicado.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: mesmo que o ambiente do botão ainda não esteja sendo aprofundado tecnicamente nesta etapa, o exercício é valioso como modelo mental. A função passada não representa um clique acontecendo agora. Representa o comportamento que deverá ser disparado caso e quando o clique ocorrer. Esse padrão é central para a programação orientada a eventos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: callback de evento é ponte entre um acontecimento possível e a reação preparada para ele."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Exercício 8 — Arrow function em callback curto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observe o código:"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const numeros = [1, 2, 3];\n\nconst dobrados = numeros.map((numero) => numero * 2);\nconsole.log(dobrados);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " numeros "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " dobrados "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " numeros."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "((numero) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " numero "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(dobrados);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: este exercício mostra como arrow functions se encaixam naturalmente em callbacks curtos de transformação. O método map fornece a estrutura do processo, e a arrow function descreve a lógica específica aplicada a cada item. O valor do trecho está em mostrar concisão com clareza. A seta não muda o conceito de callback; apenas o expressa de forma mais enxuta."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: arrow functions são muito frequentes em callbacks quando a lógica é curta e o contexto já espera um comportamento funcional."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Exercício 9 — Callback excessivamente longo pode enfraquecer a leitura"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um callback passado a um método ou função genérica que contenha muitas condições, variáveis locais, múltiplos passos e longos blocos de lógica. Mesmo sem erro sintático, qual o problema potencial?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: o problema é a perda de legibilidade. O callback deixa de ser uma lógica específica clara encaixada em um processo geral e passa a competir visualmente com o próprio mecanismo principal. O desenho do fluxo se enfraquece. Muitas vezes, isso é sinal de que o comportamento deveria ser extraído para uma função nomeada ou reorganizado em partes menores."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: callback bom costuma ser flexível sem destruir a inteligibilidade do processo que o recebe."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Exercício 10 — O que realmente precisa ser delegado?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um processo em que tudo é escrito por meio de callbacks, mesmo quando não há variação real de comportamento nem controle externo de execução. Isso é necessariamente bom?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Comentário: não. O callback faz sentido quando há motivo estrutural claro para delegar comportamento. Se não há customização real, controle externo relevante ou necessidade de tratar a função como valor naquele contexto, o uso de callback pode apenas adicionar indireção desnecessária. O exercício reforça que callback não é valor em si; valor tem o desenho que o justifica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Lição principal: delegar comportamento sem ganho estrutural claro pode tornar o código mais difícil sem torná-lo melhor."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Como revisar o próprio raciocínio ao ler callbacks"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de cada exercício, o estudante deve se fazer algumas perguntas fundamentais. Quem recebe esta função? Quem a chama? Quando ela será executada? Que dados o contexto principal fornece ao callback? Que parte do processo é fixa e que parte foi deixada aberta para customização? O callback está curto e claro o suficiente para permanecer inline, ou já mereceria extração para função nomeada? Essas perguntas ajudam a transformar a leitura de callbacks em revisão de arquitetura do fluxo, e não apenas em observação de funções encaixadas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa prática é especialmente importante porque callbacks mudam o modo como o comportamento é distribuído pelo sistema. Se o estudante aprende a revisá-los bem desde cedo, ganha base mais forte para enfrentar padrões mais sofisticados da linguagem depois."
+    },
+    {
+      "type": "paragraph",
+      "text": "Aprender callbacks em JavaScript é, em grande medida, aprender a distinguir com clareza o mecanismo que conduz o processo da lógica que foi delegada a ele."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Erros comuns ao resolver estes exercícios"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir função passada com função executada imediatamente.",
+        "Ignorar quem controla a chamada do callback.",
+        "Não perceber que métodos de array já são exemplos maduros desse padrão.",
+        "Perder a distinção entre mecanismo principal e lógica específica delegada.",
+        "Aceitar callbacks longos ou excessivamente aninhados sem questionar a legibilidade.",
+        "Usar callback sem motivo estrutural claro.",
+        "Observar apenas a sintaxe da função e não o papel que ela desempenha no desenho do fluxo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Boas práticas para consolidar o capítulo"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Releia métodos de array reconhecendo explicitamente a função passada como callback.",
+        "Treine a pergunta: quem chama esta função e quando?",
+        "Identifique o processo geral e a lógica que foi deixada aberta para customização.",
+        "Use nomes fortes para callbacks quando eles tiverem papel semântico relevante.",
+        "Extraia callbacks para funções nomeadas quando a leitura inline começar a ficar pesada.",
+        "Empregue arrow functions quando a concisão fortalecer a clareza.",
+        "Reveja os exercícios que contrariaram sua expectativa, pois eles revelam os pontos de maior aprendizado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "15. Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo analisar callbacks em termos de contexto receptor, momento de execução e lógica delegada.",
+        "Reconheço callbacks em métodos de array, temporização e eventos.",
+        "Percebo quando um callback fortalece a flexibilidade e quando começa a enfraquecer a legibilidade.",
+        "Entendo a diferença entre processo principal e comportamento customizado.",
+        "Consigo avaliar melhor o uso de callbacks inline versus funções nomeadas.",
+        "Estou preparado para encerrar o capítulo com uma consolidação final integrada na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "16. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois desta sequência de exercícios comentados, o capítulo está pronto para seu encerramento integrador. Na próxima parte, faremos a consolidação final dos callbacks e da composição inicial de comportamento, fechando a ponte entre função como valor, delegação de lógica, reação a contexto e clareza do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa etapa final será importante para transformar callbacks em repertório sólido de composição funcional, preparando o leitor para os próximos temas do livro, em que a organização temporal do comportamento ganhará ainda mais profundidade."
+    }
+  ]
+}

@@ -1,0 +1,877 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 9 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "9",
+    "chapter_title": "Funções em profundidade",
+    "part_number": "3",
+    "part_title": "Retorno e produção de valores",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 9 — Funções em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Retorno e produção de valores"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é uma função, por que ela existe como unidade de comportamento reutilizável e como recebe dados de entrada por meio de parâmetros e argumentos, o leitor está pronto para entrar em uma das ideias mais importantes de todo o capítulo: o retorno. Até aqui, a função já foi vista como estrutura capaz de executar comportamentos sobre entradas variadas. Agora ela começará a ser entendida também como produtora de valores que podem alimentar outras partes do fluxo do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque funções não servem apenas para disparar ações visíveis, como exibir mensagens no console ou alterar algum estado diretamente. Em grande parte da programação real, elas também existem para calcular, transformar, validar e devolver resultados que serão usados por expressões, condições, outras funções, estruturas de dados e fluxos mais amplos do sistema. Em outras palavras, a função passa de simples executora de instruções para peça ativa na circulação de valores dentro do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre o que significa uma função devolver algo ao fluxo. O leitor compreenderá a diferença entre executar uma ação e retornar um valor, verá o papel da palavra-chave return e entenderá por que o retorno é uma das bases da composição de comportamento em JavaScript. Ao final, deixará de ver a função apenas como bloco que faz algo e passará a entendê-la também como estrutura que produz resultados reutilizáveis."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: muitas funções precisam entregar um resultado para o restante do programa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função que calcula desconto, verifica se um usuário tem permissão, transforma um texto para exibição, soma valores de um carrinho ou extrai uma propriedade importante de um objeto. Em todos esses casos, o comportamento não se esgota em “fazer alguma coisa localmente”. O programa precisa receber o resultado daquela operação para continuar trabalhando com ele. Se a função apenas executasse o cálculo sem entregar o valor produzido, grande parte de sua utilidade seria perdida."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que o retorno resolve. Ele permite que a função produza um valor e o devolva ao ponto em que foi chamada. Assim, o comportamento encapsulado não apenas acontece; ele também gera uma saída que pode ser armazenada, comparada, exibida, combinada com outros cálculos ou passada adiante para outras partes do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que o retorno transforma a função em uma peça muito mais poderosa de composição lógica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é retorno em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, retorno é o valor que uma função devolve ao ponto do programa que a chamou. Esse valor é produzido no interior da função e enviado de volta ao fluxo por meio da palavra-chave return. Em vez de a função apenas executar instruções internas sem resultado reaproveitável, ela passa a entregar uma saída que o restante do programa pode utilizar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function somar(a, b) {\n  return a + b;\n}\n\nconst resultado = somar(5, 3);\nconsole.log(resultado);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(resultado);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a função somar não apenas executa um cálculo internamente. Ela devolve o resultado da soma para o ponto em que foi chamada. Esse valor é então armazenado em resultado e pode ser usado pelo programa. O ponto mais importante aqui é compreender que a função se torna uma produtora de valor, e não apenas uma executora de ação."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve associar return à ideia de saída reutilizável da função."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Executar ação não é o mesmo que retornar valor"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das distinções mais importantes desta etapa é a diferença entre executar uma ação visível e retornar um valor. Muitas vezes o iniciante confunde as duas coisas, especialmente quando usa console.log dentro da função. Exibir algo no console pode ser útil para observação, mas isso não equivale a devolver o valor para o fluxo do programa."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function somar(a, b) {\n  console.log(a + b);\n}\n\nconst resultado = somar(5, 3);\nconsole.log(resultado);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(resultado);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é extremamente didático porque mostra um erro conceitual muito comum. A função imprime a soma no console, mas não a retorna. Como consequência, o valor armazenado em resultado não é a soma reaproveitável, e sim a ausência de retorno explícito da função. O programa viu um efeito visível no console, mas não recebeu uma saída útil para continuar a lógica."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: mostrar um valor não é o mesmo que devolvê-lo ao programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Return encerra a execução da função naquele ponto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro aspecto central do retorno é que a palavra-chave return não apenas devolve um valor. Ela também encerra a execução da função naquele ponto. Isso significa que, depois de um return atingido, o restante do corpo da função não continua sendo executado naquela chamada."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function verificarNumero(numero) {\n  if (numero > 0) {\n    return \"positivo\";\n  }\n\n  return \"não positivo\";\n}\n\nconsole.log(verificarNumero(10));",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "verificarNumero"
+          },
+          {
+            "kind": "plain",
+            "text": "(numero) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (numero "
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"positivo\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"não positivo\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "verificarNumero"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, quando numero é maior que zero, a função retorna imediatamente a string correspondente e encerra sua execução. Esse comportamento é muito importante porque conecta retorno à estrutura do fluxo interno da função. Return não é apenas um detalhe de saída; é também um ponto de fechamento da execução naquele caminho lógico."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve internalizar desde cedo que return tem papel duplo: produzir valor e concluir a função naquele trecho."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Funções com retorno são mais compostáveis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das maiores vantagens de funções que retornam valores é sua capacidade de composição. Como produzem uma saída reutilizável, elas podem ser encaixadas em outras expressões, usadas em condições, atribuídas a variáveis, passadas como entrada para outros comportamentos e integradas a fluxos mais complexos. Isso torna o código muito mais expressivo e modular."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por exemplo, uma função que calcula desconto pode retornar o valor final e permitir que esse resultado seja exibido, armazenado em um objeto, comparado com outro preço ou enviado para outra função de formatação. Sem retorno, a lógica ficaria muito mais presa ao contexto local de execução. Com retorno, ela se torna uma peça interoperável do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa capacidade de composição é uma das grandes razões pelas quais o retorno é tão central na programação com funções."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Return como ponte entre interior da função e fluxo externo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma função possui um interior, em que sua lógica acontece, e um exterior, que é o restante do programa. O retorno funciona como ponte entre esses dois mundos. Ele pega o resultado produzido internamente e o entrega ao fluxo externo, permitindo que o comportamento encapsulado participe de cálculos, decisões e transformações além dos limites do próprio corpo da função."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque ajuda o estudante a perceber a função não como bloco isolado, mas como componente conectado ao restante do sistema. O valor retornado é justamente o que permite essa conexão sem quebrar o encapsulamento do comportamento interno."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura de funções exige sempre perguntar não apenas o que elas fazem por dentro, mas também o que devolvem para fora."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Nem toda função precisa retornar algo útil, mas muitas precisam"
+    },
+    {
+      "type": "paragraph",
+      "text": "É importante reconhecer que nem toda função existe para devolver um valor reaproveitável. Algumas são criadas para produzir efeitos no sistema, como registrar algo, atualizar estado, disparar uma mensagem ou acionar uma rotina. No entanto, grande parte das funções mais úteis em lógica de negócio, transformação de dados e composição de comportamento depende fortemente de retorno. O estudante precisa aprender a distinguir essas vocações."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é importante porque evita dois extremos: achar que toda função obrigatoriamente deve retornar algo útil ou achar que retorno é opcional e periférico. A escolha depende da responsabilidade da função. O ponto principal aqui é reconhecer que, quando o problema pede um resultado utilizável pelo restante do programa, o retorno é central."
+    },
+    {
+      "type": "paragraph",
+      "text": "A maturidade funcional cresce justamente com a capacidade de perceber quando a função deve agir, quando deve devolver valor e quando deve fazer ambos de forma coerente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: calcular preço final e reutilizar o resultado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função que recebe um preço original e um percentual de desconto. O objetivo não é apenas imprimir o valor final, mas permitir que esse resultado seja usado em outros pontos do sistema — por exemplo, para montar um resumo de produto, armazenar em variável, comparar com um limite ou exibir com formatação específica. Esse cenário resume muito bem por que o retorno é tão importante. O cálculo precisa produzir uma saída reutilizável, não apenas um efeito local de exibição."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra que o retorno não é luxo técnico. É o que transforma a função em produtora de resultado integrado ao fluxo do programa. A lógica continua encapsulada, mas seu efeito semântico se amplia, porque o valor calculado pode circular e compor novos comportamentos."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: quando o valor gerado por uma função precisa participar de outros passos da lógica, retornar esse valor é a escolha natural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Return e legibilidade da intenção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma função com retorno claro costuma comunicar muito bem sua intenção. Quando o leitor vê uma chamada como const total = calcularTotal(itens), ele rapidamente entende que a função produz um valor que será reutilizado. Essa clareza fortalece a leitura do código, porque o fluxo fica organizado em termos de comportamentos que geram resultados significativos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem grande valor editorial. O retorno ajuda a tornar o programa mais narrativo: certas funções preparam valores, outras os transformam, outras os validam, outras os usam em decisões. Quando isso está claro, o código se torna mais fácil de acompanhar e manter."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que return não apenas melhora a mecânica do programa. Também melhora a explicação do que cada função entrega ao fluxo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa saída de função costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa função com retorno costuma comunicar pelo menos três coisas: que tipo de resultado ela produz, em que ponto esse resultado nasce da lógica interna e como esse valor pode ser aproveitado pelo restante do sistema. Esses elementos ajudam muito a avaliar a qualidade da função e de sua interface com o fluxo externo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a olhar para a saída da função como parte essencial de sua arquitetura. A função não é apenas definida por seu nome e por suas entradas, mas também pelo que devolve. Quanto mais clara essa saída, mais forte tende a ser a integração da função com o restante do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa função, portanto, não apenas recebe bem. Ela também devolve bem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir exibir um valor no console com retornar esse valor ao programa.",
+        "Achar que return serve apenas para “sair da função”, sem perceber seu papel de devolução de resultado.",
+        "Ignorar que return encerra a execução da função naquele ponto.",
+        "Subestimar o valor do retorno para composição de comportamento.",
+        "Não distinguir funções orientadas a efeito de funções orientadas à produção de valor.",
+        "Tratar a saída da função como detalhe secundário, em vez de parte central de sua interface."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe return sempre à ideia de valor devolvido ao fluxo.",
+        "Compare exemplos que apenas exibem valores com exemplos que de fato os retornam.",
+        "Pergunte em cada função: o programa precisa reutilizar o resultado desta lógica?",
+        "Observe que return também encerra a execução naquele caminho.",
+        "Pratique funções simples que calculam e devolvem resultados para variável.",
+        "Prepare-se para estudar escopo e o ambiente interno da função na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é retorno em uma função.",
+        "Reconheço a diferença entre imprimir um valor e devolvê-lo ao fluxo do programa.",
+        "Percebo que return encerra a execução da função naquele ponto.",
+        "Entendo o valor do retorno para reutilização e composição lógica.",
+        "Consigo avaliar quando uma função precisa produzir uma saída utilizável.",
+        "Estou preparado para estudar escopo, variáveis locais e ambiente interno das funções na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende entradas e saídas das funções, o próximo passo é estudar o ambiente interno em que esse comportamento acontece. Na próxima parte, entraremos em escopo, variáveis locais e a diferença entre o que pertence ao interior da função e o que pertence ao fluxo externo do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque a função não é apenas uma caixa que recebe e devolve valores. Ela também é um espaço próprio de execução, com regras importantes sobre visibilidade, acesso e isolamento de variáveis."
+    }
+  ]
+}

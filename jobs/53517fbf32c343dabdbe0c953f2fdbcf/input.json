@@ -1,0 +1,2022 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 14 — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 14,
+    "chapter_title": "Aplicações no navegador: storage, roteamento simples e componentes sem framework",
+    "part_number": 6,
+    "part_title": "Compondo telas com router + storage: baixo acoplamento e estado previsível entre rotas",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 14 — Aplicações no navegador: storage, roteamento simples e componentes sem framework"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Compondo telas com router + storage: baixo acoplamento e estado previsível entre rotas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 5 você aprendeu a criar componentes com funções-fábrica e API mínima. Agora o passo seguinte é compor esses componentes dentro de um app real com roteamento e persistência. O objetivo júnior aqui é baixo acoplamento: a tela conhece o router apenas por uma função de navegação, conhece o storage apenas por actions específicas e mantém o resto encapsulado. Nesta parte, você vai ver como montar telas por composição, preservar preferências entre rotas e evitar que uma tela precise saber detalhes internos da outra."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1) Problema real: “Minha tela de settings conhece detalhes da tela de lista”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse problema aparece quando telas compartilham variáveis globais diretamente ou alteram o DOM umas das outras. O padrão profissional é: estado global mínimo, estado local por tela/componente, e comunicação por parâmetros e actions. Assim, a tela A não manipula o DOM da tela B; ela apenas muda o estado ou navega para outra rota."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2) Arquitetura alvo: app shell + telas compostas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "App shell: controla rota atual, preferências persistidas e ponto de montagem (#app).",
+        "Tela: componente maior que compõe subcomponentes (toolbar, lista, painel etc.).",
+        "Subcomponentes: recebem dados/callbacks, expõem root e métodos mínimos.",
+        "Router: decide qual tela montar com base na rota.",
+        "Storage: persiste preferências e partes específicas do estado de UI."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3) Exemplo de composição por tela"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nfunction createToolbar({ title, onBack }) {\n  const root = document.createElement('header');\n  const h1 = document.createElement('h1');\n  const btn = document.createElement('button');\n\n  h1.textContent = title;\n  btn.textContent = 'Voltar';\n  btn.addEventListener('click', () => onBack?.());\n\n  root.append(h1, btn);\n  return { root };\n}\n\nfunction createThemeToggle({ value, onChange }) {\n  const root = document.createElement('div');\n  const btn = document.createElement('button');\n\n  function render(theme) {\n    btn.textContent = `Tema: ${theme}`;\n  }\n\n  btn.addEventListener('click', () => {\n    const next = value() === 'dark' ? 'light' : 'dark';\n    onChange?.(next);\n  });\n\n  root.appendChild(btn);\n  render(value());\n\n  return {\n    root,\n    refresh() { render(value()); },\n  };\n}",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "createToolbar"
+          },
+          {
+            "kind": "plain",
+            "text": "({ title, onBack }) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " root "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "createElement"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'header'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " h1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "createElement"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'h1'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btn "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "createElement"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'button'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  h1.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " title;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  btn.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Voltar'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  btn."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " onBack"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  root."
+          },
+          {
+            "kind": "function",
+            "text": "append"
+          },
+          {
+            "kind": "plain",
+            "text": "(h1, btn);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { root };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "createThemeToggle"
+          },
+          {
+            "kind": "plain",
+            "text": "({ value, onChange }) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " root "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "createElement"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'div'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btn "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "createElement"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'button'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "(theme) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    btn.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "`Tema: ${theme}`"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  btn."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " next "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "value"
+          },
+          {
+            "kind": "plain",
+            "text": "() "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'dark'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'light'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'dark'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    onChange"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".(next);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  root."
+          },
+          {
+            "kind": "function",
+            "text": "appendChild"
+          },
+          {
+            "kind": "plain",
+            "text": "(btn);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "value"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    root,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "refresh"
+          },
+          {
+            "kind": "plain",
+            "text": "() { "
+          },
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "value"
+          },
+          {
+            "kind": "plain",
+            "text": "()); },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4) Tela de settings: conhece só callbacks, não o app inteiro"
+    },
+    {
+      "type": "paragraph",
+      "text": "A tela recebe funções do app shell: getTheme, setTheme e go. Ela não acessa localStorage diretamente, nem conhece outras telas. Isso reduz acoplamento e permite reaproveitar a tela em outro contexto."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function createSettingsScreen({ getTheme, setTheme, go }) {\n  const root = document.createElement('main');\n  const toolbar = createToolbar({ title: 'Settings', onBack: () => go('/itens') });\n  const toggle = createThemeToggle({\n    value: getTheme,\n    onChange: (theme) => {\n      setTheme(theme);   // action do app shell\n      toggle.refresh();  // atualiza o componente local\n    },\n  });\n\n  root.append(toolbar.root, toggle.root);\n  return { root };\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "createSettingsScreen"
+          },
+          {
+            "kind": "plain",
+            "text": "({ getTheme, setTheme, go }) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " root "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "createElement"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'main'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " toolbar "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "createToolbar"
+          },
+          {
+            "kind": "plain",
+            "text": "({ title"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Settings'"
+          },
+          {
+            "kind": "plain",
+            "text": ", onBack"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "go"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'/itens'"
+          },
+          {
+            "kind": "plain",
+            "text": ") });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " toggle "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "createThemeToggle"
+          },
+          {
+            "kind": "plain",
+            "text": "({"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    value"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " getTheme,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    onChange"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " (theme) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "function",
+            "text": "setTheme"
+          },
+          {
+            "kind": "plain",
+            "text": "(theme);   "
+          },
+          {
+            "kind": "comment",
+            "text": "// action do app shell"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      toggle."
+          },
+          {
+            "kind": "function",
+            "text": "refresh"
+          },
+          {
+            "kind": "plain",
+            "text": "();  "
+          },
+          {
+            "kind": "comment",
+            "text": "// atualiza o componente local"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  root."
+          },
+          {
+            "kind": "function",
+            "text": "append"
+          },
+          {
+            "kind": "plain",
+            "text": "(toolbar.root, toggle.root);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " { root };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5) App shell: injeta dependências nas telas"
+    },
+    {
+      "type": "paragraph",
+      "text": "O app shell concentra o que é global: rota, UI persistida e actions centrais. Ao montar uma tela, ele injeta apenas o necessário. Isso é injeção de dependência em pequena escala, mas já traz clareza arquitetural."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const appState = {\n  ui: loadUi(),\n  route: matchRoute(getPath()),\n};\n\nfunction setTheme(theme) {\n  appState.ui = { ...appState.ui, theme };\n  saveUi(appState.ui);\n  document.body.dataset.theme = theme;\n}\n\nfunction go(path) {\n  window.location.hash = '#' + path;\n}\n\nfunction mountScreen() {\n  const root = document.querySelector('#app');\n  root.innerHTML = '';\n\n  let screen;\n  switch (appState.route.name) {\n    case 'settings':\n      screen = createSettingsScreen({\n        getTheme: () => appState.ui.theme,\n        setTheme,\n        go,\n      });\n      break;\n    default:\n      screen = { root: document.createTextNode('outra tela') };\n  }\n\n  root.appendChild(screen.root);\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " appState "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ui"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "loadUi"
+          },
+          {
+            "kind": "plain",
+            "text": "(),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  route"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "matchRoute"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "getPath"
+          },
+          {
+            "kind": "plain",
+            "text": "()),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setTheme"
+          },
+          {
+            "kind": "plain",
+            "text": "(theme) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  appState.ui "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { ...appState.ui, theme };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "saveUi"
+          },
+          {
+            "kind": "plain",
+            "text": "(appState.ui);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  document.body.dataset.theme "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " theme;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "go"
+          },
+          {
+            "kind": "plain",
+            "text": "(path) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  window.location.hash "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'#'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " path;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "mountScreen"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " root "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#app'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  root.innerHTML "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " screen;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "switch"
+          },
+          {
+            "kind": "plain",
+            "text": " (appState.route.name) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'settings'"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      screen "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "createSettingsScreen"
+          },
+          {
+            "kind": "plain",
+            "text": "({"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        getTheme"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " appState.ui.theme,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        setTheme,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "        go,"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "default"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      screen "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { root"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "createTextNode"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'outra tela'"
+          },
+          {
+            "kind": "plain",
+            "text": ") };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  root."
+          },
+          {
+            "kind": "function",
+            "text": "appendChild"
+          },
+          {
+            "kind": "plain",
+            "text": "(screen.root);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6) Estado por rota: o que preservar ao navegar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nem tudo precisa ser global. Filtros de uma lista podem pertencer à rota '/itens', enquanto preferências de tema pertencem ao app todo. Separar essas camadas evita que o estado global vire um saco de tudo."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Global: tema, idioma, usuário logado (quando aplicável), preferências persistidas.",
+        "Por rota: filtro q da lista, item selecionado, paginação local, aba atual da tela.",
+        "Efêmero: spinner, hover, foco temporário — normalmente não persistir."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7) Salvando estado por rota com intenção"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const routeState = {\n  itens: { q: '', selectedId: null },\n  settings: {},\n};\n\nfunction setItensFilter(q) {\n  routeState.itens = { ...routeState.itens, q: String(q ?? '') };\n  scheduleSaveUi();\n  render();\n}\n\nfunction scheduleSaveUi() {\n  clearTimeout(scheduleSaveUi.id);\n  scheduleSaveUi.id = setTimeout(() => {\n    saveUi({ ...appState.ui, itensQ: routeState.itens.q });\n  }, 250);\n}\n",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " routeState "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  itens"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " { q"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ", selectedId"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  settings"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " {},"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setItensFilter"
+          },
+          {
+            "kind": "plain",
+            "text": "(q) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  routeState.itens "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { ...routeState.itens, q"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "String"
+          },
+          {
+            "kind": "plain",
+            "text": "(q "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "''"
+          },
+          {
+            "kind": "plain",
+            "text": ") };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "scheduleSaveUi"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "render"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "scheduleSaveUi"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "clearTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(scheduleSaveUi.id);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  scheduleSaveUi.id "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "saveUi"
+          },
+          {
+            "kind": "plain",
+            "text": "({ ...appState.ui, itensQ"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " routeState.itens.q });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }, "
+          },
+          {
+            "kind": "number",
+            "text": "250"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8) Checklist profissional (Parte 6)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei compor telas a partir de componentes menores com responsabilidade clara.",
+        "Eu injeto dependências (go, getTheme, setTheme) em vez de acoplar componentes ao app inteiro.",
+        "Eu separo estado global, estado por rota e estado efêmero.",
+        "Eu persisto apenas o que faz sentido para UX entre rotas.",
+        "Eu monto telas pelo router sem deixar uma tela manipular o DOM da outra."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 7, você vai revisar padrões de refatoração e organização para apps vanilla maiores: módulos, naming, contratos entre componentes e pontos de teste. Na Parte 8, você fecha o Capítulo 14 com resumo e checklist final."
+    }
+  ]
+}

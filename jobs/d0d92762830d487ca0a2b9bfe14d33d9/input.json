@@ -1,0 +1,901 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 13 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 13,
+    "chapter_title": "DOM e UI: formulários, estado e arquitetura de interação",
+    "part_number": 1,
+    "part_title": "DOM como árvore: seleção, criação, atributos e o modelo mental correto",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 13 — DOM e UI: formulários, estado e arquitetura de interação"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — DOM como árvore: seleção, criação, atributos e o modelo mental correto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que você domina funções, objetos/arrays, strings, assíncrono e fetch, você está pronto para a cola final do front-end: o DOM. DOM é a representação em memória do HTML da página. O iniciante “faz funcionar” manipulando elementos no improviso. O júnior entende DOM como árvore, trabalha com seleção e criação com disciplina, separa estado de UI de elementos e evita bugs clássicos (seletores frágeis, innerHTML inseguro, re-render desnecessário). Nesta parte, você vai construir o modelo mental correto e aprender operações básicas: selecionar, criar, inserir e ajustar atributos/classes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Meu código quebra quando mudo o HTML”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse bug acontece quando seu JavaScript depende de seletores frágeis ou de estrutura específica do HTML. O padrão profissional é: marcar pontos de interação com ids/data-attributes e escrever seletores que expressam intenção. Além disso, você deve validar que o elemento existe e falhar de forma controlada, especialmente em páginas com múltiplas telas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. DOM como árvore (modelo mental)"
+    },
+    {
+      "type": "paragraph",
+      "text": "O navegador parseia o HTML e constrói uma árvore de nós. Cada elemento é um nó com filhos. Quando você modifica essa árvore, o navegador precisa recalcular layout e renderizar. Por isso: manipular DOM custa. A disciplina é minimizar alterações e manter clareza."
+    },
+    {
+      "type": "list",
+      "items": [
+        "document é a raiz do DOM.",
+        "Elementos são nós (div, input, button).",
+        "Nó pai tem filhos; ordem importa.",
+        "Alterar DOM pode causar reflow/repaint (custo)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Seleção: querySelector e querySelectorAll"
+    },
+    {
+      "type": "paragraph",
+      "text": "querySelector retorna o primeiro elemento que casa com o seletor CSS. querySelectorAll retorna uma NodeList (iterável). Prefira ids para elementos únicos e data-* para listas e componentes."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nconst titulo = document.querySelector('#titulo');\nconst itens = document.querySelectorAll('.item');\n\nconsole.log(titulo);\nfor (const el of itens) {\n  console.log(el.textContent);\n}",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " titulo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#titulo'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " itens "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelectorAll"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'.item'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(titulo);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " el of itens) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(el.textContent);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. assertEl: falhar cedo e com mensagem"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em UI real, seletores errados viram null e geram TypeError ao acessar propriedades. Um padrão simples é ter um helper assertEl que loga erro claramente."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function assertEl(sel) {\n  const el = document.querySelector(sel);\n  if (!el) throw new Error(`Elemento não encontrado: ${sel}`);\n  return el;\n}\n\n// const btn = assertEl('#btn');",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "assertEl"
+          },
+          {
+            "kind": "plain",
+            "text": "(sel) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " el "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "(sel);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "el) "
+          },
+          {
+            "kind": "keyword",
+            "text": "throw"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "`Elemento não encontrado: ${sel}`"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " el;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// const btn = assertEl('#btn');"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Criar e inserir elementos: createElement + appendChild"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para criar elementos com segurança, prefira createElement e textContent. Isso evita XSS acidental e mantém controle sobre a árvore."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const ul = document.querySelector('#lista');\n\nconst li = document.createElement('li');\nli.textContent = 'Novo item';\n\nul.appendChild(li);",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " ul "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#lista'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " li "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "createElement"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'li'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "li.textContent "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Novo item'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "ul."
+          },
+          {
+            "kind": "function",
+            "text": "appendChild"
+          },
+          {
+            "kind": "plain",
+            "text": "(li);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Atributos, propriedades e classes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Há diferença entre atributo HTML e propriedade DOM. No dia a dia, você usa: setAttribute/getAttribute para atributos e .value/.checked/.disabled para propriedades de inputs. Para classes, use classList."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const input = document.querySelector('#q');\ninput.value = 'texto';\ninput.disabled = false;\n\nconst box = document.querySelector('#box');\nbox.setAttribute('data-id', '123');\nconsole.log(box.getAttribute('data-id'));\n\nbox.classList.add('ativo');\nbox.classList.remove('ativo');\nbox.classList.toggle('ativo');",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " input "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#q'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "input.value "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'texto'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "input.disabled "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " box "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'#box'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "box."
+          },
+          {
+            "kind": "function",
+            "text": "setAttribute"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'data-id'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'123'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(box."
+          },
+          {
+            "kind": "function",
+            "text": "getAttribute"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'data-id'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "box.classList."
+          },
+          {
+            "kind": "function",
+            "text": "add"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ativo'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "box.classList."
+          },
+          {
+            "kind": "function",
+            "text": "remove"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ativo'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "box.classList."
+          },
+          {
+            "kind": "function",
+            "text": "toggle"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ativo'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. innerHTML: quando evitar"
+    },
+    {
+      "type": "paragraph",
+      "text": "innerHTML é rápido para protótipos, mas perigoso quando você inclui conteúdo vindo do usuário/API: pode abrir brechas de XSS. Para júnior, a regra é: use textContent e createElement; use innerHTML apenas quando o conteúdo é totalmente controlado e confiável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Checklist profissional (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu entendo DOM como árvore e sei que manipular DOM tem custo.",
+        "Eu uso querySelector/querySelectorAll e prefiro ids/data-attributes para seletores estáveis.",
+        "Eu evito TypeError validando elementos (assertEl).",
+        "Eu crio elementos com createElement + textContent (segurança).",
+        "Eu sei a diferença prática entre atributos e propriedades (value/checked/disabled).",
+        "Eu uso classList para manipular classes.",
+        "Eu evito innerHTML com dados não confiáveis."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 2, você vai entrar em eventos no DOM: addEventListener, event object, delegation e padrões para não criar listeners demais."
+    }
+  ]
+}

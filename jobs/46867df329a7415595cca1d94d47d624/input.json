@@ -1,0 +1,1277 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 8 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "8",
+    "chapter_title": "Estruturas de repetição e controle de fluxo",
+    "part_number": "8",
+    "part_title": "Estudo de caso: percorrendo dados de forma segura",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 8 — Estruturas de repetição e controle de fluxo"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Estudo de caso: percorrendo dados de forma segura"
+    },
+    {
+      "type": "paragraph",
+      "text": "Encerrar este capítulo apenas com explicações sobre while, do...while, for, break, continue, loops aninhados e erros clássicos de controle seria insuficiente. O leitor já conhece a mecânica das estruturas de repetição, mas agora precisa observá-las atuando em um problema mais integrado, em que percorrer dados de forma segura seja a preocupação central. Esta parte final tem exatamente esse objetivo: mostrar como a repetição deixa de ser exercício isolado de contagem e passa a funcionar como ferramenta concreta para visitar, validar, processar e interpretar uma sequência de informações sem perder controle do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "O conceito de percorrer dados de forma segura precisa ser entendido com precisão. Segurança, aqui, não significa apenas ausência de falha técnica extrema, como uma repetição infinita. Significa também percorrer no intervalo correto, usar o laço adequado, manter clareza sobre o estado do processo, tratar interrupções com critério, evitar pular elementos indevidamente e garantir que o resultado final represente com fidelidade o conjunto de dados observado. Em outras palavras, segurança em repetição é combinação entre controle, legibilidade e correção semântica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste estudo de caso, imaginaremos um pequeno sistema que precisa analisar uma lista simples de notas de estudantes. O objetivo do programa será percorrer essas notas, exibi-las, contar quantas são válidas e identificar se existe alguma nota máxima, isto é, igual a 10. Esse cenário é excelente pedagogicamente porque permite integrar vários elementos do capítulo. Há percurso linear por dados, controle por índice, critério de parada, validação local, uso consciente de continue para ignorar entradas inadequadas e uso criterioso de break quando um objetivo específico for alcançado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 1 — Compreender o que significa percorrer a lista"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de escrever qualquer laço, o estudante precisa ler o problema em linguagem algorítmica. Percorrer uma lista significa visitar seus elementos um a um de forma ordenada. O algoritmo precisa saber por onde começa, quando deve parar e o que fará em cada visita. No caso das notas, o processo começará na primeira posição da sequência e continuará até que todos os elementos tenham sido examinados. Esse é um caso típico de percurso por índice, o que já sugere que o for tradicional poderá comunicar bem a estrutura do processo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse momento inicial é muito importante porque evita o uso automático de laços por hábito. O programador não começa pela sintaxe. Começa pela forma do percurso. Existe uma sequência finita de elementos. Eles precisam ser visitados um a um. Há uma ação comum a ser repetida para cada item. Essa leitura do problema é o que justifica a escolha do laço e a organização do fluxo seguinte."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 2 — Montar o percurso básico com for"
+    },
+    {
+      "type": "paragraph",
+      "text": "Como o processo é um percurso sequencial por posições bem definidas, o for tradicional tende a ser uma escolha bastante adequada. A variável de controle representará a posição atual examinada, e a condição de continuidade cuidará para que o laço pare exatamente no fim da lista."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const notas = [8, 5, 10, 7, 6];\n\nfor (let indice = 0; indice < notas.length; indice = indice + 1) {\n  console.log('Nota atual:', notas[indice]);\n}",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " notas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "8"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "7"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "6"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " indice "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; indice "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " notas.length; indice "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " indice "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Nota atual:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", notas[indice]);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse primeiro trecho já representa um percurso seguro em sentido básico. O laço começa na posição 0, continua enquanto o índice for menor que o tamanho da lista e avança de uma unidade por vez. A condição está calibrada para visitar cada elemento exatamente uma vez, sem ultrapassar o limite. O estudante deve perceber que a segurança do percurso começa aqui: na coerência entre ponto de partida, critério de parada e atualização do índice."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 3 — Acrescentar validação local com continue"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora imaginemos que a lista possa conter valores inválidos, como null ou undefined, e que o sistema deva ignorar esses casos sem encerrar todo o processo. Esse é um excelente cenário para uso de continue. O laço deve manter o percurso global, mas precisa descartar localmente as entradas inadequadas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const notas = [8, null, 10, undefined, 6];\nlet quantidadeValidas = 0;\n\nfor (let indice = 0; indice < notas.length; indice = indice + 1) {\n  const notaAtual = notas[indice];\n\n  if (notaAtual === null || notaAtual === undefined) {\n    continue;\n  }\n\n  console.log('Nota válida:', notaAtual);\n  quantidadeValidas = quantidadeValidas + 1;\n}\n\nconsole.log('Quantidade de notas válidas:', quantidadeValidas);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " notas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "8"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", undefined, "
+          },
+          {
+            "kind": "number",
+            "text": "6"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " quantidadeValidas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " indice "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; indice "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " notas.length; indice "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " indice "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " notaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " notas[indice];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (notaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "null"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " notaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " undefined) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "continue"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Nota válida:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", notaAtual);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  quantidadeValidas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " quantidadeValidas "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Quantidade de notas válidas:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", quantidadeValidas);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse trecho mostra uma repetição mais madura. O laço continua percorrendo toda a lista, mas entradas inválidas são ignoradas por meio de continue. O restante da iteração só acontece para notas aproveitáveis. O estudante deve notar que continue não interrompe o processo inteiro. Ele apenas descarta a iteração atual e permite que o percurso siga adiante. Isso é controle fino do fluxo aplicado com coerência semântica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 4 — Interromper o percurso quando um objetivo específico for atingido"
+    },
+    {
+      "type": "paragraph",
+      "text": "Suponha agora que o sistema precise verificar se existe alguma nota máxima igual a 10 e, ao encontrá-la, possa parar o percurso porque o objetivo já foi atingido. Nesse caso, continuar analisando o restante da lista não é mais necessário para essa finalidade específica. Surge, então, um cenário adequado para uso de break."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const notas = [8, 5, 10, 7, 6];\nlet encontrouNotaMaxima = false;\n\nfor (let indice = 0; indice < notas.length; indice = indice + 1) {\n  const notaAtual = notas[indice];\n\n  if (notaAtual === 10) {\n    encontrouNotaMaxima = true;\n    break;\n  }\n}\n\nconsole.log('Encontrou nota máxima:', encontrouNotaMaxima);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " notas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "8"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "7"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "6"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " encontrouNotaMaxima "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " indice "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; indice "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " notas.length; indice "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " indice "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " notaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " notas[indice];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (notaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    encontrouNotaMaxima "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Encontrou nota máxima:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", encontrouNotaMaxima);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Aqui, break representa com precisão a lógica do problema. O laço não precisa percorrer além do ponto em que a nota máxima já foi encontrada. O fluxo de repetição é interrompido de forma antecipada, mas justificada. O estudante deve perceber que essa interrupção não é improvisada. Ela responde a um critério local claro: a busca terminou com sucesso."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 5 — Separar objetivos diferentes em percursos claros"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro comum do iniciante seria tentar fazer contagem de válidas, busca por nota máxima, exibição de valores e talvez outras regras adicionais dentro de um mesmo laço excessivamente denso sem organização semântica. Embora isso possa ser possível em certos casos, o fluxo rapidamente se torna mais difícil de revisar. Em muitos cenários iniciais, separar objetivos ou nomear bem os estados intermediários aumenta a segurança da leitura. O ponto aqui não é proibir laços mais ricos, mas mostrar que percorrer dados com segurança também envolve legibilidade do propósito do percurso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é extremamente importante. Segurança em repetição não é só evitar travamento. É também evitar que o laço se torne um bloco opaco em que várias responsabilidades se misturam sem clareza. Quando o estudante entende isso, começa a tratar o laço como estrutura de processo com propósito definido, e não apenas como recipiente geral de qualquer lógica que caiba ali dentro."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 6 — Pensar nos limites e nos cenários de borda"
+    },
+    {
+      "type": "paragraph",
+      "text": "Percorrer dados de forma segura também exige considerar cenários de borda. O que acontece se a lista estiver vazia. E se todos os valores forem inválidos. E se a nota máxima estiver logo no primeiro elemento. E se não existir nenhuma nota máxima. Essas perguntas são muito importantes porque ajudam a testar a robustez do laço. Um percurso bem modelado não depende apenas de um caso feliz. Ele precisa continuar semanticamente correto em situações limítrofes. Esse hábito de revisar cenários de borda é uma das marcas mais importantes do bom uso de estruturas de repetição."
+    },
+    {
+      "type": "paragraph",
+      "text": "No caso do percurso por índice apresentado, uma lista vazia simplesmente fará a condição inicial falhar de imediato, e o corpo do laço não será executado. Esse comportamento é coerente. Já no caso da busca pela nota 10, o valor da variável encontrouNotaMaxima permanecerá false se nenhum elemento satisfizer a regra. Também é um resultado coerente. Observar essas bordas fortalece a confiança no desenho do algoritmo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 7 — Comparar um percurso seguro com um percurso frágil"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vale a pena imaginar uma versão mais frágil do mesmo problema. Um iniciante poderia escrever um while com índice, mas esquecer de atualizá-lo em um ramo que usa continue. Ou poderia usar uma condição como indice <= notas.length, ultrapassando o limite válido da lista. Ou ainda misturar busca, contagem e tratamento de inválidos sem nomes claros, tornando difícil perceber se o laço continua correto em todos os cenários. Comparado a isso, o percurso seguro depende de três virtudes principais: limite bem calibrado, avanço garantido e objetivos semanticamente legíveis."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse contraste é essencial porque mostra que segurança em laços não nasce da escolha arbitrária de uma palavra-chave, mas da combinação entre estrutura adequada, controle coerente e leitura cuidadosa do problema. Um laço simples pode ser seguro e um laço aparentemente sofisticado pode ser frágil. O critério real é a qualidade do controle iterativo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Síntese integrada do estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observando o caso completo, o leitor deve perceber que percorrer dados de forma segura exige vários elementos atuando em conjunto. É preciso escolher um laço compatível com a estrutura do percurso. Ajustar corretamente ponto de partida, condição e atualização. Tratar casos locais com continue quando o processo global deve prosseguir. Encerrar com break quando um objetivo de busca já tiver sido alcançado. Nomear estados intermediários quando isso melhorar a leitura. E revisar cenários de borda para garantir que a repetição permaneça correta em situações menos óbvias. O estudo de caso mostra que repetição segura não é apenas questão de fazer o laço rodar, mas de fazer o laço representar corretamente o processo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o verdadeiro fechamento do capítulo. O estudante deixa de ver estruturas de repetição como meras ferramentas para mostrar números na tela e passa a enxergá-las como mecanismos de percurso e processamento confiável de dados. Essa mudança de visão é profunda. Ela aproxima a repetição da prática real de software, em que o algoritmo precisa visitar elementos, tomar pequenas decisões ao longo do caminho e encerrar o processo com clareza. Quando essa base está bem formada, o programador fica muito mais preparado para estruturas de dados e percursos mais avançados nos capítulos seguintes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos iniciantes conseguem montar um laço que percorre alguns dados, mas ainda não sabem fazê-lo de forma clara, segura e semanticamente controlada. Como resultado, o percurso pode ficar frágil, difícil de revisar ou suscetível a erros de limite, interrupção e validação local. O problema real é repetir sobre dados sem transformar esse percurso em um processo legível e confiável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Percorrer dados de forma segura envolve alinhar a estrutura do laço ao tipo de percurso desejado, calibrar corretamente condição e atualização, tratar elementos inválidos sem corromper o processo global, interromper o laço apenas quando um critério local justificar isso e revisar cenários de borda para garantir correção fora do caso ideal. Repetição segura é, portanto, uma combinação de controle técnico e legibilidade algorítmica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Modelo mental correto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao percorrer uma sequência, o programador deve perguntar de onde o percurso começa, como avança, o que deve acontecer em cada elemento, que casos devem ser ignorados ou interrompidos e em que momento o processo está corretamente encerrado. Um laço bem modelado não apenas visita dados; ele traduz uma política clara de processamento sobre esses dados."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Percurso ordenado: visita controlada a cada elemento da sequência.",
+        "Validação local: checagem de um item específico sem comprometer o percurso global.",
+        "Interrupção antecipada: encerramento do laço quando um objetivo já foi alcançado.",
+        "Cenário de borda: situação limítrofe que testa a robustez do percurso.",
+        "Estado intermediário: informação acumulada durante a iteração.",
+        "Segurança iterativa: combinação entre limite correto, avanço garantido e leitura clara do processo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso final da parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine dois estudantes percorrendo uma lista de notas. O primeiro usa um laço apressado, mistura validação, contagem e busca sem nomes claros e não pensa nos cenários de borda. O segundo escolhe a estrutura de repetição mais adequada, controla bem o índice, usa continue apenas para descartar itens inválidos, usa break apenas quando a busca realmente pode terminar e mantém estados intermediários semanticamente legíveis. Ambos talvez consigam fazer o laço funcionar em um caso pequeno, mas o segundo código será muito mais fácil de revisar, expandir e confiar. Esse contraste mostra que percorrer dados de forma segura é uma habilidade de modelagem, não apenas de sintaxe."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Percorrer com limite mal calibrado e visitar elementos a menos ou a mais.",
+        "Usar continue sem atenção ao avanço do laço em estruturas que exigem atualização explícita.",
+        "Interromper cedo demais ou tarde demais com break.",
+        "Misturar muitos objetivos no mesmo laço sem clareza semântica.",
+        "Ignorar cenários de borda como lista vazia ou ausência total do valor procurado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escolher o laço pela forma do percurso e não por hábito sintático.",
+        "Calibrar com atenção o ponto de partida, a condição e a atualização.",
+        "Usar continue para descarte local e break para encerramento local justificado.",
+        "Nomear estados intermediários quando isso melhorar a leitura do processo.",
+        "Revisar cenários de borda para confirmar a robustez do percurso.",
+        "Separar responsabilidades do laço quando a lógica começar a ficar excessivamente densa."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo percorrer dados de forma mais segura em JavaScript.",
+        "Sei alinhar estrutura de repetição, limite, atualização e propósito do percurso.",
+        "Reconheço o papel de continue e break como refinamentos locais do processo.",
+        "Percebo a importância de revisar cenários de borda em laços sobre dados.",
+        "Entendo que repetição segura depende tanto de controle quanto de legibilidade da lógica."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com o próximo capítulo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com isso, o Capítulo 8 está completo. O leitor agora possui uma base sólida sobre estruturas de repetição, while, do...while, for, break, continue, loops aninhados, escolha de laços e segurança no percurso de dados em JavaScript. No Capítulo 9, o foco avançará para funções — isto é, para o momento em que a lógica do programa passa a ser encapsulada, reutilizada e organizada em unidades nomeadas de comportamento. O sumário aprovado segue integralmente coberto até este ponto."
+    }
+  ]
+}

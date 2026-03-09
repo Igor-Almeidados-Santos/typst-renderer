@@ -1,0 +1,638 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 6 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "6",
+    "chapter_title": "Estruturas de repetição e controle iterativo do fluxo",
+    "part_number": "2",
+    "part_title": "while em profundidade",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 6 — Estruturas de repetição e controle iterativo do fluxo"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — while em profundidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de estabelecer o modelo mental geral das estruturas de repetição, o leitor está pronto para estudar a primeira grande forma iterativa do capítulo: o while. Essa estrutura é particularmente importante porque torna explícita, de maneira muito clara, a relação entre condição, continuidade e atualização de estado. Em certo sentido, o while é uma das maneiras mais diretas de enxergar a repetição em JavaScript: enquanto determinada condição continuar sendo satisfeita, o bloco correspondente será executado novamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa simplicidade aparente faz do while uma excelente porta de entrada para o raciocínio iterativo. Ao mesmo tempo, ela exige responsabilidade lógica. Justamente por depender tão diretamente de uma condição de continuidade, o while evidencia com força um dos riscos centrais dos laços: o laço infinito causado por ausência de atualização adequada ou por critério mal desenhado. Estudá-lo bem é, portanto, aprender não apenas a repetir, mas a repetir com controle."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é apresentar o while em profundidade editorial e técnica. O leitor compreenderá sua sintaxe, seu comportamento, sua relação com estado e condição, os erros mais comuns associados a ele e as boas práticas para mantê-lo legível e seguro. Ao final, o while deixará de parecer apenas “um loop que roda enquanto for verdade” e passará a ser entendido como uma forma estruturada de modelar continuidade iterativa no fluxo do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: há processos que dependem de continuar enquanto uma condição permanecer válida"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nem toda repetição é naturalmente descrita como contagem fixa. Em muitos casos, o programa precisa continuar fazendo algo enquanto determinada situação permanecer verdadeira. Pode ser continuar lendo uma fila enquanto ainda há elementos, continuar tentando uma operação enquanto uma condição de bloqueio não foi removida, continuar processando dados enquanto um índice ainda não atingiu o limite ou continuar iterando enquanto um critério lógico for satisfeito. Nessas situações, a ideia de continuidade depende diretamente de um teste condicional."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que o while resolve muito bem. Ele permite que a repetição seja governada por uma condição verificada antes de cada iteração. Em vez de dizer “repita exatamente N vezes”, a estrutura diz, em essência, “repita enquanto ainda fizer sentido continuar”. Essa diferença é muito importante porque aproxima a linguagem de vários cenários reais de processo iterativo."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a perceber, portanto, que o while não é apenas uma forma de laço. Ele é uma forma muito específica de alinhar repetição ao estado atual da condição observada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é while em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, while é uma estrutura de repetição que executa um bloco de código repetidamente enquanto uma condição for logicamente satisfeita. A condição é verificada antes de cada nova iteração. Se ela for verdadeira naquele momento, o bloco executa. Se não for, o laço é encerrado e o fluxo segue adiante."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let contador = 1;\n\nwhile (contador <= 3) {\n  console.log(contador);\n  contador = contador + 1;\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "while"
+          },
+          {
+            "kind": "plain",
+            "text": " (contador "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(contador);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo já mostra os elementos essenciais do while. Há um estado inicial, representado por contador. Há uma condição de continuidade, contador <= 3. Há um bloco de execução. E há uma atualização de estado, contador = contador + 1, sem a qual a repetição não avançaria em direção ao encerramento. Essa combinação é a espinha dorsal da estrutura."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve se acostumar desde já a enxergar o while não apenas como palavra-chave, mas como articulação entre estado, teste e progresso."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. A condição vem antes: repetição pré-testada"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das características mais importantes do while é que a condição é verificada antes da execução de cada iteração. Isso significa que o bloco pode, inclusive, não ser executado nenhuma vez se a condição já começar como falsa. Esse detalhe é decisivo para o modelo mental correto da estrutura. O while não garante “ao menos uma execução”. Ele garante apenas que a execução ocorrerá enquanto o teste inicial e os testes subsequentes continuarem permitindo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa propriedade faz do while uma estrutura pré-testada. O laço pergunta primeiro se deve continuar. Só depois executa o bloco. Isso é particularmente útil quando o programa não pode assumir que haverá sequer uma repetição válida sem antes verificar o estado do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve guardar com clareza essa diferença, porque ela será importante quando o capítulo avançar para do...while, estrutura em que a lógica de teste se organiza de outro modo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Estado inicial, condição e atualização: a tríade do while"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para compreender bem um while, é muito útil observar sempre três elementos fundamentais: o estado inicial, a condição de continuidade e a atualização do estado entre as iterações. O estado inicial define o ponto de partida. A condição determina se a próxima repetição ainda faz sentido. A atualização move o processo para frente, alterando o estado para que a próxima verificação possa ser diferente da anterior."
+    },
+    {
+      "type": "paragraph",
+      "text": "Se um desses três elementos estiver mal concebido, o laço tende a ficar errado ou perigoso. Sem estado inicial adequado, a repetição pode começar em um ponto inadequado. Sem condição clara, o fluxo perde critério. Sem atualização, a repetição corre o risco de nunca terminar. Essa tríade é tão importante que deve se tornar hábito de leitura para qualquer laço estudado daqui em diante."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em outras palavras, o while é simples na superfície, mas rigoroso em sua arquitetura lógica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. O risco clássico: laço infinito"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nenhuma explicação séria sobre while pode deixar de enfatizar o risco do laço infinito. Esse problema aparece quando a condição de continuidade nunca deixa de ser satisfeita ou quando o estado que deveria caminhar em direção ao encerramento não é atualizado de modo correto. O resultado é um fluxo que continua repetindo indefinidamente, bloqueando o avanço normal do programa."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let contador = 1;\n\nwhile (contador <= 3) {\n  console.log(contador);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "while"
+          },
+          {
+            "kind": "plain",
+            "text": " (contador "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(contador);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, a condição depende de contador, mas o valor de contador nunca muda. Como ele começa em 1 e permanece em 1, a condição continua verdadeira indefinidamente. O laço não tem progresso. Esse tipo de erro é extremamente comum em iniciantes e, por isso, deve ser tratado desde cedo como alerta conceitual central."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição é simples: se o programador não consegue explicar por que o while vai parar, provavelmente ainda não desenhou bem o laço."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. While como forma de percorrer um processo progressivo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos cenários, o while é excelente para modelar processos progressivos em que o estado vai sendo ajustado a cada passo até que um limite lógico seja atingido. Pode ser um contador, um índice, um saldo parcial, um cursor de leitura, uma tentativa repetida ou qualquer outro valor cuja evolução governe a continuidade do laço."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é importante porque ajuda a afastar a ideia de que while é apenas um mecanismo abstrato de repetição. Na prática, ele é muito útil quando o programador quer descrever um processo que depende de evolução gradual do estado. Cada iteração é um passo, e cada passo altera algo que influencia a próxima verificação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa forma de raciocinar faz do while uma ferramenta muito intuitiva para muitos problemas iterativos simples e intermediários."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. While e legibilidade do critério"
+    },
+    {
+      "type": "paragraph",
+      "text": "Como em estruturas condicionais, a qualidade do while depende fortemente da clareza do critério que governa sua continuidade. Um laço pode estar formalmente correto, mas ser difícil de ler se a condição for obscura, se o estado for mal nomeado ou se a atualização estiver escondida em um lugar pouco visível. Isso torna o processo iterativo difícil de revisar e aumenta o risco de erro futuro."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, boas práticas de nomeação e organização do estado continuam extremamente relevantes aqui. Um while com um identificador como indiceAtual, limiteTotal ou tentativasRestantes comunica muito melhor seu propósito do que um laço guiado por nomes genéricos como x, valor ou dado. A legibilidade do laço nasce da legibilidade do estado que ele movimenta."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve internalizar esse princípio cedo: um laço bom não apenas funciona; ele também deixa relativamente claro por que continua e por que termina."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: contar de 1 até 5"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um programa que precisa exibir os números de 1 a 5. Com while, essa lógica pode ser escrita como um processo controlado por um contador que começa em 1, continua enquanto for menor ou igual a 5 e é incrementado a cada iteração. Esse é um caso clássico, mas continua sendo extremamente valioso porque ilustra com muita nitidez a tríade do laço: estado inicial, condição e atualização."
+    },
+    {
+      "type": "paragraph",
+      "text": "O valor desse estudo de caso não está em sua simplicidade numérica, mas na transparência da arquitetura. O leitor consegue ver o ponto de partida, o critério de continuidade e o movimento que leva ao encerramento. Essa clareza é exatamente o que um bom laço deve oferecer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao dominar esse modelo simples, o estudante se prepara para estruturas mais sofisticadas sem perder o fundamento lógico da repetição."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Quando while costuma ser uma escolha adequada"
+    },
+    {
+      "type": "paragraph",
+      "text": "While costuma ser especialmente adequado quando o programador quer enfatizar que a repetição depende de uma condição que pode ou não continuar válida a cada nova iteração, sem necessariamente destacar com a mesma força uma estrutura fixa de contagem na própria assinatura do laço. Ele funciona muito bem em situações em que o processo parece naturalmente descrito como “enquanto isso for verdade, continue”."
+    },
+    {
+      "type": "paragraph",
+      "text": "Isso não significa que while seja sempre a melhor escolha para qualquer repetição. Em certos cenários de contagem muito explícita, o for poderá comunicar melhor a estrutura. Mas o while continua sendo uma peça central do repertório porque aproxima a escrita do raciocínio de continuidade condicional."
+    },
+    {
+      "type": "paragraph",
+      "text": "A maturidade do leitor começa justamente quando ele deixa de perguntar apenas “qual laço funciona?” e passa a perguntar “qual laço representa melhor a lógica deste processo?”."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Erros comuns desta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escrever while sem atualização adequada do estado.",
+        "Confiar em uma condição de continuidade sem revisar claramente por que ela deixará de ser verdadeira.",
+        "Ler o while como se ele sempre executasse pelo menos uma vez.",
+        "Usar nomes opacos para o estado que controla o laço.",
+        "Tratar a repetição como bloco misterioso, sem identificar estado inicial, condição e progresso.",
+        "Ignorar o risco de laço infinito ao projetar o fluxo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ao ler qualquer while, identifique imediatamente estado inicial, condição e atualização.",
+        "Pergunte sempre como o laço termina antes mesmo de pensar no que ele executa.",
+        "Use nomes claros para o estado que governa a continuidade do processo.",
+        "Teste exemplos pequenos no console para observar concretamente a evolução do estado entre iterações.",
+        "Evite esconder a atualização em pontos pouco visíveis do bloco quando estiver aprendendo.",
+        "Trate o while como estrutura de processo iterativo governado por condição, e não como simples repetidor automático."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é a estrutura while em nível introdutório e estrutural.",
+        "Reconheço que o while verifica a condição antes de cada iteração.",
+        "Consigo identificar a tríade estado inicial, condição e atualização em um laço simples.",
+        "Percebo por que a ausência de atualização pode produzir laço infinito.",
+        "Entendo quando o while tende a representar bem um processo governado por continuidade condicional.",
+        "Estou preparado para estudar do...while e a diferença entre testar antes e testar depois na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o while foi estudado em profundidade, o próximo passo é observar uma estrutura semelhante, mas com comportamento diferente em um ponto crucial: o momento do teste. Na próxima parte, entraremos em do...while e veremos como essa construção garante ao menos uma execução antes de verificar a condição de continuidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa continuação é importante porque reforça uma das ideias centrais do capítulo: pequenas diferenças de estrutura alteram significativamente o modelo lógico da repetição. Entender isso ajuda o leitor a escolher a forma iterativa mais adequada para cada problema."
+    }
+  ]
+}

@@ -1,0 +1,941 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Callbacks e composição inicial de comportamento",
+    "part_number": "2",
+    "part_title": "Callbacks em uso prático e customização de lógica",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Callbacks e composição inicial de comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Callbacks em uso prático e customização de lógica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é um callback e por que ele existe como comportamento entregue a outro contexto, o leitor está pronto para avançar do modelo conceitual para o uso prático. Até aqui, o callback foi apresentado como função passada para outra função ou método, com a expectativa de que seria executado conforme a lógica do contexto receptor. Agora é o momento de entender por que isso é tão útil na prática: callbacks permitem personalizar o que acontece dentro de mecanismos mais genéricos sem reescrever a estrutura principal desses mecanismos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é muito importante porque mostra o callback como ferramenta de composição e não apenas como curiosidade sintática. O programador passa a perceber que pode construir um processo geral — percorrer uma lista, processar entradas, reagir a eventos, aplicar uma rotina repetida — e deixar em aberto a lógica específica por meio de um callback. Isso separa de forma muito poderosa o esqueleto do processo do comportamento particular que será aplicado em cada caso."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é mostrar como callbacks aparecem em cenários práticos de customização de lógica. O leitor compreenderá por que eles são tão valiosos em percursos, transformações e comportamentos parametrizáveis, verá como o contexto principal recebe a função e a executa com dados relevantes, e entenderá que callbacks são uma forma elegante de tornar processos genéricos muito mais flexíveis. Ao final, deixará de ver callbacks apenas como “funções passadas por argumento” e passará a reconhecê-los como mecanismo concreto de composição comportamental."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: um mesmo processo geral pode precisar de comportamentos específicos diferentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos problemas de programação possuem uma estrutura geral relativamente estável, mas precisam variar na lógica aplicada em pontos específicos. Por exemplo, um mecanismo pode percorrer todos os itens de uma lista, mas o que fazer com cada item pode mudar. Um sistema pode receber um evento de clique, mas a reação desejada depende do contexto. Uma função genérica pode processar dados, mas a regra exata de transformação pode variar conforme a necessidade do momento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que o callback ajuda a resolver. Em vez de duplicar o mecanismo inteiro para cada variação de comportamento, o programador mantém a estrutura principal e troca apenas a lógica específica por meio da função recebida. Isso reduz repetição, melhora reutilização e fortalece a clareza da separação entre processo geral e regra particular."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que essa é uma ideia extremamente poderosa: manter a infraestrutura estável e tornar variável apenas o comportamento realmente específico."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Callback como ponto de extensão do comportamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma forma muito útil de entender callbacks é vê-los como pontos de extensão do comportamento. O código principal oferece uma estrutura geral pronta: ele sabe quando iterar, quando chamar, quais dados fornecer e em que momento o comportamento deve acontecer. O callback entra como extensão dessa estrutura, definindo a lógica específica que o mecanismo principal ainda não fixou internamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa leitura é muito importante porque mostra o callback como algo arquitetural. Ele não é apenas uma função encaixada por acaso. Ele é o lugar em que o processo genérico se torna adaptável. Em vez de uma rotina rígida, o sistema ganha um ponto controlado de personalização."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar callback à ideia de abertura disciplinada para comportamento externo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Percorrer coleção e decidir o que fazer com cada item"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos exemplos mais claros de callback em uso prático aparece em percursos de coleção. O mecanismo do percurso pode ser sempre o mesmo: visitar item por item. O que muda é a ação desejada para cada elemento. Em vez de criar uma versão diferente do mecanismo de percurso para cada objetivo, o programa recebe um callback com a lógica a ser aplicada."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function percorrerLista(lista, acao) {\n  for (let i = 0; i < lista.length; i = i + 1) {\n    acao(lista[i]);\n  }\n}\n\npercorrerLista([1, 2, 3], function (item) {\n  console.log(item);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "percorrerLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista, acao) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " lista.length; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "acao"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista[i]);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "percorrerLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "], "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (item) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(item);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a função percorrerLista sabe como caminhar pela coleção, mas não fixa internamente o que será feito com cada item. Essa responsabilidade é entregue ao callback acao. O valor do desenho está justamente nessa divisão: mecanismo de percurso de um lado, lógica específica do outro."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição principal aqui é que callbacks permitem parametrizar o comportamento aplicado ao longo de um processo repetitivo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. O contexto receptor fornece dados ao callback"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro ponto central do callback em uso prático é que o contexto que o recebe frequentemente também fornece dados a ele no momento da execução. Em métodos de array, por exemplo, o callback costuma receber o elemento atual. Em outros cenários, pode receber índice, evento, resultado parcial ou outros valores relevantes. Isso mostra que o callback não é apenas chamado “do nada”; ele é acionado com informações contextuais que o tornam útil."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse detalhe é muito importante porque conecta callbacks ao que foi estudado sobre parâmetros e argumentos. O callback também é uma função, portanto também pode receber entradas. A diferença está em que essas entradas são fornecidas pelo mecanismo receptor, e não diretamente pelo ponto externo em que o callback foi escrito."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que callbacks vivem em dois níveis ao mesmo tempo: são passados de fora, mas recebem dados relevantes de dentro do contexto que os executa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Customizar transformação de dados"
+    },
+    {
+      "type": "paragraph",
+      "text": "Callbacks também são muito valiosos quando o processo geral consiste em transformar dados. O mecanismo pode estar pronto para percorrer uma coleção e construir outra, mas a regra exata de transformação pode variar. Nesse caso, o callback funciona como descrição da conversão específica que será aplicada a cada item."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function transformarLista(lista, transformacao) {\n  const resultado = [];\n\n  for (let i = 0; i < lista.length; i = i + 1) {\n    resultado.push(transformacao(lista[i]));\n  }\n\n  return resultado;\n}\n\nconst dobrados = transformarLista([1, 2, 3], function (numero) {\n  return numero * 2;\n});\n\nconsole.log(dobrados);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "transformarLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista, transformacao) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " [];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " lista.length; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    resultado."
+          },
+          {
+            "kind": "function",
+            "text": "push"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "transformacao"
+          },
+          {
+            "kind": "plain",
+            "text": "(lista[i]));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " resultado;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " dobrados "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "transformarLista"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "], "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (numero) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " numero "
+          },
+          {
+            "kind": "operator",
+            "text": "*"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(dobrados);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é extremamente didático porque mostra a separação entre infraestrutura e lógica específica. A função transformarLista sabe percorrer, criar o array final e organizar o resultado. O callback transformacao decide como cada item será convertido. Essa é uma das ideias mais importantes de todo o capítulo."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve ver nesse padrão a base de muitos recursos poderosos da linguagem e de suas bibliotecas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Callback como forma de evitar rigidez no código"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sem callbacks, muitas funções genéricas acabariam rígidas demais. Elas já nasceriam decidindo tudo sozinhas, sem espaço para adaptar parte do comportamento. Com callbacks, o programador consegue manter a estrutura principal útil em mais cenários, porque deixa em aberto exatamente a parte que varia. Esse ganho é muito valioso para reuso e clareza arquitetural."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é importante porque mostra que callbacks não são truques para “escrever de forma mais difícil”, como às vezes o iniciante imagina. Eles existem justamente para tornar o código menos rígido e menos repetitivo. O callback desloca a variação para onde ela deve estar: no comportamento específico entregue ao processo genérico."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: callbacks ajudam a desenhar mecanismos mais abertos, sem dissolver a clareza da estrutura principal."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Métodos de array como modelos prontos desse raciocínio"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vários métodos de array vistos anteriormente são, na prática, versões prontas e especializadas desse desenho. ForEach oferece um mecanismo de percurso com callback de ação. Map oferece um mecanismo de transformação com callback transformador. Filter oferece um mecanismo de seleção com callback de critério. Reduce oferece um mecanismo de acúmulo com callback acumulador. Em todos eles, há infraestrutura estável e lógica específica recebida como função."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse reconhecimento é extremamente importante porque ajuda o estudante a conectar o estudo atual ao repertório já construído. O que parecia apenas “jeito de usar métodos de array” agora se revela como manifestação concreta de uma ideia mais geral de composição por callback."
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando essa leitura amadurece, o leitor deixa de ver cada método como caso isolado e passa a entender o padrão comportamental que os une."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: escolher como exibir itens de uma coleção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um mecanismo que percorre uma coleção de produtos. Em um contexto, o callback exibe apenas o título. Em outro, exibe título e preço. Em outro, monta uma string resumida para interface. O percurso continua exatamente o mesmo. O que muda é o callback. Esse estudo de caso resume muito bem a utilidade prática do padrão: o processo estrutural continua estável, enquanto a apresentação específica pode variar conforme a necessidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra que callbacks não servem apenas para cálculos abstratos. Eles servem também para adaptar comportamento em situações muito concretas do dia a dia do software. A flexibilidade do sistema cresce sem exigir que a estrutura principal seja reescrita a cada uso."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: callbacks tornam o mesmo mecanismo reaproveitável em múltiplos contextos de uso real."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de nomear bem o callback e o contexto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando callbacks entram em cena, a legibilidade depende muito da qualidade dos nomes. O leitor precisa entender qual é o mecanismo principal e qual é o papel da função recebida. Nomes como acao, transformacao, criterio, formatador ou processarItem costumam comunicar muito melhor a intenção do que nomes vagos ou genéricos demais. Isso ajuda a distinguir com nitidez a estrutura fixa da parte customizável."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é central porque callbacks já adicionam um nível novo de abstração ao código. Se a nomeação for ruim, a leitura fica ainda mais pesada. Se for boa, o padrão se torna muito mais compreensível. O leitor consegue enxergar rapidamente quem conduz o processo e quem define a lógica específica dentro dele."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em software profissional, clareza de nomeação é parte essencial da boa composição por callback."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que um bom desenho com callback costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que um bom desenho com callback costuma comunicar pelo menos três coisas: qual parte do processo é fixa, qual parte foi deixada aberta para customização e que dados o contexto receptor fornecerá ao callback durante a execução. Esses três elementos ajudam muito a avaliar se o código ficou flexível sem ficar confuso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a olhar para callbacks não como complicação gratuita, mas como escolha arquitetural. A pergunta correta não é apenas “há um callback aqui?”, mas “o callback está sendo usado para separar bem mecanismo e lógica específica?”. Quando a resposta é sim, o desenho tende a ser poderoso e claro ao mesmo tempo."
+    },
+    {
+      "type": "paragraph",
+      "text": "O bom callback, portanto, não apenas existe. Ele ocupa um papel estrutural compreensível dentro do processo maior."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ver o callback apenas como função encaixada, sem perceber seu papel como ponto de customização do comportamento.",
+        "Não identificar quem fornece os dados ao callback durante a execução.",
+        "Reescrever várias vezes o mecanismo geral em vez de separar infraestrutura e lógica específica.",
+        "Ler métodos de array sem perceber que eles já são exemplos maduros desse padrão.",
+        "Escolher nomes vagos para callbacks, dificultando a leitura estrutural do processo.",
+        "Achar que callback complica o código por natureza, quando muitas vezes ele o torna mais flexível e menos rígido."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe callbacks à separação entre mecanismo geral e lógica específica.",
+        "Pratique reconhecer o callback em exemplos de forEach, map, filter e reduce.",
+        "Ao ler um trecho com callback, pergunte quem controla o processo principal e que papel cabe à função recebida.",
+        "Use nomes que explicitem a intenção da função passada como argumento.",
+        "Tente reescrever pequenos padrões genéricos com callback para sentir a vantagem da customização.",
+        "Prepare-se para estudar callbacks em contextos temporais e de eventos nas próximas partes do capítulo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo que callbacks permitem customizar lógica dentro de mecanismos mais genéricos.",
+        "Reconheço que o contexto receptor fornece dados relevantes ao callback durante a execução.",
+        "Percebo como métodos de array materializam esse padrão de composição.",
+        "Consigo relacionar callbacks à redução de rigidez e repetição no código.",
+        "Reconheço a importância da clareza na nomeação do processo principal e da função recebida.",
+        "Estou preparado para estudar callbacks em eventos, temporização e contextos mais dinâmicos na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende callbacks como ferramenta de customização prática de lógica, o próximo passo é observá-los em contextos mais dinâmicos do fluxo, como eventos e temporização. Na próxima parte, veremos como a ideia de callback se torna ainda mais poderosa quando o comportamento precisa reagir a acontecimentos ou momentos definidos por outro mecanismo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque prepara o terreno para a compreensão de uma das dimensões mais características do JavaScript: a organização do comportamento em resposta a contextos que controlam não apenas a lógica, mas também o tempo da execução."
+    }
+  ]
+}

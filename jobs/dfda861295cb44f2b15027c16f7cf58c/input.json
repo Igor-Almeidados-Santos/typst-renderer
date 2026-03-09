@@ -1,0 +1,925 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 9 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "9",
+    "chapter_title": "Funções em profundidade",
+    "part_number": "4",
+    "part_title": "Escopo, variáveis locais e ambiente interno da função",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 9 — Funções em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Escopo, variáveis locais e ambiente interno da função"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é uma função, estudar parâmetros, argumentos e retorno, o leitor está pronto para entrar em uma das ideias mais importantes de toda a programação com comportamento encapsulado: o escopo. Até aqui, a função já foi entendida como unidade capaz de receber entradas e devolver saídas. Agora ela começará a ser percebida também como um ambiente próprio de execução, com regras específicas sobre o que pode ser visto, acessado e modificado em seu interior."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque a utilidade das funções não depende apenas de organizar comportamento. Ela depende também de organizar visibilidade. Em programas reais, nem toda variável deve estar disponível em todo lugar. Nem toda informação deve circular livremente por todos os blocos do sistema. A função ajuda a estruturar o comportamento, mas também ajuda a delimitar o espaço em que certos dados existem e fazem sentido. É justamente essa delimitação que o conceito de escopo torna inteligível."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre escopo, variáveis locais e ambiente interno da função. O leitor compreenderá a diferença entre o que pertence ao interior da função e o que pertence ao fluxo externo, verá por que isso importa para clareza e segurança do código e começará a interpretar funções não apenas como blocos reutilizáveis, mas como fronteiras de organização do estado temporário da execução. Ao final, deixará de ver a função apenas como um mecanismo de chamada e passará a entendê-la também como espaço controlado de visibilidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: nem toda variável deve existir em todo lugar do programa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o estudante está começando, é comum imaginar o programa como um lugar único em que tudo está disponível para tudo. Essa leitura pode funcionar em exemplos muito pequenos, mas rapidamente se torna problemática. Em sistemas maiores, permitir que qualquer parte do código enxergue e altere qualquer valor a qualquer momento tornaria o comportamento muito mais difícil de prever, manter e revisar. O código perderia fronteiras de responsabilidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que o escopo ajuda a resolver. Ele define onde determinadas variáveis existem, em que trechos podem ser acessadas e em que ponto deixam de fazer sentido. Com isso, a linguagem passa a organizar não apenas valores, mas também a visibilidade desses valores ao longo da execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que escopo não é detalhe abstrato da linguagem. É uma regra de organização do acesso ao estado do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é escopo em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, escopo é o contexto em que uma variável ou identificador pode ser acessado. Em outras palavras, é a região do código em que determinado nome existe com significado válido. Quando uma variável está dentro do escopo, o programa pode utilizá-la. Quando está fora, esse nome não está disponível naquele ponto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa definição é muito importante porque desloca a atenção do valor para o alcance do nome. Não basta saber que uma variável foi criada. É preciso saber onde ela vive em termos de leitura e uso. O escopo responde justamente a essa pergunta."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar escopo à ideia de fronteira de visibilidade dentro do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. A função cria um ambiente próprio"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das características mais importantes das funções é que elas criam seu próprio ambiente de execução. Isso significa que variáveis declaradas dentro de uma função pertencem, em nível introdutório, ao contexto interno dessa função e não ficam automaticamente disponíveis fora dela. Esse isolamento é uma das razões pelas quais funções ajudam tanto a organizar o código."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function exemplo() {\n  const mensagem = \"Olá\";\n  console.log(mensagem);\n}\n\nexemplo();",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exemplo"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagem "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Olá\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagem);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "exemplo"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, mensagem existe como variável local ao interior da função exemplo. Ela foi criada para servir àquele comportamento e àquele ambiente. Seu sentido está ligado à execução interna da função, e não ao restante do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "O ponto essencial aqui é que a função não organiza apenas instruções. Ela também organiza o espaço em que certos nomes existem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Variável local: dado que pertence ao interior da função"
+    },
+    {
+      "type": "paragraph",
+      "text": "Chamamos de variável local aquela que foi declarada dentro da função e que, por isso, pertence ao ambiente interno dessa função. Em termos conceituais, trata-se de um dado que faz sentido naquele comportamento específico e que não precisa existir como parte livre do fluxo externo. Muitas vezes, variáveis locais servem como apoio temporário a cálculos, formatações, verificações ou transformações realizadas pela função."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa noção é muito importante porque mostra que nem todo valor do programa deve virar estado amplo ou compartilhado. Muitas informações existem apenas como suporte interno a um comportamento e, por isso, devem permanecer locais. Isso torna o código mais limpo, mais previsível e menos exposto a interferências externas desnecessárias."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve aprender cedo a reconhecer o valor das variáveis locais como parte da disciplina de organização do comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. O lado de fora não enxerga automaticamente o lado de dentro"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma consequência importante do escopo de função é que o lado externo do programa não enxerga automaticamente as variáveis locais definidas dentro da função. Isso reforça a ideia de fronteira. O interior da função pode ter seus próprios nomes de apoio, mas esses nomes não se tornam parte livre do restante do código só por terem existido naquela execução."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function exemplo() {\n  const mensagem = \"Olá\";\n}\n\nexemplo();\nconsole.log(mensagem);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "exemplo"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagem "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Olá\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "exemplo"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagem);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é extremamente importante porque corrige um erro conceitual muito comum. O fato de a variável ter existido no interior da função não faz dela uma variável disponível em qualquer ponto do programa. Ela pertence ao ambiente em que foi declarada."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição principal aqui é clara: existir dentro da função não significa ficar acessível fora dela."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. O lado de dentro pode acessar o lado de fora em muitos casos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao mesmo tempo que o lado externo não enxerga automaticamente o lado interno, o interior da função pode acessar, em muitos casos introdutórios, valores definidos em contextos mais amplos, desde que esses valores estejam disponíveis no escopo externo visível naquele ponto. Essa relação assimétrica é muito importante para o modelo mental correto: a função cria um ambiente próprio, mas esse ambiente não é isolado de tudo; ele pode dialogar com níveis mais externos."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const saudacaoBase = \"Olá\";\n\nfunction cumprimentar(nome) {\n  console.log(saudacaoBase + \", \" + nome);\n}\n\ncumprimentar(\"Ana\");",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " saudacaoBase "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Olá\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "cumprimentar"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(saudacaoBase "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\", \""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " nome);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "cumprimentar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a função usa um valor definido fora dela. O ponto didático aqui é mostrar que escopo não significa apenas barreira, mas também relação hierárquica de visibilidade. O interior enxerga certos níveis externos; o exterior não enxerga automaticamente o interior."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse padrão será aprofundado muito mais à frente, mas desde já ele ajuda a construir um entendimento correto da direção da visibilidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Parâmetros também vivem no escopo da função"
+    },
+    {
+      "type": "paragraph",
+      "text": "Os parâmetros estudados na parte anterior também fazem parte do ambiente interno da função. Eles não são valores livres de todo o programa. São nomes que passam a existir no contexto da execução da função, recebendo os argumentos fornecidos em cada chamada. Em termos de escopo, isso significa que parâmetros funcionam como entradas locais do comportamento."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function saudacao(nome) {\n  console.log(\"Olá, \" + nome);\n}\n\nsaudacao(\"Ana\");",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Olá, \""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " nome);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, nome é um identificador válido dentro da função. Ele pertence à execução daquele comportamento. Isso reforça a ideia de que a função possui não apenas variáveis locais declaradas em seu corpo, mas também entradas nomeadas que fazem parte do seu escopo interno."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve associar parâmetros à ideia de nomes locais de entrada no ambiente da função."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Escopo e clareza de responsabilidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das grandes vantagens do escopo é ajudar a concentrar responsabilidades. Se um valor serve apenas para o funcionamento interno de uma função, mantê-lo nesse escopo evita que ele polua o restante do programa. Isso reduz confusão, diminui risco de uso inadequado em outros pontos e torna mais claro que aquele dado faz sentido apenas como parte daquele comportamento específico."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é especialmente importante para a manutenção. Quanto mais nomes desnecessariamente amplos o programa possui, mais difícil se torna revisar quem depende de quem e quem pode alterar o quê. O escopo funciona como mecanismo disciplinador do uso dos dados. Ele ajuda o código a dizer: isto pertence a este comportamento e não precisa viver solto em todo o sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve ver o escopo como aliado da clareza arquitetural do comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: variável de apoio usada só no cálculo interno"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função que recebe preço e percentual de desconto e precisa calcular o valor final. É muito natural que ela crie uma variável temporária como valorDesconto ou precoFinal apenas para organizar melhor a lógica interna. Esses nomes não precisam existir fora da função, porque sua utilidade pertence exclusivamente ao cálculo interno daquele comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra o uso correto de variáveis locais. Em vez de espalhar pelo programa nomes que só fazem sentido dentro de uma etapa específica de cálculo, a função os mantém em seu próprio ambiente. Isso fortalece legibilidade, disciplina e encapsulamento do comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: variáveis que pertencem apenas ao raciocínio interno de uma função devem, em muitos casos, permanecer locais a ela."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O valor editorial de escopos bem desenhados"
+    },
+    {
+      "type": "paragraph",
+      "text": "Escopos bem desenhados contribuem muito para a legibilidade do código. Quando uma função mantém em seu interior apenas os nomes de que precisa e evita depender excessivamente de variáveis externas desnecessárias, o leitor consegue entender com mais facilidade quais dados realmente pertencem àquele comportamento. O código se torna mais concentrado, mais honesto e menos espalhado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem enorme valor editorial porque funções são uma das principais unidades de organização do programa. Se seus escopos forem confusos, o comportamento também parecerá confuso. Se o escopo for claro, a função se torna uma peça mais auditável e mais previsível."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve levar esta regra adiante: escopo bom é aquele que ajuda o comportamento a manter sua responsabilidade legível e contida."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que qualquer variável criada dentro da função fica automaticamente acessível fora dela.",
+        "Não perceber que parâmetros também pertencem ao escopo interno da função.",
+        "Tratar o escopo como detalhe abstrato, sem entender sua função na organização da visibilidade.",
+        "Espalhar nomes desnecessariamente no fluxo externo quando eles só fariam sentido dentro da função.",
+        "Confundir a possibilidade de acessar valores externos com ausência total de fronteira de escopo.",
+        "Subestimar o papel do escopo para legibilidade e concentração de responsabilidade."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe função sempre à ideia de ambiente próprio de execução.",
+        "Pergunte em cada exemplo: este nome pertence ao interior da função ou ao fluxo externo?",
+        "Use variáveis locais para dados temporários que fazem sentido apenas dentro do comportamento.",
+        "Observe com atenção que parâmetros são nomes locais de entrada.",
+        "Compare exemplos em que a função usa apenas seu interior com exemplos em que também acessa valores externos visíveis.",
+        "Prepare-se para aprofundar declaração, expressão de função e diferentes formas de escrita nas próximas partes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 4"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é escopo em nível introdutório e conceitual.",
+        "Reconheço que a função cria um ambiente próprio de execução.",
+        "Percebo a diferença entre variáveis locais e variáveis definidas em contextos externos.",
+        "Entendo que parâmetros também fazem parte do escopo interno da função.",
+        "Reconheço o valor do escopo para clareza, organização e responsabilidade do comportamento.",
+        "Estou preparado para estudar formas de declaração e expressão de funções na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende melhor o ambiente interno da função, o próximo passo é estudar as diferentes formas de escrevê-la na linguagem. Na próxima parte, entraremos em declaração de função, expressão de função e as primeiras diferenças estruturais entre esses formatos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque permitirá ao estudante perceber que a linguagem não oferece apenas uma única forma de definir comportamento. Cada forma de escrita carrega implicações importantes para legibilidade, organização do código e estilo de composição."
+    }
+  ]
+}

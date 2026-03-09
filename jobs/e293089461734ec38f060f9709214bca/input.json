@@ -1,0 +1,534 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Escopo, contexto léxico e closures",
+    "part_number": "3",
+    "part_title": "Contexto léxico explicado com exemplos",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Escopo, contexto léxico e closures"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Contexto léxico explicado com exemplos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender escopo global, de função e de bloco e de estudar a cadeia de escopos como mecanismo de busca do interno para o externo, o estudante chega a um conceito que dá fundamento estrutural a tudo isso: o contexto léxico. Este é um dos pontos mais importantes de todo o capítulo, porque ele responde a uma pergunta decisiva: por que a linguagem considera certos escopos externos como relevantes para uma função e não outros. A resposta está no fato de que o JavaScript organiza essa relação com base na posição em que o código foi escrito, e não apenas no ponto em que ele será executado. É exatamente isso que a ideia de léxico começa a esclarecer."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, contexto léxico pode ser entendido como o ambiente estrutural criado pela posição do código-fonte. O adjetivo léxico, aqui, remete à forma como o código está organizado textualmente, isto é, à maneira como funções, blocos e declarações aparecem aninhados no arquivo. Quando o JavaScript determina quais nomes fazem parte da cadeia de escopos relevante para uma função, ele olha para essa estrutura de escrita. Em outras palavras, o contexto léxico de uma função nasce do lugar em que ela foi definida dentro do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa ideia é fundamental porque ela impede uma interpretação equivocada muito comum: a de que o acesso às variáveis externas depende do lugar em que a função foi chamada. Em JavaScript, o mais importante para a resolução léxica dos identificadores não é o ponto da chamada, mas o ponto da definição. A função carrega consigo a relação estrutural com os ambientes em que foi criada. É isso que explica por que uma função interna consegue acessar variáveis da função externa que a contém, mesmo quando a execução acontece mais tarde ou em outro ponto do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto merece grande destaque porque, sem ele, a cadeia de escopos pode parecer um mecanismo apenas operacional, como se o programa improvisasse uma busca por nomes a partir de onde a execução está naquele instante. O contexto léxico mostra que essa busca não é improvisada. Ela está previamente estruturada pela forma do código. A linguagem já sabe, pela maneira como as funções foram escritas e aninhadas, quais ambientes pertencem à trajetória de resolução dos nomes. Essa previsibilidade é uma das bases do comportamento das funções em JavaScript."
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma maneira muito útil de entender isso é pensar que o código desenha um mapa de vizinhança entre ambientes. Uma função escrita dentro de outra nasce conectada ao ambiente léxico externo em que foi criada. Uma variável declarada naquele ambiente poderá, em princípio, ser encontrada por essa função interna se não houver um nome mais próximo que resolva o identificador primeiro. O estudante deve perceber que essa conexão não surge porque a função decidiu olhar em volta no momento da chamada. Ela já estava inscrita no desenho estrutural do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse raciocínio se torna muito mais claro com exemplos. Imagine uma variável declarada no escopo global, uma função externa declarada nesse mesmo nível e, dentro dela, uma função interna. Quando a função interna acessa um identificador que não está em seu corpo local, a linguagem percorre a cadeia de escopos relevante para ela. Essa cadeia existe porque o contexto léxico da função interna inclui a função externa e, por consequência, pode incluir também o escopo global. O estudante já viu esse comportamento na prática. Agora começa a entender a razão estrutural dele: a função interna foi definida naquele contexto, e é esse fato que molda seu acesso aos nomes."
+    },
+    {
+      "type": "paragraph",
+      "text": "É especialmente importante notar que contexto léxico não significa apenas proximidade visual qualquer. O que importa não é que um nome apareça antes ou depois no arquivo em termos superficiais, mas que ele pertença ao ambiente estrutural em que a função foi definida. Um identificador pode estar escrito em outra região do código e ainda assim não fazer parte do contexto léxico relevante para determinada função. Isso reforça a ideia de que não basta existir no arquivo. É preciso existir na cadeia lexicalmente conectada ao ponto de definição da função."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse detalhe ajuda a evitar leituras erradas sobre funções definidas em lugares diferentes. Duas funções podem ter corpos parecidos, mas contextos léxicos distintos. Cada uma nasce ligada ao ambiente em que foi escrita. Isso significa que o comportamento de resolução de nomes pode variar conforme a posição estrutural da definição, mesmo que a chamada posterior pareça semelhante. Essa observação será extremamente importante quando o capítulo avançar para closures, porque o fechamento lexical depende exatamente dessa ligação entre a função e o ambiente onde ela surgiu."
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere agora um exemplo em que uma função interna usa uma variável declarada na função externa. O estudante pode perguntar por que esse acesso é válido. A resposta correta não é apenas porque a variável está acima no código. A resposta mais precisa é porque a função interna foi definida dentro daquele ambiente e, portanto, esse ambiente faz parte do seu contexto léxico. O acesso decorre da estrutura de definição, e não de uma abertura genérica do programa. Essa precisão conceitual é muito importante para que o raciocínio não fique apoiado em metáforas soltas demais."
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro ganho importante do contexto léxico é tornar mais previsível a leitura de funções passadas para outros lugares do programa. Ainda que uma função seja chamada em ponto diferente daquele em que foi escrita, sua relação com os identificadores externos relevantes continua sendo determinada pelo contexto em que foi criada. Esse ponto ainda ganhará mais densidade nas partes seguintes, mas já deve ser intuído agora: a função leva consigo, por assim dizer, a marca estrutural do ambiente em que nasceu. Essa marca é lexical, não oportunista."
+    },
+    {
+      "type": "paragraph",
+      "text": "Do ponto de vista pedagógico, o contexto léxico ajuda a consolidar uma visão mais madura sobre escopo. O escopo já não é apenas uma região estática isolada. Ele passa a ser entendido em articulação com a forma como funções são aninhadas no código. A cadeia de escopos torna-se, então, a consequência operacional de uma organização léxica prévia. O programa não decide de forma arbitrária quais ambientes consultar. Ele segue a estrutura lexical desenhada pelo código-fonte. Essa integração entre forma escrita e acesso aos nomes é um dos pontos mais elegantes da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse raciocínio também melhora a depuração. Quando uma função acessa ou deixa de acessar certo nome, o programador pode perguntar não apenas em qual escopo a execução está, mas em que contexto léxico a função foi criada. Talvez a variável exista no ponto em que a função foi chamada, mas não no ambiente estrutural em que ela nasceu. Essa distinção é sutil, porém extremamente poderosa. Ela ajuda a explicar vários comportamentos que, sem a noção léxica, pareceriam estranhos ou contraditórios."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também vale notar que o contexto léxico é o alicerce das closures. Uma closure, em termos simples que serão aprofundados adiante, depende justamente da preservação da relação entre a função e seu ambiente léxico de origem. Sem compreender primeiro que a função é definida dentro de um contexto e que esse contexto importa para a resolução de variáveis, o tema de closure parecerá mais misterioso do que realmente é. Por isso, esta parte do capítulo funciona como uma ponte conceitual indispensável."
+    },
+    {
+      "type": "paragraph",
+      "text": "No nível profissional, entender contexto léxico é essencial para ler funções internas, callbacks, closures e vários padrões idiomáticos do JavaScript. Ele sustenta a previsibilidade da resolução de identificadores e ajuda a construir um modelo mental robusto sobre o acesso a dados externos por funções definidas em camadas internas. Sem esse domínio, muitos trechos de código real parecem mágicos. Com ele, passam a ser estruturalmente compreensíveis."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em síntese, contexto léxico é o ambiente estrutural determinado pela posição em que o código foi escrito. Ele define a quais escopos externos uma função está ligada no momento de sua definição e, portanto, organiza a cadeia relevante para a resolução dos identificadores. Compreender esse princípio é essencial para entender por que funções internas acessam certas variáveis externas, por que o ponto de definição importa mais do que o ponto de chamada e por que closures funcionam em JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "O iniciante já entende que existem escopos diferentes e que a linguagem procura nomes do interno para o externo, mas ainda pode não saber por que certos escopos externos entram nessa busca e outros não. Como consequência, interpreta acessos válidos ou inválidos como se dependessem apenas do ponto da chamada. O problema real é não perceber que a estrutura do código no momento da definição da função é o que organiza os ambientes relevantes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "O contexto léxico é determinado pela posição estrutural do código-fonte. Uma função nasce ligada aos ambientes em que foi definida, e é essa ligação que molda a cadeia de escopos usada na resolução dos identificadores. Assim, a visibilidade lexical dos nomes depende do desenho do código e não apenas do lugar posterior em que a função venha a ser chamada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao analisar uma função, o programador deve perguntar em que ambiente ela foi criada e quais escopos externos faziam parte desse contexto no momento da definição. Esse raciocínio explica por que a função acessa certos nomes e não outros. A resolução de identificadores não é uma busca livre pelo arquivo, mas uma busca condicionada pela estrutura léxica do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Contexto léxico: ambiente estrutural determinado pela posição do código-fonte.",
+        "Definição da função: momento e lugar em que a função é escrita e passa a se ligar a certos escopos.",
+        "Estrutura lexical: forma de aninhamento entre funções, blocos e declarações no código.",
+        "Vizinhança estrutural: conjunto de ambientes externos relevantes para a função em sua definição.",
+        "Busca condicionada: resolução de nomes limitada à cadeia formada pelo contexto léxico.",
+        "Primazia da definição: prioridade do lugar em que a função foi criada sobre o lugar em que foi chamada."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Exemplo prático comentado"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const mensagemGlobal = 'Global';\n\nfunction externa() {\n  const mensagemExterna = 'Externa';\n\n  function interna() {\n    console.log(mensagemExterna);\n    console.log(mensagemGlobal);\n  }\n\n  interna();\n}\n\nexterna();",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemGlobal "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Global'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "externa"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemExterna "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Externa'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "interna"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemExterna);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemGlobal);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "interna"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "externa"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a função interna acessa mensagemExterna e mensagemGlobal porque foi definida em um contexto léxico que inclui a função externa e o escopo global. O acesso não acontece por sorte nem apenas porque as variáveis estão escritas acima. Ele acontece porque a estrutura do código ligou a função interna a esses ambientes no momento da definição. Esse é o coração da explicação léxica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um aluno movendo uma função interna para outro ponto do código e percebendo que certos nomes antes disponíveis deixam de ser acessíveis. Se ele não entende contexto léxico, pode achar que a linguagem se comportou de forma arbitrária. Quando compreende que a função depende do ambiente estrutural em que foi definida, percebe que a mudança de lugar alterou a vizinhança lexical da função. Esse caso mostra, de forma muito concreta, que a posição estrutural do código tem efeito real sobre o acesso aos identificadores."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que o ponto da chamada define sozinho os nomes acessíveis pela função.",
+        "Confundir posição visual geral no arquivo com contexto léxico relevante.",
+        "Ignorar que a função se liga aos ambientes em que foi definida.",
+        "Imaginar que qualquer nome existente no programa pode entrar na busca lexical.",
+        "Tratar o acesso a variáveis externas como comportamento mágico e não estrutural."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ler funções perguntando onde foram definidas e não apenas onde são chamadas.",
+        "Observar o aninhamento estrutural do código para entender a resolução de nomes.",
+        "Usar nomes e parâmetros claros para reduzir confusão sobre dependências léxicas externas.",
+        "Revisar o impacto estrutural ao mover funções de lugar no código.",
+        "Tratar contexto léxico como fundamento para closures e não como detalhe isolado."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é contexto léxico em JavaScript.",
+        "Consigo explicar por que a definição da função importa mais do que a chamada na resolução lexical de nomes.",
+        "Percebo a relação entre estrutura do código e cadeia de escopos.",
+        "Reconheço que funções internas carregam vínculo com o ambiente em que nasceram.",
+        "Estou preparado para avançar para o conceito de closure."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com o contexto léxico explicado com exemplos, o próximo passo será estudar diretamente o que é closure. A próxima parte mostrará como funções podem continuar acessando variáveis de seu ambiente léxico mesmo após o término da execução do contexto em que foram criadas, revelando um dos comportamentos mais poderosos do JavaScript."
+    }
+  ]
+}

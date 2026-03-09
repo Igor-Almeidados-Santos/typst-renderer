@@ -1,0 +1,1484 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 11 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 11,
+    "chapter_title": "Assíncrono: eventos, timers e o modelo mental do JavaScript",
+    "part_number": 3,
+    "part_title": "Timers: setTimeout, setInterval, cancelamento e dividir trabalho sem travar",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 11 — Assíncrono: eventos, timers e o modelo mental do JavaScript"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Timers: setTimeout, setInterval, cancelamento e dividir trabalho sem travar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Timers são a forma mais simples de agendar trabalho para o futuro. Eles servem para: atrasar uma ação, criar repetição (polling), debouncing de input e, principalmente, dividir trabalho pesado em “pedaços” para não travar a UI. Nesta parte, você vai dominar setTimeout e setInterval, entender drift (atraso acumulado), cancelamento com clearTimeout/clearInterval e um padrão prático de chunking (processar lista em lotes)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Meu setInterval atrasou e ficou irregular”"
+    },
+    {
+      "type": "paragraph",
+      "text": "setInterval tenta disparar em um intervalo fixo, mas se o thread principal estiver ocupado, o callback atrasa. Esse atraso acumulado é chamado de drift. Em tarefas críticas de tempo, muitas vezes é melhor usar setTimeout recursivo, recalculando o próximo disparo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. setTimeout: executar uma vez (depois)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nconst id = setTimeout(() => {\n  console.log('rodou depois de 500ms');\n}, 500);\n\n// Cancelar antes de rodar:\n// clearTimeout(id);",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " id "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'rodou depois de 500ms'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}, "
+          },
+          {
+            "kind": "number",
+            "text": "500"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Cancelar antes de rodar:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// clearTimeout(id);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. setInterval: executar repetidamente (com cuidado)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let ticks = 0;\nconst intervalId = setInterval(() => {\n  ticks++;\n  console.log('tick', ticks);\n  if (ticks >= 3) {\n    clearInterval(intervalId);\n  }\n}, 1000);",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " ticks "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " intervalId "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setInterval"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ticks"
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'tick'"
+          },
+          {
+            "kind": "plain",
+            "text": ", ticks);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (ticks "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "clearInterval"
+          },
+          {
+            "kind": "plain",
+            "text": "(intervalId);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}, "
+          },
+          {
+            "kind": "number",
+            "text": "1000"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Cancelamento é parte do contrato"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sempre que você cria um timer, você deve ter uma estratégia para cancelar. Em UI, isso evita vazamento de timers em navegação, componentes desmontados ou múltiplos cliques."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Drift: por que setInterval não é “preciso”"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const start = Date.now();\nlet count = 0;\n\nconst id2 = setInterval(() => {\n  count++;\n  const elapsed = Date.now() - start;\n  console.log('tick', count, 'elapsed(ms)=', elapsed);\n  if (count >= 5) clearInterval(id2);\n}, 200);",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " start "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Date."
+          },
+          {
+            "kind": "function",
+            "text": "now"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " count "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " id2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setInterval"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  count"
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " elapsed "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Date."
+          },
+          {
+            "kind": "function",
+            "text": "now"
+          },
+          {
+            "kind": "plain",
+            "text": "() "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " start;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'tick'"
+          },
+          {
+            "kind": "plain",
+            "text": ", count, "
+          },
+          {
+            "kind": "string",
+            "text": "'elapsed(ms)='"
+          },
+          {
+            "kind": "plain",
+            "text": ", elapsed);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (count "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ") "
+          },
+          {
+            "kind": "function",
+            "text": "clearInterval"
+          },
+          {
+            "kind": "plain",
+            "text": "(id2);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}, "
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Alternativa: setTimeout recursivo (mais controlável)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function loopComTimeout(count, delay) {\n  const start = Date.now();\n\n  function step(i) {\n    const elapsed = Date.now() - start;\n    console.log('step', i, 'elapsed(ms)=', elapsed);\n\n    if (i >= count) return;\n    setTimeout(() => step(i + 1), delay);\n  }\n\n  step(1);\n}\n\nloopComTimeout(5, 200);",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "loopComTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(count, delay) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " start "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Date."
+          },
+          {
+            "kind": "function",
+            "text": "now"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "step"
+          },
+          {
+            "kind": "plain",
+            "text": "(i) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " elapsed "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Date."
+          },
+          {
+            "kind": "function",
+            "text": "now"
+          },
+          {
+            "kind": "plain",
+            "text": "() "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " start;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'step'"
+          },
+          {
+            "kind": "plain",
+            "text": ", i, "
+          },
+          {
+            "kind": "string",
+            "text": "'elapsed(ms)='"
+          },
+          {
+            "kind": "plain",
+            "text": ", elapsed);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (i "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " count) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "step"
+          },
+          {
+            "kind": "plain",
+            "text": "(i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "), delay);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "step"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "loopComTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Dividir trabalho pesado: processar em lotes (chunking)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se você precisa processar muitos itens (ex.: 100 mil), fazer tudo de uma vez pode travar a página. Um padrão simples é processar em lotes e agendar o próximo lote com setTimeout. Assim, o navegador tem chance de renderizar e processar eventos entre lotes."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function processarEmLotes(itens, loteSize, onItem, onDone) {\n  let i = 0;\n\n  function runBatch() {\n    const end = Math.min(i + loteSize, itens.length);\n    for (; i < end; i++) {\n      onItem(itens[i], i);\n    }\n\n    if (i < itens.length) {\n      setTimeout(runBatch, 0); // cede o controle\n    } else {\n      onDone?.();\n    }\n  }\n\n  runBatch();\n}\n\n// Exemplo\nconst big = Array.from({ length: 10000 }, (_, i) => i);\nlet soma = 0;\nprocessarEmLotes(big, 500, (n) => { soma += n; }, () => {\n  console.log('feito, soma=', soma);\n});",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "processarEmLotes"
+          },
+          {
+            "kind": "plain",
+            "text": "(itens, loteSize, onItem, onDone) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "runBatch"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " end "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Math."
+          },
+          {
+            "kind": "function",
+            "text": "min"
+          },
+          {
+            "kind": "plain",
+            "text": "(i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " loteSize, itens.length);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " (; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " end; i"
+          },
+          {
+            "kind": "operator",
+            "text": "++"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "function",
+            "text": "onItem"
+          },
+          {
+            "kind": "plain",
+            "text": "(itens[i], i);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " itens.length) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(runBatch, "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// cede o controle"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    } "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      onDone"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": ".();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "runBatch"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Exemplo"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " big "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " Array."
+          },
+          {
+            "kind": "function",
+            "text": "from"
+          },
+          {
+            "kind": "plain",
+            "text": "({ length"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10000"
+          },
+          {
+            "kind": "plain",
+            "text": " }, (_, i) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " i);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " soma "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "processarEmLotes"
+          },
+          {
+            "kind": "plain",
+            "text": "(big, "
+          },
+          {
+            "kind": "number",
+            "text": "500"
+          },
+          {
+            "kind": "plain",
+            "text": ", (n) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " { soma "
+          },
+          {
+            "kind": "operator",
+            "text": "+="
+          },
+          {
+            "kind": "plain",
+            "text": " n; }, () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'feito, soma='"
+          },
+          {
+            "kind": "plain",
+            "text": ", soma);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Boas práticas (nível júnior)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use setTimeout para atrasar ações e para chunking; use setInterval para ticks simples e sempre cancele.",
+        "Sempre guarde o id do timer e cancele quando não precisar mais.",
+        "Evite usar timers como “controle de fluxo” complexo; prefira Promises/async (próximas partes).",
+        "Lembre do drift: tempo real pode variar com carga do thread principal.",
+        "Para tarefas longas, processe em lotes para manter a UI responsiva."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Checklist profissional (Parte 3)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei a diferença entre setTimeout (uma vez) e setInterval (repetição).",
+        "Eu sempre planejo cancelamento (clearTimeout/clearInterval).",
+        "Eu entendo drift e por que intervalos atrasam sob carga.",
+        "Eu sei usar setTimeout recursivo quando quero mais controle.",
+        "Eu consigo dividir trabalho pesado em lotes para não travar a UI."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 4, você vai entrar em Promises: como representar um resultado futuro, encadear then/catch e evitar callback hell."
+    }
+  ]
+}

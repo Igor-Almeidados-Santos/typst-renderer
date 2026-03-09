@@ -1,0 +1,208 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 12 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 12,
+    "chapter_title": "Rede e APIs: fetch, HTTP e consumo seguro de JSON",
+    "part_number": 8,
+    "part_title": "Fechamento do Capítulo 12: resumo executivo, erros clássicos e checklist final",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 12 — Rede e APIs: fetch, HTTP e consumo seguro de JSON"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Fechamento do Capítulo 12: resumo executivo, erros clássicos e checklist final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o capítulo que transforma “fazer fetch” em engenharia: entender HTTP, tratar status corretamente, consumir JSON com segurança, aplicar timeout e cancelamento, lidar com corrida em UI e implementar retries responsáveis. A partir daqui, você consegue construir clientes de API previsíveis e interfaces que não travam, não mostram dados fora de ordem e não ficam esperando para sempre. Nesta parte final, você revisa os pontos-chave e fecha com um checklist final."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Resumo executivo (o que você deve levar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "HTTP é contrato: request (método/URL/headers/body) e response (status/headers/body).",
+        "fetch só rejeita por erro de rede/abort; 4xx/5xx ainda geram Response (cheque res.ok/res.status).",
+        "Sempre trate JSON como não confiável: parse pode falhar mesmo com 200.",
+        "Separar camadas: rede (status/body) → domínio (validação/normalização) → UI (estado).",
+        "Timeout/cancelamento com AbortController e limpeza em finally.",
+        "Corrida: apenas o último request vale (jobId) e/ou aborte o anterior.",
+        "CORS é política do navegador; a correção costuma ser no servidor (headers) ou proxy controlado.",
+        "Retries com backoff só em erros apropriados (rede, 429, 502/503/504).",
+        "Idempotência em POST evita duplicidade (Idempotency-Key com suporte do servidor).",
+        "Limites responsáveis: debounce, cancelamento e limitar concorrência para não sobrecarregar."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Erros clássicos (sinais e correções rápidas)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "“fetch não caiu no catch com 404”: você esqueceu res.ok → trate status e leia body de erro.",
+        "JSON inválido em 200: res.json() explodiu → leia res.text e faça JSON.parse em try/catch.",
+        "App travando em busca: disparo por digitação sem debounce/cancelamento → implemente debounce + abort + jobId.",
+        "Timeout inexistente: request pendurado → use AbortController + timer e limpe em finally.",
+        "CORS policy error: bloqueio do navegador → ajustar servidor (Allow-Origin/Methods/Headers/Credentials) ou usar proxy.",
+        "Retry em 400/401: comportamento errado → retry apenas em transitórios (rede/429/5xx).",
+        "Duplicidade em POST: retry criou duas ações → idempotency key (servidor)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Checklist final do Capítulo 12 (sinal verde)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu entendo HTTP e consigo mapear métodos/headers/status para fetch.",
+        "Eu sempre verifico res.ok/res.status e trato 4xx/5xx sem depender de catch.",
+        "Eu faço parse seguro de JSON e retorno erro previsível quando o body não é JSON.",
+        "Eu separo rede, domínio e UI por contratos claros.",
+        "Eu aplico timeout/cancelamento com AbortController e limpo timers em finally.",
+        "Eu trato corrida em UI com jobId e abort do request anterior.",
+        "Eu sei diagnosticar CORS e pedir/ajustar os headers corretos no servidor.",
+        "Eu implemento retries com backoff apenas em casos apropriados.",
+        "Eu entendo idempotência para POST e o risco de duplicidade.",
+        "Eu uso debounce/limites de concorrência para ser um bom cidadão do servidor."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Conexão com o Capítulo 13"
+    },
+    {
+      "type": "paragraph",
+      "text": "No Capítulo 13, você vai aprofundar DOM e integração com a rede em mini-projetos mais completos: formulários, validação, envio de dados, estados de carregamento e tratamento de erros com UX consistente. Tudo o que você aprendeu aqui vira “musculatura” para apps reais."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o Capítulo 12 com todas as 8 partes previstas. Próximo passo: Capítulo 13 — Parte 1."
+    }
+  ]
+}

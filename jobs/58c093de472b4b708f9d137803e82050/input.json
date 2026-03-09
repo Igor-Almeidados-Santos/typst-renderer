@@ -1,0 +1,748 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 8 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 8,
+    "chapter_title": "Objetos e Arrays em profundidade",
+    "part_number": 8,
+    "part_title": "Fechamento do Capítulo 8: resumo executivo, erros clássicos e checklist final",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 8 — Objetos e Arrays em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Fechamento do Capítulo 8: resumo executivo, erros clássicos e checklist final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o capítulo que sustenta quase todo o JavaScript do dia a dia: objetos e arrays. Se você domina identidade (referência), acesso seguro, cópia rasa vs profunda e padrões de atualização em listas de objetos, você elimina uma enorme classe de bugs difíceis (vazamento de estado, mutações invisíveis, comparações erradas). Nesta parte final, você vai revisar o essencial, reconhecer erros clássicos rapidamente e fechar com um checklist final — seu sinal verde para o próximo capítulo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Resumo executivo (o que você deve levar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Objetos/arrays têm identidade (referência). === compara identidade, não estrutura.",
+        "Acesso por ponto é chave literal; colchetes permitem chave dinâmica (obj[chave]).",
+        "Checagem: 'in' inclui protótipo; hasOwnProperty (via call) verifica propriedade própria.",
+        "Optional chaining (?.) evita TypeError em null/undefined; ?? define default sem derrubar 0/''/false.",
+        "Cópia rasa (spread/Object.assign) copia só o 1º nível; objetos internos continuam compartilhados.",
+        "Deep copy não é universal: structuredClone é a opção moderna; JSON stringify/parse é limitado.",
+        "Copy-on-write: copie apenas o caminho que muda (padrão comum em estado de UI).",
+        "Arrays: conheça métodos mutáveis (push/pop/splice/sort) e não mutáveis (slice/concat/map/filter).",
+        "Listas de objetos: find/some/every + update por id com map + spread; remover com filter.",
+        "Seleção por id evita comparar objetos por referência e torna o estado mais robusto."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Erros clássicos (e a causa real)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Comparar objetos “iguais” com ==="
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const a = { id: 1 };\nconst b = { id: 1 };\nconsole.log(a === b); // false\n\n// Compare por chave:\nconsole.log(a.id === b.id); // true",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { id"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " b); "
+          },
+          {
+            "kind": "comment",
+            "text": "// false"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Compare por chave:"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a.id "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " b.id); "
+          },
+          {
+            "kind": "comment",
+            "text": "// true"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Copiar com spread e achar que é deep copy"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const o1 = { b: { c: 1 } };\nconst o2 = { ...o1 };\n\no2.b.c = 99;\nconsole.log(o1.b.c); // 99 (compartilha referencia interna)",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " o1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { b"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " { c"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " } };"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " o2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " { ...o1 };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "o2.b.c "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "99"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(o1.b.c); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 99 (compartilha referencia interna)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.3 Usar || e perder 0/''"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const v = 0;\nconsole.log(v || 10); // 10 (pegadinha)\nconsole.log(v ?? 10); // 0 (correto para ausencia null/undefined)",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " v "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(v "
+          },
+          {
+            "kind": "operator",
+            "text": "||"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 10 (pegadinha)"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(v "
+          },
+          {
+            "kind": "operator",
+            "text": "??"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 0 (correto para ausencia null/undefined)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.4 for...in em arrays"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const arr = ['a', 'b'];\narr.extra = 'x';\nfor (const k in arr) {\n  console.log(k, arr[k]); // pode listar 'extra'\n}\n\nfor (const v of arr) {\n  console.log(v); // 'a','b'\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " arr "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "'a'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'b'"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "arr.extra "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'x'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " k "
+          },
+          {
+            "kind": "keyword",
+            "text": "in"
+          },
+          {
+            "kind": "plain",
+            "text": " arr) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(k, arr[k]); "
+          },
+          {
+            "kind": "comment",
+            "text": "// pode listar 'extra'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " v of arr) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(v); "
+          },
+          {
+            "kind": "comment",
+            "text": "// 'a','b'"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Padrões recomendados (jeito júnior)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Preferir seleção por id (estado) e buscar com find quando necessário.",
+        "Separar edição (draft) do item real para não mutar enquanto digita.",
+        "Atualizar listas por id com map + spread (imutável) quando o contexto pede previsibilidade.",
+        "Usar filter para remoção imutável.",
+        "Usar ?. e ?? para ler dados opcionais com segurança e defaults corretos.",
+        "Evitar mutações invisíveis: conhecer métodos mutáveis e usá-los com intenção.",
+        "Usar copy-on-write em vez de deep copy geral sempre que possível.",
+        "Checar propriedades com hasOwnProperty quando a diferença entre própria e herdada importar."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Checklist final do Capítulo 8 (sinal verde)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei explicar identidade (referência) em objetos/arrays e como isso afeta ===.",
+        "Eu sei acessar propriedades com ponto e colchetes e quando cada um é necessário.",
+        "Eu sei checar existência com in vs hasOwnProperty (via call).",
+        "Eu sei usar ?. e ?? para acesso seguro e defaults sem derrubar 0/''/false.",
+        "Eu sei a diferença entre cópia rasa e profunda e consigo detectar referência interna compartilhada.",
+        "Eu sei usar structuredClone quando disponível e reconheço limitações do JSON stringify/parse.",
+        "Eu sei aplicar copy-on-write copiando apenas o caminho que muda.",
+        "Eu sei quais métodos de array mutam e quais retornam novo array.",
+        "Eu sei atualizar item por id com map + spread e remover com filter.",
+        "Eu consigo construir UI derivada do estado com seleção por id e atualização previsível."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Conexão com o próximo capítulo"
+    },
+    {
+      "type": "paragraph",
+      "text": "No próximo capítulo, você vai aprofundar APIs do JavaScript que trabalham diretamente com objetos e arrays: métodos de array como map/filter/reduce em cenários mais ricos, além de padrões de manipulação de dados do mundo real. Tudo o que você aprendeu aqui (identidade, cópia, seleção por id e acesso seguro) será usado o tempo todo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o Capítulo 8 com todas as 8 partes previstas. Próximo passo: Capítulo 9 — Parte 1."
+    }
+  ]
+}

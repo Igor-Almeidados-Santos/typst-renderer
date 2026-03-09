@@ -1,0 +1,360 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 12 — Parte 7",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 12,
+    "chapter_title": "Rede e APIs: fetch, HTTP e consumo seguro de JSON",
+    "part_number": 7,
+    "part_title": "Exercícios e refatorações: de fetch ingênuo a cliente robusto",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 12 — Rede e APIs: fetch, HTTP e consumo seguro de JSON"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 7 — Exercícios e refatorações: de fetch ingênuo a cliente robusto"
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo é transformar conhecimento em habilidade: refatorar um fetch “ingênuo” para um cliente previsível com status, parse seguro, timeout/cancelamento, corrida e retry responsável. Saída esperada: uma camada de rede (apiRequest), uma camada de domínio (parse/normalização) e UI por estado (idle/loading/success/error)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1) Regras do treino"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Trate res.ok/res.status (4xx/5xx não caem no catch).",
+        "Faça parse seguro (res.text + JSON.parse em try/catch).",
+        "Timeout e cancelamento com AbortController.",
+        "Evite corrida: jobId e/ou abort do request anterior.",
+        "Retry só em rede/429/502/503/504 e sempre com backoff.",
+        "Separe rede (HTTP), domínio (parse) e UI (render)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2) Exercício 1 — Diagnóstico (liste 5 problemas)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "async function carregarPedido(id) {\n  const res = await fetch('/api/pedidos/' + id);\n  const data = await res.json();\n  return data.data;\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "carregarPedido"
+          },
+          {
+            "kind": "plain",
+            "text": "(id) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " res "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "fetch"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'/api/pedidos/'"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " id);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " data "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " res."
+          },
+          {
+            "kind": "function",
+            "text": "json"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " data.data;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "list",
+      "items": [
+        "A) Falta tratar status (res.ok).",
+        "B) res.json() pode falhar (JSON inválido).",
+        "C) Falta timeout/cancelamento.",
+        "D) Sem validação/normalização do domínio (id/total/data).",
+        "E) Sem contrato de erro previsível para a UI."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3) Exercício 2 — apiRequest (camada de rede)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Implemente apiRequest(url, options, timeoutMs) que retorna { ok:true, status, data } ou { ok:false, status?, msg, raw? }. Requisitos: timeout com AbortController; diferenciar abort/rede (sem status) de erro HTTP (com status); parse seguro; aceitar headers e body."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4) Exercício 3 — Retry responsável (backoff)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Implemente requestWithRetry(apiRequest, cfg) para tentar novamente apenas quando fizer sentido: erro de rede (sem status) ou status em {429, 502, 503, 504}. Use backoff (200ms, 400ms, 800ms, teto 2000ms). Não faça retry em 400/401/403/404/422."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5) Exercício 4 — Corrida + cancelamento em UI"
+    },
+    {
+      "type": "paragraph",
+      "text": "Crie buscar(termo) com debounce 300ms. Ao iniciar novo request: aborta o anterior, incrementa jobId e só renderiza se jobId ainda for o atual. Mostrar estados e mensagens claras."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6) Checklist (Parte 7)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo refatorar fetch ingênuo para tratar status, JSON inválido e erros previsíveis.",
+        "Eu tenho apiRequest reutilizável com timeout/cancelamento.",
+        "Eu faço retry responsável com backoff e sem bombardear o servidor.",
+        "Eu trato corrida em buscas (último vence) com jobId + abort.",
+        "Eu separo rede, domínio e UI por contrato claro."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 8, você fecha o Capítulo 12 com resumo executivo, erros clássicos e checklist final."
+    }
+  ]
+}

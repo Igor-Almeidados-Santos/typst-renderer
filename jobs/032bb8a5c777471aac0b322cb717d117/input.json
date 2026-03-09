@@ -1,0 +1,1210 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 9 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "9",
+    "chapter_title": "Funções: definição, chamada e reutilização",
+    "part_number": "8",
+    "part_title": "Estudo de caso: transformando lógica repetida em funções úteis",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 9 — Funções: definição, chamada e reutilização"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Estudo de caso: transformando lógica repetida em funções úteis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Encerrar este capítulo apenas com conceitos sobre definição, chamada, parâmetros, retorno, reutilização e legibilidade seria insuficiente. O leitor já possui os elementos necessários para compreender o papel das funções, mas agora precisa vê-los cooperando em um problema concreto. Esta parte final tem exatamente esse objetivo: mostrar como lógica repetida pode ser transformada em funções úteis, legíveis e reutilizáveis. O ponto central não é apenas reduzir linhas duplicadas, mas reorganizar o programa em comportamentos nomeados que expressem melhor a intenção do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "A expressão lógica repetida deve ser entendida com cuidado. Nem toda repetição textual de linhas exige imediatamente uma função, e nem toda função nasce apenas porque um trecho apareceu duas vezes. O que o programador precisa identificar é um comportamento recorrente ou conceitualmente importante que, ao ser agrupado em uma função, melhora clareza, consistência e manutenção. Este estudo de caso mostrará exatamente essa passagem: sair de um código funcional, porém repetitivo, e chegar a uma estrutura mais útil do ponto de vista semântico e arquitetural."
+    },
+    {
+      "type": "paragraph",
+      "text": "Imaginemos um pequeno sistema de vendas que precisa calcular desconto e exibir mensagens de preço final em mais de um ponto do programa. Em uma versão inicial, o estudante pode escrever toda a lógica diretamente no fluxo principal, repetindo cálculos e formatações para cenários diferentes. À primeira vista, isso pode parecer suficiente. No entanto, conforme o programa cresce, essa repetição começa a cobrar um preço alto em legibilidade e manutenção. O estudo de caso servirá para mostrar exatamente como a função corrige esse problema de forma gradual e compreensível."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 1 — Observar a repetição antes de abstrair"
+    },
+    {
+      "type": "paragraph",
+      "text": "O primeiro passo saudável não é criar uma função por impulso, mas observar com calma o que está sendo repetido. Suponha que o programa precise calcular o preço final de dois produtos com desconto e exibir mensagens para ambos. Uma versão inicial poderia ser escrita assim."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const precoProdutoA = 100;\nconst descontoProdutoA = 10;\nconst precoFinalA = precoProdutoA - descontoProdutoA;\nconsole.log('Preço final do produto A: R$ ' + precoFinalA);\n\nconst precoProdutoB = 200;\nconst descontoProdutoB = 25;\nconst precoFinalB = precoProdutoB - descontoProdutoB;\nconsole.log('Preço final do produto B: R$ ' + precoFinalB);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " precoProdutoA "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " descontoProdutoA "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " precoFinalA "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " precoProdutoA "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " descontoProdutoA;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Preço final do produto A: R$ '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " precoFinalA);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " precoProdutoB "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " descontoProdutoB "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "25"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " precoFinalB "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " precoProdutoB "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " descontoProdutoB;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'Preço final do produto B: R$ '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " precoFinalB);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse código funciona, mas já revela duas repetições conceituais. A primeira é a lógica de calcular o preço final a partir do preço e do desconto. A segunda é a lógica de montar a mensagem de saída. O estudante deve perceber que o problema não está apenas em ter várias linhas. O problema está em o mesmo comportamento aparecer espalhado no fluxo principal, dificultando leitura e futura alteração. Se a fórmula mudar ou se o formato da mensagem precisar ser ajustado, o programador terá que lembrar de editar múltiplos pontos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 2 — Extrair a primeira função útil"
+    },
+    {
+      "type": "paragraph",
+      "text": "A primeira abstração natural aqui é o cálculo do preço final. Trata-se de um comportamento claro, coeso e reutilizável. Em vez de repetir a conta em cada caso, o programa pode defini-la uma única vez em uma função com parâmetros semânticos e retorno explícito."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function calcularPrecoFinal(preco, desconto) {\n  return preco - desconto;\n}\n\nconst precoFinalA = calcularPrecoFinal(100, 10);\nconst precoFinalB = calcularPrecoFinal(200, 25);\n\nconsole.log(precoFinalA);\nconsole.log(precoFinalB);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "calcularPrecoFinal"
+          },
+          {
+            "kind": "plain",
+            "text": "(preco, desconto) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " preco "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " desconto;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " precoFinalA "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "calcularPrecoFinal"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " precoFinalB "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "calcularPrecoFinal"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "25"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(precoFinalA);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(precoFinalB);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse passo já representa uma melhoria real. A lógica do desconto foi concentrada em um único ponto. A função recebe parâmetros, processa os dados e devolve o valor final por meio de return. O fluxo principal deixa de carregar o detalhe do cálculo e passa a usar um comportamento nomeado. O ganho aqui é simultaneamente técnico e semântico. Técnico, porque a regra foi centralizada. Semântico, porque o nome da função comunica claramente a intenção da operação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 3 — Extrair também a lógica de apresentação"
+    },
+    {
+      "type": "paragraph",
+      "text": "O próximo passo é perceber que a mensagem exibida também representa um comportamento reaproveitável. Em vez de montar manualmente o texto toda vez, o programa pode criar uma função específica para essa responsabilidade. Esse movimento é importante porque mostra que funções não servem apenas para cálculo. Elas também podem encapsular apresentação, desde que a responsabilidade permaneça clara."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function calcularPrecoFinal(preco, desconto) {\n  return preco - desconto;\n}\n\nfunction montarMensagemPrecoFinal(nomeProduto, precoFinal) {\n  return 'Preço final do ' + nomeProduto + ': R$ ' + precoFinal;\n}\n\nconst precoFinalA = calcularPrecoFinal(100, 10);\nconst precoFinalB = calcularPrecoFinal(200, 25);\n\nconst mensagemA = montarMensagemPrecoFinal('produto A', precoFinalA);\nconst mensagemB = montarMensagemPrecoFinal('produto B', precoFinalB);\n\nconsole.log(mensagemA);\nconsole.log(mensagemB);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "calcularPrecoFinal"
+          },
+          {
+            "kind": "plain",
+            "text": "(preco, desconto) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " preco "
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": " desconto;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "montarMensagemPrecoFinal"
+          },
+          {
+            "kind": "plain",
+            "text": "(nomeProduto, precoFinal) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Preço final do '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " nomeProduto "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "': R$ '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " precoFinal;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " precoFinalA "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "calcularPrecoFinal"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " precoFinalB "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "calcularPrecoFinal"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "25"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemA "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "montarMensagemPrecoFinal"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'produto A'"
+          },
+          {
+            "kind": "plain",
+            "text": ", precoFinalA);"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemB "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "montarMensagemPrecoFinal"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'produto B'"
+          },
+          {
+            "kind": "plain",
+            "text": ", precoFinalB);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemA);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(mensagemB);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora o código fica ainda mais organizado. O cálculo foi separado da apresentação. Uma função cuida da regra numérica. A outra cuida da mensagem textual. O fluxo principal apenas coordena essas partes. Esse é um excelente exemplo de reutilização e composição: uma função produz o valor, outra recebe esse valor para produzir uma nova saída. O programa começa a se estruturar como cooperação entre pequenas abstrações."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 4 — Ler o fluxo principal em nível mais alto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto merece atenção especial. Quando a lógica repetida foi extraída em funções úteis, o fluxo principal mudou de natureza. Antes, ele era uma sucessão de cálculos e concatenações manuais. Agora, ele pode ser lido quase como uma narrativa técnica. Calcular preço final. Montar mensagem. Exibir resultado. Essa mudança é extremamente importante porque mostra o verdadeiro poder das funções. Elas não apenas evitam repetir linhas. Elas reorganizam o nível de leitura do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o momento em que o estudante começa a perceber o valor real da abstração. O código principal deixa de ser um lugar onde todos os detalhes vivem ao mesmo tempo. Ele passa a operar em um nível semântico mais alto, apoiado em funções menores que concentram os detalhes internos. Essa arquitetura elementar já melhora muito a navegabilidade do programa, mesmo em exemplos pequenos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 5 — Avaliar a utilidade real da abstração"
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é importante mostrar que a função criada aqui é útil não apenas porque reapareceu duas vezes. Ela é útil porque representa um comportamento que faz sentido no domínio do problema. Calcular preço final é uma ação conceitualmente clara. Montar mensagem de preço final também é. Isso significa que a abstração não nasceu de um truque mecânico de refatoração, mas da percepção de que o sistema possui comportamentos recorrentes e identificáveis. Esse é o critério mais saudável para transformar lógica repetida em função."
+    },
+    {
+      "type": "paragraph",
+      "text": "Se amanhã um terceiro produto for adicionado, as mesmas funções poderão ser reutilizadas imediatamente. Se a regra de desconto mudar, a alteração estará concentrada em um único ponto. Se o formato textual da mensagem mudar, a função correspondente absorverá a mudança de forma centralizada. Esse tipo de estabilidade é um dos sinais de que a abstração foi bem escolhida."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 6 — Evitar abstração artificial"
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudo de caso também ensina um cuidado importante. Nem toda divisão em funções melhora o código. Se o programador criasse funções excessivamente pequenas e sem valor semântico claro, como uma função só para subtrair dois números sem conexão com o domínio do problema ou uma função para colar metades de string sem propósito claro, talvez a legibilidade piorasse. O mérito das abstrações deste caso está em elas corresponderem a comportamentos reconhecíveis do sistema. O estudante deve aprender a procurar abstrações úteis, não apenas abstrações possíveis."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa distinção é crucial para a maturidade. Boas funções não surgem apenas porque o autor gosta de fragmentar código. Elas surgem porque há uma responsabilidade clara que merece nome, reutilização e eventual composição. Esse critério protege o estudante contra dois excessos: deixar tudo repetido no fluxo principal ou quebrar o código em pedaços sem identidade semântica real."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Etapa 7 — Comparar o antes e o depois como mudança estrutural"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vale a pena comparar explicitamente as duas versões. Na primeira, o programa repete cálculo e mensagem manualmente. O fluxo principal carrega detalhes demais e a manutenção depende de lembrar múltiplos pontos. Na segunda, o comportamento foi transformado em funções úteis, com nomes claros, parâmetros compreensíveis, retorno apropriado e possibilidade de recombinação. Essa não é apenas uma diferença de estilo. É uma diferença de estrutura. O programa passou a expressar sua lógica em termos de comportamentos reutilizáveis, e não apenas em termos de linhas repetidas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse contraste encerra de forma muito rica o capítulo porque mostra a função cumprindo plenamente sua promessa: encapsular comportamento, melhorar legibilidade, favorecer reutilização e permitir composição. O estudante não aprende apenas o que é uma função. Aprende por que e quando ela melhora efetivamente a forma do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Síntese integrada do estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Observando o caso completo, o leitor deve perceber que transformar lógica repetida em funções úteis depende de vários princípios já estudados ao longo do capítulo. É preciso reconhecer um comportamento recorrente ou semanticamente importante. Dar a ele um nome claro. Definir parâmetros compatíveis com os dados de entrada. Usar retorno quando o comportamento deve produzir valor reutilizável. Manter coesão de responsabilidade. E compor essas funções de modo que o fluxo principal possa operar em um nível mais alto de intenção. Quando esses elementos cooperam, o programa se torna muito mais claro e sustentável."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o verdadeiro fechamento do capítulo. O estudante deixa de ver funções apenas como recurso sintático e passa a enxergá-las como instrumento de organização do pensamento programador. A lógica repetida deixa de ser fardo espalhado pelo código e passa a se concentrar em unidades semânticas de comportamento. Essa é uma das mudanças mais importantes na passagem do código linear e repetitivo para o código modular e legível."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitos iniciantes percebem que há repetição em seu código, mas ainda não sabem transformá-la em funções realmente úteis. Como resultado, podem tanto manter lógica duplicada demais quanto criar abstrações artificiais sem propósito claro. O problema real é não reconhecer quando uma repetição representa um comportamento suficientemente importante e recorrente para merecer uma função bem nomeada e reutilizável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Transformar lógica repetida em funções úteis exige identificar comportamentos recorrentes, concentrá-los em unidades coesas, nomeá-los segundo o domínio do problema e permitir sua reutilização por meio de parâmetros, argumentos e retorno. Quando essas funções cooperam entre si por composição, o programa passa a operar em um nível mais alto de abstração e legibilidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de extrair uma função, o programador deve perguntar se a repetição identificada representa de fato um comportamento claro e reutilizável, se os dados de entrada podem ser expressos por parâmetros úteis e se o resultado precisa ser devolvido ao fluxo principal. O objetivo não é apenas reduzir linhas repetidas, mas melhorar a estrutura semântica do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Lógica repetida: comportamento que aparece novamente ou que merece centralização semântica.",
+        "Função útil: abstração que melhora clareza, manutenção e reaproveitamento.",
+        "Reutilização estrutural: uso repetido da mesma regra a partir de um único ponto de definição.",
+        "Composição funcional: encadeamento entre funções por meio de retornos e argumentos.",
+        "Abstração semântica: nomeação de um comportamento relevante do domínio.",
+        "Fluxo principal limpo: código central lido em termos de comportamentos nomeados."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso final da parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine dois estudantes resolvendo o mesmo problema de calcular e exibir preços com desconto. O primeiro repete a conta e a formatação manualmente sempre que precisa de um novo caso. O segundo reconhece o padrão, cria uma função para calcular o valor final, outra para montar a mensagem e faz o fluxo principal chamar essas funções em sequência. Ambos podem chegar a resultados corretos em um exemplo pequeno, mas apenas o segundo constrói uma base realmente escalável, legível e fácil de manter. Esse contraste mostra por que funções não servem apenas para esconder código: elas servem para dar forma mais inteligente à lógica do sistema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Manter repetição textual mesmo quando o comportamento já está claramente identificado.",
+        "Criar funções genéricas demais sem vínculo semântico com o problema.",
+        "Misturar cálculo e apresentação em uma única abstração quando a separação faria mais sentido.",
+        "Extrair funções sem pensar em parâmetros úteis ou retorno adequado.",
+        "Confundir redução de linhas com melhoria real da estrutura do código."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Observar se a repetição representa um comportamento claro do domínio do problema.",
+        "Criar funções com nomes semânticos e responsabilidade coesa.",
+        "Usar parâmetros e retorno para tornar a abstração realmente reutilizável.",
+        "Separar funções de cálculo e funções de apresentação quando isso melhorar a clareza.",
+        "Ler o fluxo principal perguntando se ele ficou mais expressivo depois da extração.",
+        "Preferir abstrações úteis e próximas do problema a fragmentações artificiais."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo identificar lógica repetida que merece virar função.",
+        "Entendo a diferença entre abstração útil e abstração artificial.",
+        "Sei transformar comportamentos recorrentes em funções com parâmetros e retorno adequados.",
+        "Percebo o valor da composição entre funções menores e claras.",
+        "Reconheço que funções bem usadas reorganizam o código em um nível mais alto de legibilidade."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com o próximo capítulo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com isso, o Capítulo 9 está completo. O leitor agora possui uma base sólida sobre definição, chamada, parâmetros, argumentos, retorno, undefined, reutilização, composição e legibilidade de funções em JavaScript. No Capítulo 10, o foco avançará para escopo, contexto léxico e closures — isto é, para o modo como funções se relacionam com variáveis, ambientes de execução e retenção de contexto na linguagem. O sumário aprovado segue integralmente coberto até este ponto."
+    }
+  ]
+}

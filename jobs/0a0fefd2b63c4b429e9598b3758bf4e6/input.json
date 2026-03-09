@@ -1,0 +1,931 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 7 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "7",
+    "chapter_title": "Arrays e coleções lineares",
+    "part_number": "5",
+    "part_title": "Busca, verificação e leitura orientada de arrays",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 7 — Arrays e coleções lineares"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Busca, verificação e leitura orientada de arrays"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é um array, estudar índices, acesso posicional, propriedade length e operações fundamentais de adição e remoção, o leitor está pronto para entrar em uma dimensão muito prática do trabalho com coleções lineares: buscar elementos, verificar se certos valores estão presentes e orientar a leitura da coleção segundo critérios de interesse. Até aqui, o array foi tratado como estrutura que armazena, organiza, cresce, encolhe e pode ser percorrida. Agora ele começará a ser visto também como fonte de consulta estruturada, capaz de responder perguntas sobre o próprio conteúdo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse passo é importante porque programas reais não apenas armazenam listas; eles constantemente perguntam algo a essas listas. Um sistema pode precisar verificar se um produto já está no carrinho, localizar uma nota específica, descobrir se determinada mensagem aparece em uma coleção, encontrar a posição de um item, ou decidir se uma sequência contém um valor relevante para o fluxo. Essas operações de consulta são centrais na programação cotidiana e dependem diretamente de um entendimento maduro de arrays."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é estudar a lógica da busca e da verificação em arrays com profundidade conceitual e clareza editorial. O leitor compreenderá por que procurar dentro de uma coleção é diferente de acessar um índice conhecido, verá como a presença ou ausência de um elemento afeta o fluxo do programa e entenderá por que ler um array com intenção é tão importante quanto armazená-lo corretamente. Ao final, o array deixará de ser visto apenas como recipiente e passará a ser entendido também como estrutura consultável sob critérios significativos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: muitas vezes o programa não sabe de antemão em que posição está o valor desejado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Acesso por índice é extremamente útil quando o programador já sabe exatamente qual posição deseja ler ou alterar. No entanto, muitos problemas reais não oferecem essa informação de partida. O programa sabe o que procura, mas não sabe em que posição o item está — e, às vezes, nem sabe se ele está presente. Esse cenário é muito diferente de acessar diretamente array[2] ou array[0]. Ele exige uma lógica de busca."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que esta parte resolve. Em vez de trabalhar apenas com posições conhecidas, o programa passa a investigar a coleção em busca de ocorrências relevantes. Essa investigação pode ter objetivos diferentes: encontrar a posição de um valor, confirmar sua presença, determinar sua ausência, interromper o percurso ao localizá-lo ou usar o resultado da busca para decidir o próximo passo do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que, a partir daqui, arrays deixam de ser apenas estruturas que o programa percorre mecanicamente. Eles passam a ser estruturas sobre as quais o programa formula perguntas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Buscar é diferente de acessar diretamente"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma distinção conceitual muito importante neste ponto é a diferença entre acesso direto e busca. Acesso direto acontece quando o programador já sabe a posição do elemento e vai diretamente até ela. Busca acontece quando o programa precisa descobrir se o elemento existe e, em alguns casos, em que posição ele está. O primeiro caso depende de conhecimento prévio do índice. O segundo depende de consulta à coleção."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa diferença é importante porque ajuda o leitor a entender por que arrays pedem mais do que simples indexação. Em vários contextos reais, o índice é justamente o que ainda precisa ser descoberto. A lógica do código deixa de ser “leia o item da posição tal” e passa a ser “verifique se este valor está presente” ou “descubra onde este item aparece”."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa mudança de perspectiva é uma etapa importante da maturidade com coleções lineares."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Verificar presença como pergunta lógica sobre a coleção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das formas mais frequentes de consultar um array é perguntar se determinado valor está presente. Essa é uma pergunta lógica, não meramente posicional. O programa quer saber se a coleção contém certo elemento. Essa informação pode influenciar validações, permissões, fluxos de interface, deduplicação de dados e inúmeros outros comportamentos."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const frutas = [\"maçã\", \"banana\", \"laranja\"];\n\nconsole.log(frutas.includes(\"banana\"));\nconsole.log(frutas.includes(\"uva\"));",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " frutas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "\"maçã\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"banana\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"laranja\""
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(frutas."
+          },
+          {
+            "kind": "function",
+            "text": "includes"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"banana\""
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(frutas."
+          },
+          {
+            "kind": "function",
+            "text": "includes"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"uva\""
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a operação não está pedindo uma posição específica. Está perguntando se a coleção contém um determinado valor. O resultado tende a ser uma resposta lógica adequada a esse tipo de pergunta: presente ou ausente. Isso mostra como arrays participam diretamente de decisões do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a ver a verificação de presença como uma ponte natural entre coleções e estruturas condicionais."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Descobrir posição também é forma de busca"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em outros cenários, não basta saber se o valor existe. O programa precisa descobrir em que posição ele aparece. Isso é especialmente útil quando a lógica posterior depende da localização do elemento dentro da coleção. Nesse tipo de caso, a busca deixa de responder apenas “sim ou não” e passa a responder “onde?”."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const frutas = [\"maçã\", \"banana\", \"laranja\"];\n\nconsole.log(frutas.indexOf(\"banana\"));\nconsole.log(frutas.indexOf(\"uva\"));",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " frutas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "\"maçã\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"banana\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"laranja\""
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(frutas."
+          },
+          {
+            "kind": "function",
+            "text": "indexOf"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"banana\""
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(frutas."
+          },
+          {
+            "kind": "function",
+            "text": "indexOf"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"uva\""
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de operação é muito importante porque mostra outra faceta da leitura orientada de arrays. O programa não está apenas consultando presença, mas traduzindo a ocorrência em localização. E isso pode ser usado depois para acesso, atualização, remoção ou outras formas de manipulação estrutural."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande diferença conceitual aqui é que a coleção passa a ser tratada não só como fonte de valores, mas também como espaço de localização relativa desses valores."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Presença, ausência e fluxo do programa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o programa verifica se um valor está presente em um array ou quando tenta localizar a posição de um item, o resultado dessa consulta quase sempre influencia o fluxo. Se um produto já está no carrinho, talvez a lógica de adição mude. Se uma permissão está ausente, o acesso pode ser negado. Se uma tarefa não existe na lista, talvez o programa precise informar isso ao usuário. Em outras palavras, busca e verificação não são apenas curiosidades sobre a coleção; são decisões sobre o comportamento do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é muito importante porque conecta o capítulo atual ao capítulo sobre estruturas condicionais. A coleção vira fonte de critérios lógicos. O programa deixa de perguntar apenas “o que há neste array?” e passa a perguntar “o que farei com base no que este array contém ou não contém?”."
+    },
+    {
+      "type": "paragraph",
+      "text": "Com isso, arrays ganham papel cada vez mais ativo na governança do fluxo da aplicação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Leitura orientada: percorrer com intenção"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nem toda consulta precisa ser feita por um método pronto. Em muitos cenários, o programador também pode percorrer o array com um laço e observar cada elemento em busca de certa condição. Nesse caso, a leitura deixa de ser apenas um percurso genérico e se torna leitura orientada por objetivo. O laço já não existe apenas para visitar todos os itens; ele existe para procurar algo, validar algo ou identificar um caso específico."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const numeros = [10, 20, 30, 40];\n\nfor (let i = 0; i < numeros.length; i = i + 1) {\n  if (numeros[i] === 30) {\n    console.log(\"Valor encontrado no índice:\", i);\n    break;\n  }\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " numeros "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "20"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "30"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "40"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": " numeros.length; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (numeros[i] "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "30"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Valor encontrado no índice:\""
+          },
+          {
+            "kind": "plain",
+            "text": ", i);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é muito importante porque mostra a união entre arrays, índices, laços e break. O programa percorre a coleção, compara elemento por elemento e interrompe o processo ao encontrar o que procura. Isso torna visível a lógica de busca como processo iterativo orientado por critério."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que percorrer arrays com intenção é uma das competências mais centrais do JavaScript prático."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Buscar o primeiro caso suficiente"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos problemas reais, não interessa processar toda a coleção se o primeiro caso suficiente já resolve a necessidade. Esse raciocínio foi estudado no capítulo sobre laços com break e aparece aqui de forma muito natural. Se o programa está procurando apenas a primeira ocorrência relevante, faz sentido parar assim que ela for encontrada. Isso economiza percurso e expressa melhor a lógica do problema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de leitura orientada é muito valioso porque mostra que busca não é sempre sinônimo de varrer tudo cegamente até o fim. Às vezes, o percurso inteiro é desnecessário depois que uma resposta suficiente já foi obtida. Em outras situações, ao contrário, todos os elementos precisam ser analisados. O programador precisa distinguir esses cenários."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa distinção ajuda a transformar laços em instrumentos mais inteligentes de consulta a coleções."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Verificar presença não é o mesmo que recuperar posição"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro conceitual comum nesta etapa é misturar duas perguntas diferentes: “este valor está presente?” e “em que posição este valor está?”. Embora relacionadas, elas não são idênticas. A primeira é lógica e binária. A segunda é posicional e informativa. O código deve ser construído com base na pergunta certa, porque isso influencia tanto a operação escolhida quanto o tipo de resposta esperada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante para a clareza do raciocínio. Quando o problema pede apenas confirmação de presença, buscar posição pode ser mais do que o necessário. Quando o problema pede localização precisa, saber apenas que o valor existe não basta. A maturidade em arrays passa por essa capacidade de formular corretamente o tipo de consulta que o problema exige."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em programação, perguntas diferentes sobre a coleção pedem leituras diferentes da estrutura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: verificar se um item já está no carrinho"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um sistema de carrinho de compras em que o usuário tenta adicionar um produto. Antes de inserir o novo item, o programa precisa verificar se ele já está presente na lista. Esse é um caso clássico de consulta orientada por presença. O objetivo não é, inicialmente, percorrer o array por mera curiosidade, mas responder a uma pergunta de negócio: este produto já faz parte da coleção atual?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é extremamente realista porque mostra como arrays participam diretamente de decisões da aplicação. A presença ou ausência de um item pode alterar a lógica de inserção, atualização de quantidade ou feedback ao usuário. O array deixa de ser armazenamento passivo e passa a influenciar comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: saber consultar coleções é tão importante quanto saber montá-las e percorrê-las."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O valor editorial de tornar a consulta legível"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o código consulta um array, a clareza depende muito de o leitor conseguir entender rapidamente o que está sendo procurado e por quê. Nomes bons para a coleção, para o elemento buscado e para variáveis auxiliares tornam esse processo muito mais transparente. Um código que pergunta se produtos.includes(produtoBuscado) comunica muito melhor sua intenção do que uma verificação opaca com nomes vagos e contexto implícito."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto reforça, mais uma vez, que técnica e escrita andam juntas. Buscar bem não é só obter a resposta certa da coleção. É também escrever a consulta de forma que o leitor consiga reconstruir a pergunta que o programa está fazendo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em software profissional, consultas legíveis facilitam revisão lógica, depuração e manutenção de fluxos dependentes de coleções."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir acesso direto por índice com busca orientada por valor.",
+        "Misturar a pergunta sobre presença com a pergunta sobre posição.",
+        "Percorrer o array inteiro quando o primeiro caso suficiente já resolveria o problema.",
+        "Usar consulta inadequada para o tipo de informação que o fluxo precisa.",
+        "Subestimar a ligação entre busca em arrays e estruturas condicionais.",
+        "Escrever verificações opacas com nomes pouco informativos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pergunte sempre se o problema exige saber presença ou localização do elemento.",
+        "Associe consultas em arrays a decisões concretas do fluxo do programa.",
+        "Pratique tanto verificações diretas quanto percursos orientados com laços.",
+        "Use break quando a lógica pedir apenas o primeiro caso suficiente.",
+        "Escolha nomes claros para coleção, valor buscado e índices auxiliares.",
+        "Veja cada consulta como uma pergunta que o programa faz à coleção."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo a diferença entre acessar um índice conhecido e buscar um valor na coleção.",
+        "Reconheço a distinção entre verificar presença e recuperar posição.",
+        "Consigo relacionar arrays a decisões lógicas baseadas em conteúdo presente ou ausente.",
+        "Percebo que percursos orientados podem ser encerrados cedo quando o primeiro caso suficiente basta.",
+        "Reconheço a importância de consultas legíveis em código real.",
+        "Estou preparado para estudar métodos fundamentais de transformação e iteração mais declarativa na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende como consultar arrays por presença, posição e percursos orientados, o próximo passo é entrar em métodos fundamentais de transformação e iteração que tornam o trabalho com coleções ainda mais expressivo. Na próxima parte, começaremos a expandir o repertório para além do percurso manual com laços."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é muito importante porque representa uma mudança de estilo: o programador deixará de usar apenas controles explícitos de índice e começará a explorar formas mais declarativas de interagir com coleções lineares."
+    }
+  ]
+}

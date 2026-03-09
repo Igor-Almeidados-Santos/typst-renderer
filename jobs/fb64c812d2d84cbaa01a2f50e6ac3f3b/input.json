@@ -1,0 +1,553 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 11 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 11,
+    "chapter_title": "Assíncrono: eventos, timers e o modelo mental do JavaScript",
+    "part_number": 2,
+    "part_title": "Microtasks vs tasks: Promises, queueMicrotask e ordem de execução",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 11 — Assíncrono: eventos, timers e o modelo mental do JavaScript"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Microtasks vs tasks: Promises, queueMicrotask e ordem de execução"
+    },
+    {
+      "type": "paragraph",
+      "text": "Além da fila de tasks (setTimeout, eventos), existe a fila de microtasks (Promises e queueMicrotask). Regra prática: quando o call stack esvazia, o motor executa todas as microtasks pendentes antes de pegar a próxima task. Isso muda a ordem de logs e explica por que Promise costuma “furar a fila” do setTimeout(0)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1) Experimento: Promise vs setTimeout(0)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nconsole.log('A');\n\nsetTimeout(() => console.log('D (timeout)'), 0);\n\nPromise.resolve().then(() => console.log('C (promise)'));\n\nconsole.log('B');\n\n// Ordem típica:\n// A\n// B\n// C (promise)\n// D (timeout)",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'D (timeout)'"
+          },
+          {
+            "kind": "plain",
+            "text": "), "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'C (promise)'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'B'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Ordem típica:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// A"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// B"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// C (promise)"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// D (timeout)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2) queueMicrotask: microtask explícita"
+    },
+    {
+      "type": "paragraph",
+      "text": "queueMicrotask agenda uma microtask sem criar uma Promise. É útil quando você quer postergar um pedaço pequeno para “logo depois”, mas ainda antes de timers/eventos."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log('A');\n\nqueueMicrotask(() => console.log('C (microtask)'));\nsetTimeout(() => console.log('D (timeout)'), 0);\n\nconsole.log('B');\n\n// A, B, C, D",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "queueMicrotask"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'C (microtask)'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'D (timeout)'"
+          },
+          {
+            "kind": "plain",
+            "text": "), "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'B'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// A, B, C, D"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3) Modelo mental em uma frase"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Síncrono roda agora (call stack).",
+        "Tasks rodam depois (eventos, timeouts).",
+        "Microtasks rodam “antes das tasks”, assim que o call stack esvazia."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4) Consequência prática: cuidado ao “loopar” microtasks"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se você enfileira microtasks sem parar, você pode atrasar timers e eventos (starvation). Em geral, use microtasks para passos pequenos; para trabalho maior, quebre em tasks."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5) Checklist profissional (Parte 2)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei que existem duas filas principais: tasks e microtasks.",
+        "Eu sei que Promises/queueMicrotask rodam antes de setTimeout(0).",
+        "Eu consigo prever a ordem de execução em exemplos com logs.",
+        "Eu sei que microtasks em excesso podem atrasar timers/eventos.",
+        "Eu escolho microtask para passos pequenos e task para dividir trabalho maior."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 3, você vai estudar timers (setTimeout/setInterval), cancelamento e padrões para dividir trabalho pesado sem travar a UI."
+    }
+  ]
+}

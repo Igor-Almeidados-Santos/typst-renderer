@@ -1,0 +1,558 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Escopo, contexto léxico e closures",
+    "part_number": "4",
+    "part_title": "O que é closure",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Escopo, contexto léxico e closures"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — O que é closure"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender escopo global, de função e de bloco, estudar a cadeia de escopos e entender o contexto léxico como fundamento estrutural da resolução de identificadores, o estudante está pronto para encontrar um dos conceitos mais importantes e, ao mesmo tempo, mais mal compreendidos do JavaScript: closure. Este tema costuma causar estranhamento no início porque parece desafiar uma intuição comum sobre o tempo de vida das variáveis. A impressão inicial de muitos iniciantes é que, quando uma função externa termina, tudo o que existia em seu interior desaparece por completo. Closure mostra que essa leitura é incompleta. Em certos casos, uma função interna pode continuar acessando variáveis do ambiente em que foi criada, mesmo depois de a função externa já ter terminado sua execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, closure pode ser entendida como a combinação entre uma função e o ambiente léxico em que ela foi definida, especialmente quando essa função continua podendo acessar variáveis desse ambiente externo posteriormente. Essa definição precisa ser lida com calma. Closure não é apenas a função interna, nem apenas a variável externa, nem apenas a cadeia de escopos. É a preservação prática da ligação entre a função e o contexto léxico relevante para ela. O que antes parecia apenas uma teoria de acesso a nomes torna-se agora um comportamento concreto de retenção de ambiente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque closures não surgem por mágica. Elas são consequência direta de tudo o que foi construído nas partes anteriores. O escopo mostrou que variáveis vivem em regiões diferentes do código. A cadeia de escopos mostrou que funções internas podem buscar nomes em ambientes externos. O contexto léxico mostrou que essa relação depende do lugar em que a função foi definida. Closure é o momento em que essa ligação continua existindo de modo significativo mesmo após o término da função externa. Em outras palavras, closure é a consequência operacional madura do modelo léxico da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma função externa que declara uma variável local e retorna uma função interna. Essa função interna usa a variável da função externa. Quando a função externa termina, o estudante pode esperar que a variável local desapareça por completo. No entanto, se a função interna retornada ainda depende dela, o JavaScript mantém essa ligação acessível. É exatamente esse fenômeno que caracteriza closure de maneira muito clara. A função interna não perde o acesso ao ambiente léxico em que nasceu apenas porque esse ambiente já não está mais executando como fluxo principal naquele momento."
+    },
+    {
+      "type": "paragraph",
+      "text": "É muito importante destacar que closure não significa que o programa copia mecanicamente os valores externos para dentro da função interna como se fossem constantes isoladas sem contexto. A ideia correta é mais rica. A função interna permanece ligada ao ambiente léxico relevante para resolver aqueles nomes. Essa formulação é conceitualmente superior porque evita simplificações erradas. O poder da closure não está em duplicar valores arbitrariamente, mas em preservar o acesso lexical estruturado ao ambiente em que a função foi criada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse comportamento é um dos grandes motivos pelos quais JavaScript é tão expressivo. Ele permite criar funções que carregam consigo não apenas lógica abstrata, mas também uma relação viva com certos dados do ambiente em que nasceram. O programador passa a poder construir comportamentos personalizados que lembram seu contexto de origem. Essa capacidade é extremamente poderosa, mas precisa ser compreendida com clareza para não parecer mistério nem superstição técnica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma maneira didática de visualizar isso é pensar que a função interna sai da função externa levando consigo a capacidade de acessar o ambiente léxico que lhe era relevante. Ela não leva o escopo inteiro do programa, nem ganha acesso livre a tudo. Ela permanece conectada àquilo que fazia parte de sua vizinhança lexical no momento da definição. Essa imagem ajuda bastante o iniciante, desde que seja entendida como metáfora estruturada e não como descrição física literal do que a máquina faz internamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse conceito se torna muito mais claro quando o estudante observa um exemplo de contador. Uma função criarContador declara uma variável interna chamada contador e retorna outra função que incrementa e retorna esse valor. Cada vez que a função retornada é chamada, ela continua conseguindo ler e atualizar contador. O detalhe essencial é que contador não está em escopo global, nem foi passado por parâmetro em todas as chamadas. Ele pertence ao ambiente da função externa original. O acesso contínuo a esse ambiente é precisamente o coração da closure."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é pedagogicamente poderoso porque revela que closure combina duas propriedades muito importantes. A primeira é encapsulamento: o dado contador não fica exposto globalmente ao programa inteiro. A segunda é persistência de acesso: a função retornada continua podendo operar sobre esse dado ao longo do tempo. O estudante começa a perceber, assim, que closure não é apenas curiosidade da linguagem. Ela é um mecanismo útil para organizar estado privado e comportamento associado de maneira elegante."
+    },
+    {
+      "type": "paragraph",
+      "text": "Também é importante esclarecer o que closure não é. Closure não significa simplesmente qualquer função dentro de outra. A aninhamento entre funções é parte do cenário, mas o conceito ganha relevância real quando a função interna continua dependente do ambiente externo de maneira preservada. Da mesma forma, closure não é sinônimo de escopo. Escopo é o sistema de regiões de visibilidade. Closure é um comportamento particular que decorre desse sistema em combinação com funções e contexto léxico. Misturar esses conceitos como se fossem idênticos enfraquece muito a compreensão."
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro ponto decisivo é perceber que closures podem ser extremamente úteis justamente porque permitem esconder dados de forma controlada. Uma variável interna da função externa pode não estar diretamente acessível no restante do programa, mas ainda assim pode ser manipulada por funções internas autorizadas. Isso cria uma forma inicial de encapsulamento funcional. O estudante ainda não precisa chamar isso de arquitetura avançada, mas já deve perceber o valor: certos dados deixam de ficar soltos em escopo amplo e passam a viver protegidos por funções que mediam seu acesso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Do ponto de vista da leitura, closures exigem uma mudança de postura. Quando o leitor encontra uma função retornada ou usada posteriormente, precisa perguntar de que ambiente léxico ela veio e que variáveis relevantes ela continua podendo acessar. Essa pergunta é muito mais poderosa do que simplesmente tentar adivinhar o valor por inspeção superficial da linha atual. Closures são compreendidas corretamente quando o programador rastreia a origem da função e o ambiente com que ela permaneceu conectada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse rastreamento é particularmente importante porque closures explicam vários comportamentos que, sem esse modelo mental, parecem contraditórios. Uma variável local da função externa aparentemente deveria ter desaparecido, mas continua sendo usada. Uma função chamada em outro lugar do programa ainda se comporta de acordo com dados do contexto em que foi criada. Nada disso é anomalia. Tudo decorre da preservação da relação léxica relevante entre a função e seu ambiente de origem."
+    },
+    {
+      "type": "paragraph",
+      "text": "No nível profissional, closures aparecem o tempo todo, mesmo quando o programador ainda não as nomeia explicitamente. Elas estão presentes em funções retornadas, funções internas que usam variáveis externas, callbacks com acesso ao ambiente onde foram criados e em vários padrões de encapsulamento e composição. Por isso, aprender closure cedo não é luxo teórico. É adquirir o modelo mental necessário para ler JavaScript real com muito mais segurança e maturidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em síntese, closure é a preservação da relação entre uma função e o ambiente léxico em que ela foi definida, de modo que a função continue podendo acessar variáveis externas relevantes mesmo depois que o fluxo original daquele ambiente já terminou. Esse conceito resulta diretamente da combinação entre escopo, cadeia de escopos e contexto léxico. Compreendê-lo é essencial para entender como JavaScript lida com encapsulamento funcional, retenção de estado e funções que carregam consigo parte do contexto em que nasceram."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "O iniciante já entende escopo e contexto léxico em termos básicos, mas ainda pode estranhar quando uma função continua acessando variáveis de um ambiente externo que aparentemente já deveria ter terminado. Como consequência, closures parecem mágicas ou contraditórias. O problema real é não perceber que a função preserva uma ligação com o contexto léxico em que foi criada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Closure surge quando uma função mantém acesso ao ambiente léxico relevante de sua definição, mesmo após o encerramento do fluxo original desse ambiente. Ela não é um conceito isolado, mas uma consequência da estrutura lexical da linguagem e da cadeia de escopos. Funções internas que continuam usando variáveis externas de seu contexto original são a manifestação clássica desse comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao analisar uma closure, o programador deve perguntar onde a função foi definida, que variáveis externas ela usa e por que essas variáveis continuam acessíveis quando a função é chamada mais tarde. Essa leitura transforma o fenômeno de algo aparentemente misterioso em resultado previsível da arquitetura lexical do JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Função interna: função definida dentro de outro ambiente funcional.",
+        "Ambiente léxico preservado: contexto relevante que continua acessível à função.",
+        "Retenção de acesso: capacidade de continuar usando variáveis externas após o término do fluxo original.",
+        "Encapsulamento funcional: organização de dados privados acessíveis por funções específicas.",
+        "Estado privado: dado mantido fora do escopo global, mas ainda utilizável por closure.",
+        "Continuidade lexical: permanência da ligação entre função e contexto de origem."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Exemplo prático comentado"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function criarContador() {\n  let contador = 0;\n\n  return function () {\n    contador = contador + 1;\n    return contador;\n  };\n}\n\nconst incrementar = criarContador();\nconsole.log(incrementar());\nconsole.log(incrementar());",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarContador"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " contador;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  };"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " incrementar "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "criarContador"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "incrementar"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "incrementar"
+          },
+          {
+            "kind": "plain",
+            "text": "());"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "O exemplo mostra uma closure clássica. A função retornada continua acessando a variável contador, que pertence ao ambiente de criarContador. Mesmo depois que criarContador já terminou sua execução principal, a função interna ainda pode ler e atualizar esse valor. O trecho ilustra de forma muito clara a preservação do vínculo léxico entre a função e o ambiente onde foi criada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um aluno criando uma função que gera identificadores sequenciais. Ele quer que o número atual não fique solto no escopo global, mas também precisa que ele continue sendo atualizado a cada nova chamada. Sem closure, isso pareceria exigir uma variável externa mais exposta. Quando entende o mecanismo, percebe que pode manter esse estado dentro de uma função externa e retornar outra função responsável por incrementá-lo. Esse caso mostra por que closures não são apenas um fenômeno curioso, mas uma ferramenta concreta de encapsulamento e retenção de estado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tratar closure como mágica sem relação com escopo e contexto léxico.",
+        "Confundir closure com qualquer função aninhada, sem observar a retenção de acesso ao ambiente externo.",
+        "Imaginar que as variáveis externas foram apenas copiadas mecanicamente para dentro da função.",
+        "Não rastrear o ambiente de origem da função ao tentar entender seu comportamento.",
+        "Misturar os conceitos de escopo, contexto léxico e closure como se fossem exatamente a mesma coisa."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ler closures perguntando sempre de que ambiente léxico a função veio.",
+        "Usar exemplos pequenos, como contadores, para consolidar o modelo mental.",
+        "Relacionar closure diretamente à combinação entre função interna e ambiente preservado.",
+        "Evitar explicações vagas que falem apenas em memória da função sem contexto estrutural.",
+        "Observar o potencial de encapsulamento e estado privado trazido pelo mecanismo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é closure em JavaScript.",
+        "Consigo relacionar closure a escopo, cadeia de escopos e contexto léxico.",
+        "Percebo por que uma função pode continuar acessando variáveis externas após o término do fluxo original.",
+        "Reconheço o valor de closure para encapsulamento funcional e estado privado.",
+        "Estou preparado para avançar para os casos práticos em que closures aparecem."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com o conceito de closure estabelecido, o próximo passo será estudar casos práticos em que ele aparece. A próxima parte mostrará como esse mecanismo surge em situações reais de programação, aproximando a teoria de padrões concretos que o estudante encontrará em JavaScript com frequência."
+    }
+  ]
+}

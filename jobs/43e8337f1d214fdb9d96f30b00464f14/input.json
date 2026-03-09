@@ -1,0 +1,907 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 5 — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "5",
+    "chapter_title": "Estruturas condicionais e tomada de decisão",
+    "part_number": "6",
+    "part_title": "Erros comuns e armadilhas em lógica condicional",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Estruturas condicionais e tomada de decisão"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Erros comuns e armadilhas em lógica condicional"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de estudar o significado geral da tomada de decisão em programas, aprofundar if, else e else if, posicionar corretamente o operador ternário, compreender o papel do switch e aprender técnicas de simplificação como guard clauses, o leitor está pronto para enfrentar um passo indispensável da formação: reconhecer os erros mais comuns em lógica condicional. Essa etapa é decisiva porque grande parte dos bugs em programas iniciantes — e muitos em programas profissionais — não nasce da ausência total de sintaxe, mas da combinação de critérios mal escritos, ordem inadequada de verificações, interpretação equivocada de truthy e falsy e estruturas que parecem corretas à primeira vista, mas expressam mal o problema real."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em outras palavras, decisões condicionais não falham apenas quando há erro explícito de linguagem. Elas falham também quando o raciocínio que as organiza é fraco, ambíguo ou mal priorizado. Um programa pode executar exatamente como foi escrito e, ainda assim, estar logicamente errado. Esse tipo de erro é particularmente importante porque costuma enganar o iniciante. Como a linguagem não reclama, o autor tende a confiar demais no comportamento visível, sem perceber que a condição foi formulada de maneira inadequada."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é justamente fortalecer o olhar crítico do leitor sobre estruturas condicionais. O foco não é apenas dizer o que evitar, mas explicar por que esses erros acontecem, como detectá-los e que modelo mental correto ajuda a preveni-los. Ao final, o estudante estará mais preparado para revisar a própria lógica e menos vulnerável a armadilhas comuns de fluxo condicional."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: nem toda condição errada parece errada"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos aspectos mais traiçoeiros da lógica condicional é que ela pode falhar silenciosamente. Diferentemente de um erro de sintaxe, que costuma interromper a execução e chamar atenção imediatamente, um erro de critério pode deixar o programa funcionando, porém escolhendo caminhos incorretos. O sistema continua rodando, mensagens aparecem, blocos são executados, mas a decisão tomada não corresponde ao que o problema exigia. Esse tipo de falha é mais perigoso justamente porque não se apresenta como falha óbvia."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real desta parte. O programador precisa aprender a distinguir entre funcionamento superficial e correção lógica real. Uma condição pode ser sintaticamente impecável e, ainda assim, ser semanticamente pobre. Pode avaliar a coisa errada, na ordem errada, com um critério insuficiente ou dependente de uma interpretação equivocada do estado disponível."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, estudar armadilhas condicionais não é pessimismo técnico. É fortalecer a capacidade de revisão e diagnóstico. Quem aprende a ver onde a lógica costuma se quebrar progride muito mais rápido em direção ao nível júnior."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Erro de ordem: critérios corretos, sequência errada"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos erros mais frequentes em cadeias com if e else if é escrever condições que, isoladamente, fazem sentido, mas organizá-las em uma ordem que distorce o fluxo. Como a linguagem avalia os testes em sequência e tende a parar no primeiro caminho satisfeito dentro daquele encadeamento, uma condição mais ampla colocada cedo demais pode capturar casos que deveriam ser tratados por condições posteriores mais específicas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let nota = 9;\n\nif (nota >= 7) {\n  console.log(\"Aprovado\");\n} else if (nota >= 9) {\n  console.log(\"Aprovado com destaque\");\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " nota "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "9"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (nota "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "7"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Aprovado\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "} "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (nota "
+          },
+          {
+            "kind": "operator",
+            "text": ">="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "9"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Aprovado com destaque\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é muito instrutivo. A condição nota >= 9 está correta em si mesma, mas foi colocada depois de uma condição mais ampla, nota >= 7, que já absorve todos os casos maiores. O resultado é que o caminho mais específico nunca será alcançado. O problema não está nos símbolos. Está na prioridade lógica mal organizada."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição principal aqui é simples e poderosa: em decisões encadeadas, a ordem das condições faz parte do significado do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Erro de critério fraco: condição verdadeira demais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro erro comum ocorre quando a condição é formulada de forma fraca demais para o problema real. O programador testa algo genérico quando deveria testar algo específico. Como consequência, a decisão passa em cenários que não deveriam ser aceitos ou bloqueia menos do que o necessário. Esse tipo de erro geralmente aparece quando o autor pensa mais na forma da estrutura condicional do que na precisão do critério lógico."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por exemplo, verificar apenas se um objeto existe pode ser insuficiente quando o problema real exige saber se ele existe, se está autenticado e se possui permissão. Cada camada adicional de exigência faz parte do critério. Se a condição observa apenas a primeira, ela ainda pode ser sintaticamente correta, mas logicamente incompleta."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de falha ensina um princípio importante: uma estrutura condicional nunca é melhor do que o critério que ela recebe. O problema da decisão quase sempre começa antes do if, na forma como o estado foi interpretado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Erro de excesso: condição densa demais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se há condições fracas demais, também há condições densas demais. Em muitos casos, o programador tenta condensar tanta lógica em uma única expressão que o critério se torna difícil de ler, revisar e manter. Mesmo que a expressão esteja correta, a legibilidade cai a ponto de o código ficar frágil. Isso é especialmente comum quando operadores lógicos, negações, comparações e conversões implícitas se acumulam em uma única linha sem apoio visual adequado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O problema desse estilo é que a condição deixa de comunicar com clareza o que está sendo validado. O leitor passa a precisar fazer engenharia reversa da expressão para descobrir a intenção do autor. Em contextos pequenos, isso já atrapalha. Em contextos reais, pode virar fonte séria de bug durante manutenção."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição aqui é importante: simplificar o fluxo com guard clauses não significa comprimir tudo dentro de um teste obscuro. Clareza continua sendo o critério dominante."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Erro com truthy e falsy: confiar na aparência humana do valor"
+    },
+    {
+      "type": "paragraph",
+      "text": "Como vimos no capítulo anterior, JavaScript permite que muitos valores sejam avaliados logicamente em contexto condicional. Isso é poderoso, mas também cria armadilhas. Uma das mais clássicas ocorre quando o programador trata a aparência humana do dado como se fosse equivalente ao comportamento lógico formal da linguagem. Strings como \"false\" ou \"0\", por exemplo, podem parecer negativas para um ser humano, mas continuam sendo strings não vazias e, portanto, tendem a se comportar como truthy."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let resposta = \"false\";\n\nif (resposta) {\n  console.log(\"Condição satisfeita\");\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " resposta "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"false\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (resposta) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Condição satisfeita\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de exemplo é especialmente importante porque mostra como uma condição pode parecer “obviamente falsa” para o iniciante e, ainda assim, ser lida como verdadeira pela linguagem. O problema aqui não está no if, mas na leitura errada do tipo e do comportamento lógico do valor."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: em condições, não confie no que o valor parece dizer em linguagem natural; confie em como ele é representado formalmente na linguagem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Erro por nomes ruins: a condição observa algo opaco"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma lógica condicional pode estar comprometida antes mesmo de o primeiro operador aparecer, simplesmente porque os nomes usados para representar o estado são vagos ou enganosos. Quando a condição se apoia em identificadores como x, status, valor ou dado sem contexto claro, o leitor perde capacidade de revisar rapidamente o que está sendo testado. Isso aumenta a chance de aceitar lógica fraca, errada ou incompleta sem perceber."
+    },
+    {
+      "type": "paragraph",
+      "text": "Compare mentalmente if (x) com if (usuarioAutenticado). Mesmo que ambos possam ser tecnicamente válidos em algum contexto, o segundo já informa muito mais sobre o critério observado. Bons nomes fortalecem condições. Nomes ruins enfraquecem a revisão lógica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto reforça a integração entre os capítulos do livro: a qualidade da decisão depende também da qualidade do estado e da nomeação que a antecedem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Erro de aninhamento desnecessário"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outra armadilha muito comum é enterrar o fluxo principal em múltiplos níveis de if desnecessários, mesmo quando o problema poderia ser organizado com guard clauses ou com uma estrutura mais direta. O resultado é um código em que o leitor precisa atravessar várias camadas de recuo para descobrir o comportamento principal. Além disso, as condições impeditivas ficam menos visíveis, e o raciocínio tende a se tornar mais opaco."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse erro não está na validade sintática do aninhamento, mas em sua consequência para a legibilidade. Como vimos na parte anterior, um código muito aninhado pode esconder o caminho normal e tornar difícil perceber rapidamente o que é exceção, o que é bloqueio e o que é fluxo principal."
+    },
+    {
+      "type": "paragraph",
+      "text": "A solução, em muitos casos, não é eliminar condicionais, mas reorganizá-las para que a estrutura conte melhor a lógica do problema."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Erro de switch sem break"
+    },
+    {
+      "type": "paragraph",
+      "text": "No caso do switch, uma das armadilhas clássicas é esquecer break quando o fall-through não é intencional. O programador imagina que apenas o case correspondente será executado, mas, sem interrupção explícita, o fluxo continua pelos casos seguintes. O resultado pode parecer estranho para quem não internalizou esse comportamento interno da estrutura."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const nivel = 1;\n\nswitch (nivel) {\n  case 1:\n    console.log(\"Nível 1\");\n  case 2:\n    console.log(\"Nível 2\");\n  default:\n    console.log(\"Fim\");\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nivel "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "switch"
+          },
+          {
+            "kind": "plain",
+            "text": " (nivel) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Nível 1\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Nível 2\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "default"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Fim\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo reaparece aqui porque é realmente um dos erros mais comuns do cotidiano em estruturas com múltiplos casos. O estudante deve memorizar menos o “caso específico” e mais a regra geral: switch precisa de break quando se deseja interromper a execução de um caso, salvo quando a continuidade entre casos for deliberada e clara."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa revisão condicional inclui também esse tipo de vigilância estrutural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Erro de escolher a estrutura errada para o problema"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nem todo problema de decisão deve ser resolvido com a mesma ferramenta. Há casos em que if/else é claramente melhor. Outros em que switch organiza melhor. Outros em que um ternário simples é suficiente. Um erro relativamente comum é insistir em uma única forma por hábito ou preferência, sem perguntar se ela realmente representa bem a lógica do caso atual."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por exemplo, usar ternário em decisão longa demais pode destruir clareza. Usar switch em critérios heterogêneos pode tornar o código artificial. Usar if/else encadeado em uma classificação muito regular pode perder a oportunidade de organização oferecida por switch. O problema, então, não está apenas na sintaxe, mas na inadequação entre ferramenta e contexto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse erro ensina uma lição de engenharia mais ampla: escrever bem em JavaScript exige escolher não apenas um critério correto, mas também a forma de expressão mais apropriada para esse critério."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Estudo de caso: validação aparentemente correta, mas incompleta"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma rotina que pretende permitir envio de formulário apenas quando nome, email e aceite de termos estiverem presentes. O autor escreve uma condição que verifica apenas nome e email. O código roda, o envio acontece, a interface parece funcional. No entanto, a regra de negócio real foi violada, porque o aceite de termos ficou de fora. Esse é um excelente exemplo de bug lógico silencioso: a estrutura condicional existe, o fluxo escolhe um caminho, mas o critério não representa adequadamente o problema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso mostra por que a revisão de condicionais deve sempre perguntar: esta condição cobre tudo o que o problema realmente exige? A simples presença de um if não garante que o raciocínio esteja completo. Decisões corretas dependem de critérios completos e bem priorizados."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: condicional boa não é a que apenas existe, mas a que expressa fielmente a regra que deveria governar o fluxo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns desta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Organizar condições corretas em ordem errada dentro de uma cadeia de decisão.",
+        "Escrever critérios fracos demais para o problema real.",
+        "Comprimir lógica excessiva em condições densas e difíceis de revisar.",
+        "Confiar na aparência humana de valores truthy e falsy em vez da representação formal.",
+        "Usar nomes vagos que tornam opaco o que está sendo testado.",
+        "Manter aninhamento excessivo quando guard clauses deixariam o fluxo mais claro.",
+        "Esquecer break em switch quando o fall-through não é intencional.",
+        "Escolher a estrutura condicional errada para o tipo de decisão envolvida."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Revise sempre a ordem das condições em cadeias com else if.",
+        "Pergunte se o critério realmente cobre toda a regra do problema.",
+        "Teste valores potencialmente enganosos no console para observar truthy e falsy com precisão.",
+        "Prefira nomes claros para os estados observados em decisões.",
+        "Reescreva condicionais densas em versões mais legíveis para comparar clareza.",
+        "Use guard clauses quando elas tornarem o caminho principal mais visível.",
+        "Ao usar switch, pense deliberadamente na presença ou ausência de break."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 6"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo reconhecer que uma condição pode estar sintaticamente correta e logicamente errada.",
+        "Entendo a importância da ordem dos critérios em cadeias de decisão.",
+        "Reconheço armadilhas ligadas a truthy e falsy em contexto condicional.",
+        "Percebo como nomes ruins enfraquecem a leitura da lógica.",
+        "Entendo por que aninhamento excessivo pode esconder o fluxo principal.",
+        "Reconheço o risco de fall-through involuntário em switch.",
+        "Estou preparado para consolidar o capítulo com exercícios comentados na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de estudar as estruturas condicionais e mapear suas armadilhas mais comuns, o próximo passo é consolidar tudo isso em exercícios comentados. Na próxima parte, o capítulo se encerrará com exemplos práticos de tomada de decisão, permitindo ao leitor revisar if, else, else if, ternário, switch, guard clauses e lógica condicional com foco em interpretação correta do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa conclusão é importante porque a tomada de decisão é uma das competências mais fundamentais da programação. Consolidá-la com exercícios comentados ajuda o estudante a transformar teoria em leitura segura e escrita mais profissional."
+    }
+  ]
+}

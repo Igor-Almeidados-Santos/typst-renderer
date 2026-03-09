@@ -1,0 +1,649 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Callbacks e composição inicial de comportamento",
+    "part_number": "1",
+    "part_title": "O que é um callback e por que ele existe",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Callbacks e composição inicial de comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — O que é um callback e por que ele existe"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de consolidar o estudo das funções em profundidade, o leitor está pronto para avançar para um dos padrões mais importantes do JavaScript moderno: o callback. Até aqui, as funções foram estudadas como unidades de comportamento reutilizável, capazes de receber entradas, produzir saídas e organizar lógica com clareza. Agora, esse repertório será levado a um novo nível. A função deixará de ser apenas algo definido e chamado diretamente pelo próprio programador e passará a ser entendida também como comportamento que pode ser entregue a outro contexto para ser executado depois, no momento apropriado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque grande parte da expressividade do JavaScript nasce justamente da capacidade de tratar funções como valores e entregá-las a outros trechos do programa. Métodos de arrays, eventos de interface, temporizadores, bibliotecas, APIs e inúmeras partes do ecossistema usam callbacks como forma de desacoplar o que deve acontecer do momento exato em que isso acontecerá. Sem compreender callbacks, o estudante entende apenas parte da gramática real da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre o que é um callback e por que ele existe. Antes de entrar em cenários mais sofisticados de assíncronia ou em padrões mais complexos de composição, é essencial compreender a motivação estrutural do callback: permitir que um comportamento seja passado para outro contexto, que decidirá quando e como executá-lo. Ao final, o leitor deixará de ver callbacks como truques sintáticos e passará a entendê-los como uma das formas mais centrais de organizar comportamento flexível em JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: às vezes o comportamento precisa ser entregue a outro contexto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos problemas reais, o programador não quer apenas executar uma função imediatamente. Ele quer informar a outro trecho do programa qual comportamento deve ser realizado quando certa situação ocorrer. Pode ser “faça isto para cada item da coleção”, “execute isto quando o clique acontecer”, “rode isto depois de certo tempo”, “use esta lógica para filtrar os dados” ou “aplique esta transformação sobre cada elemento”. Em todos esses casos, o comportamento precisa ser entregue a outro mecanismo que controlará a execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que os callbacks resolvem. Eles permitem passar uma função como valor para outro contexto, que então a chamará em conformidade com sua própria lógica. O programador deixa de apenas chamar diretamente uma função e passa a fornecer comportamento para ser usado por outra parte do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que isso amplia muito o poder da linguagem. O programa deixa de ser apenas uma sequência de chamadas explícitas e passa a organizar colaboração entre comportamentos e contextos de execução."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é um callback em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, um callback é uma função passada como argumento para outra função ou método, com a expectativa de que será chamada posteriormente por esse outro contexto. Em outras palavras, o callback é um comportamento entregue para uso futuro ou contextual, e não necessariamente executado imediatamente no ponto em que aparece no código."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function executarAcao(acao) {\n  acao();\n}\n\nexecutarAcao(function () {\n  console.log(\"Ação executada.\");\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "executarAcao"
+          },
+          {
+            "kind": "plain",
+            "text": "(acao) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "acao"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "executarAcao"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Ação executada.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a função anônima passada para executarAcao é o callback. Ela foi entregue como argumento e executada dentro do contexto da função principal. O ponto mais importante aqui não é a complexidade da lógica, mas o modelo mental: uma função foi tratada como valor e entregue a outro comportamento para ser chamada dali."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve associar callback à ideia de comportamento fornecido a outro trecho do programa para execução contextual."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Callback depende diretamente da ideia de função como valor"
+    },
+    {
+      "type": "paragraph",
+      "text": "O capítulo anterior mostrou que funções em JavaScript podem ser tratadas como valor. Essa ideia, que já parecia importante em expressões de função e arrow functions, agora revela toda a sua potência. O callback só é possível porque a linguagem permite armazenar, passar e reutilizar funções como parte viva da composição do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é central para a coerência do aprendizado. Callback não é um conceito que surge do nada. Ele é consequência direta da natureza flexível da função em JavaScript. Se a função pode ser atribuída a variável e passada como argumento, então ela também pode ser entregue a outro contexto como comportamento delegado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que callbacks representam um uso avançado, mas perfeitamente coerente, de tudo o que já foi construído no capítulo de funções."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. O contexto que recebe o callback decide quando chamá-lo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das características mais importantes do callback é que quem o recebe passa a controlar o momento de sua execução. Isso muda bastante o modelo mental do fluxo. O programador não apenas chama uma função no instante em que escreve seu nome. Ele entrega essa função a outro mecanismo e confia que esse mecanismo a executará quando for apropriado segundo sua lógica interna."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque mostra que callbacks envolvem delegação de controle. A função principal não apenas recebe dados; ela recebe comportamento. E esse comportamento será invocado segundo regras definidas por quem o recebeu. Em alguns casos, isso acontece imediatamente. Em outros, pode acontecer mais tarde. Mas a chave conceitual já está presente desde agora: o controle da chamada deixa de estar exclusivamente no ponto externo."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é clara: callback é comportamento entregue com execução governada pelo contexto receptor."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Métodos de array como primeiros grandes exemplos de callback"
+    },
+    {
+      "type": "paragraph",
+      "text": "Embora o leitor talvez não tenha chamado isso pelo nome até agora, vários métodos de arrays já estudados no livro usam callbacks. Quando se escreve forEach, map, filter ou reduce com uma função passada como argumento, o que está sendo fornecido é justamente um callback. O método recebe esse comportamento e o executa conforme sua própria lógica sobre os elementos da coleção."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const numeros = [1, 2, 3];\n\nnumeros.forEach(function (numero) {\n  console.log(numero);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " numeros "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "numeros."
+          },
+          {
+            "kind": "function",
+            "text": "forEach"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (numero) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(numero);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a função passada para forEach é um callback. O método da coleção decide chamá-la uma vez para cada item do array. Isso mostra com muita clareza o poder do modelo: o programador não escreve manualmente a chamada da função para cada elemento. Ele entrega o comportamento ao método, e o método o aplica no contexto apropriado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse reconhecimento é muito importante porque torna familiar algo que, à primeira vista, poderia parecer completamente novo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Callback como forma de tornar sistemas mais flexíveis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das maiores vantagens dos callbacks é a flexibilidade. Em vez de fixar rigidamente o comportamento dentro de uma função ou método, o programa pode abrir espaço para que esse comportamento seja fornecido de fora. Isso torna a estrutura mais reutilizável, porque o mesmo mecanismo pode operar com diferentes lógicas conforme o callback recebido."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por exemplo, uma função que percorre uma lista pode aceitar callbacks diferentes para imprimir, validar, transformar ou acumular dados. O mecanismo geral permanece o mesmo, mas o comportamento específico muda conforme a função passada. Esse tipo de abertura é muito valioso na arquitetura do código, porque separa a infraestrutura do processo da lógica específica a ser aplicada."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a ver callbacks como ferramenta de parametrização do comportamento, e não apenas como função escrita dentro de outra chamada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Callback não significa necessariamente assíncrono"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro comum em estágios iniciais do estudo é associar callback imediatamente à assíncronia. Embora callbacks sejam muito importantes em contextos assíncronos, o conceito em si é mais amplo. Qualquer função passada para outro contexto para ser executada por esse contexto pode ser entendida como callback, mesmo que a chamada ocorra de forma imediata e síncrona, como em métodos de array."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é fundamental porque evita uma confusão conceitual muito frequente. A assíncronia é um uso relevante dos callbacks, mas não é a definição inteira do conceito. Primeiro, o estudante precisa compreender a lógica geral da delegação de comportamento. Depois, poderá ver essa lógica operando também em cenários temporais mais complexos."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição importante aqui é: callback é, antes de tudo, comportamento passado para outro contexto, e não sinônimo automático de “algo que roda mais tarde”."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: personalizar o que acontece com cada item"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um mecanismo genérico que percorre itens de uma coleção. Em vez de fixar internamente o que deve ser feito com cada elemento, ele recebe um callback responsável por decidir a ação. Em um caso, o callback exibe o item. Em outro, valida o item. Em outro, transforma o item. Esse cenário resume muito bem a utilidade estrutural do callback: o processo geral permanece o mesmo, mas a lógica aplicada a cada item pode variar."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra a essência da composição por callbacks. O programa passa a separar estrutura do percurso e comportamento aplicado. Essa separação é uma das grandes forças do JavaScript moderno e aparece em inúmeros pontos da linguagem e de suas bibliotecas."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: callbacks permitem que a mesma infraestrutura de comportamento seja reutilizada com lógicas específicas diferentes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de reconhecer o callback na leitura"
+    },
+    {
+      "type": "paragraph",
+      "text": "Para muitos iniciantes, callbacks parecem confusos porque a leitura do fluxo deixa de ser totalmente linear. Uma função aparece dentro da chamada de outra função, e isso pode gerar a impressão de que o código ficou mais intricado do que necessário. No entanto, quando o leitor reconhece que ali existe uma função sendo passada como comportamento delegado, a estrutura começa a se tornar mais legível. O que parecia “função dentro de função” passa a ser lido como contexto principal recebendo lógica específica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem grande valor editorial porque a capacidade de reconhecer callbacks reduz muito a ansiedade visual diante do JavaScript real. Em vez de se perder na aparência, o estudante aprende a perguntar: quem está recebendo o callback, quando vai chamá-lo e com que objetivo? Essas perguntas organizam a leitura."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em programação profissional, reconhecer callbacks com naturalidade é parte essencial da fluência em JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que um bom uso de callback costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que um bom uso de callback costuma comunicar pelo menos três coisas importantes: qual contexto está recebendo o comportamento, que papel esse comportamento desempenha dentro da lógica maior e por que faz sentido delegar essa parte ao callback em vez de fixá-la rigidamente. Esses três elementos ajudam o leitor a julgar a clareza do desenho do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a não ver callbacks apenas como moda sintática ou como obrigação técnica. A pergunta correta é: o callback ajuda a separar mecanismo geral e lógica específica de forma mais clara e reutilizável? Quando a resposta é sim, ele se torna uma ferramenta poderosa de design. Quando a resposta é não, talvez esteja apenas complicando a leitura."
+    },
+    {
+      "type": "paragraph",
+      "text": "O bom callback, portanto, não é apenas uma função passada por argumento. É uma escolha de composição que torna o comportamento mais flexível sem destruir a inteligibilidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que callback é um conceito completamente novo e desconectado do estudo das funções como valor.",
+        "Confundir callback com assíncronia em todos os casos.",
+        "Ver uma função passada como argumento e não reconhecer que ela será executada pelo contexto receptor.",
+        "Ler métodos de array sem perceber que já está lidando com callbacks.",
+        "Tratar callback apenas como “função dentro de outra”, sem entender a delegação de comportamento.",
+        "Subestimar a importância de identificar quem controla o momento da chamada."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe callback sempre à ideia de comportamento passado para outro contexto.",
+        "Releia exemplos de métodos de array reconhecendo explicitamente o callback fornecido.",
+        "Pergunte quem recebe a função, quando a chama e com qual finalidade.",
+        "Evite reduzir callback a sinônimo de assíncrono antes de consolidar o conceito geral.",
+        "Veja callbacks como forma de separar mecanismo geral e lógica específica.",
+        "Prepare-se para estudar callbacks em contextos mais práticos e em padrões mais ricos nas próximas partes do capítulo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 1"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é um callback em nível introdutório e conceitual.",
+        "Reconheço que callbacks dependem diretamente da ideia de função como valor.",
+        "Percebo que métodos de array usam callbacks com frequência.",
+        "Entendo que o contexto receptor controla a execução do callback.",
+        "Reconheço que callback não é sinônimo automático de assíncrono.",
+        "Estou preparado para estudar callbacks em uso mais profundo e composição prática na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o modelo mental do callback foi estabelecido, o próximo passo é observar com mais profundidade como ele opera em composições práticas de comportamento. Na próxima parte, entraremos em callbacks em percursos, transformações e customização de lógica em funções mais genéricas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque permitirá ao estudante perceber o callback não apenas como definição conceitual, mas como ferramenta concreta de composição funcional no JavaScript cotidiano."
+    }
+  ]
+}

@@ -1,0 +1,644 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 6 — Parte 6",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "6",
+    "chapter_title": "Estruturas de repetição e controle iterativo do fluxo",
+    "part_number": "6",
+    "part_title": "Erros comuns e armadilhas em estruturas de repetição",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 6 — Estruturas de repetição e controle iterativo do fluxo"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 6 — Erros comuns e armadilhas em estruturas de repetição"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de estudar o significado geral da repetição, compreender while, do...while e for, e analisar o papel de break e continue no controle fino dos laços, o leitor está pronto para uma etapa indispensável da formação: mapear os erros e armadilhas mais comuns das estruturas de repetição. Essa etapa é decisiva porque laços costumam falhar menos por desconhecimento bruto de sintaxe e mais por falhas de desenho lógico. Muitas vezes o programador sabe escrever um while ou um for, mas erra o limite, esquece de atualizar o estado, interrompe na hora errada, usa continue de forma opaca ou não percebe que o laço está infinitamente próximo de nunca terminar."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em outras palavras, repetição não costuma ser perigosa por ser complicada na aparência, mas por ser fácil demais de escrever com lógica incompleta. Um laço sintaticamente correto pode estar profundamente errado em sua arquitetura. Pode rodar vezes demais, de menos, para sempre ou de forma tão confusa que o leitor não consiga reconstruir seu propósito com segurança. É justamente essa camada que esta parte pretende tornar visível."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo aqui é fortalecer a revisão crítica de processos iterativos. O leitor verá por que certos erros acontecem, como reconhecê-los cedo e que modelo mental correto ajuda a preveni-los. Ao final, estará mais preparado para escrever laços não apenas funcionais, mas previsíveis, legíveis e coerentes com o problema real."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: um laço pode parecer simples e ainda assim estar logicamente errado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das dificuldades mais importantes em estruturas de repetição é que o erro nem sempre se apresenta como sintaxe inválida. Muitas vezes o laço roda. O programa não trava imediatamente. O console imprime algo. O fluxo parece seguir. E, ainda assim, a arquitetura iterativa está errada. Pode haver uma iteração a mais, uma a menos, uma interrupção prematura, uma condição que nunca deveria ter continuado ou uma repetição que jamais deveria ter começado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real desta parte. O programador precisa aprender a revisar laços não apenas perguntando “isso roda?”, mas perguntando “isso começa no lugar certo, continua pelo motivo certo, progride do jeito certo e termina no ponto certo?”. Sem essa revisão, erros silenciosos se tornam fáceis de aceitar, especialmente em exemplos pequenos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, estudar armadilhas em repetição é estudar qualidade de raciocínio iterativo. E essa qualidade é central para a formação júnior."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Erro clássico: laço infinito por ausência de atualização"
+    },
+    {
+      "type": "paragraph",
+      "text": "O erro mais famoso e mais perigoso em laços é o laço infinito causado por ausência de atualização adequada do estado. Isso ocorre quando a condição de continuidade depende de um valor que nunca muda ou muda de forma insuficiente para caminhar em direção ao encerramento. O laço continua sempre elegível para outra iteração e o programa fica preso em repetição indefinida."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let contador = 1;\n\nwhile (contador <= 5) {\n  console.log(contador);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " contador "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "while"
+          },
+          {
+            "kind": "plain",
+            "text": " (contador "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(contador);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, a condição depende de contador, mas contador nunca é atualizado. Como começa em 1 e continua em 1, a condição permanece verdadeira indefinidamente. O problema não está na forma do while em si. Está na ausência de progresso. Esse caso deve se tornar um alerta quase automático na mente do estudante: laço sem avanço é risco estrutural imediato."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é simples: toda repetição saudável precisa de uma história clara sobre como termina."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Erro de limite: uma iteração a mais ou a menos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nem todo erro iterativo explode em infinito. Um dos problemas mais frequentes é muito mais sutil: o laço executa um número incorreto de vezes por causa de um limite mal formulado. Isso acontece, por exemplo, quando o programador usa <= onde deveria usar <, ou o contrário. Em percursos por índices, esse tipo de falha pode gerar acesso indevido, omissão do último elemento ou processamento além do intervalo desejado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "for (let i = 0; i <= 5; i = i + 1) {\n  console.log(i);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(i);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo pode ser correto ou incorreto dependendo do objetivo do problema. E é exatamente isso que o torna tão importante. O estudante precisa aprender a revisar laços perguntando não apenas se a condição parece plausível, mas se ela corresponde exatamente ao intervalo desejado. Em muitas situações, um único sinal muda o comportamento do processo de forma relevante."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: em laços, a fronteira importa. Um erro pequeno no limite produz comportamento errado repetido muitas vezes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Erro de ponto de partida inadequado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro erro comum acontece quando o laço começa no ponto errado. O programador inicializa o estado iterativo cedo demais, tarde demais ou em posição incompatível com a lógica do problema. Mesmo que a condição e a atualização pareçam coerentes, o processo inteiro pode ficar desalinhado por causa da escolha inadequada do estado inicial."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de falha é muito importante porque mostra que a revisão de laços não começa apenas na condição. Ela começa no ponto de partida. Um processo que deveria percorrer de 0 até 4 se comporta de forma diferente de um processo que começa em 1. Um índice iniciado fora da posição correta compromete toda a sequência."
+    },
+    {
+      "type": "paragraph",
+      "text": "A pergunta essencial aqui é: por que a iteração começa exatamente neste valor e não em outro? Se o programador não consegue justificar isso claramente, o laço ainda está conceitualmente frágil."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Erro de atualização incompatível com a condição"
+    },
+    {
+      "type": "paragraph",
+      "text": "Há casos em que o laço possui atualização, mas ela não conversa corretamente com a condição. Por exemplo, o estado é decrementado quando deveria ser incrementado, ou atualizado em ritmo inadequado para alcançar o critério de parada. O resultado pode ser um laço infinito, um término prematuro ou um percurso com comportamento não pretendido."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse erro é particularmente traiçoeiro porque, visualmente, tudo parece presente: há estado inicial, há condição, há atualização. Ainda assim, a direção lógica do processo está errada. Isso mostra por que não basta verificar se os componentes existem. É preciso verificar se eles cooperam corretamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa revisão iterativa deve sempre perguntar: esta atualização está levando o estado na direção da condição de parada ou afastando-o dela?"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Erro de break prematuro ou mal posicionado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao usar break, o programador ganha poder para encerrar um laço antes do seu término natural. Isso é útil, mas pode gerar erro quando a interrupção ocorre cedo demais ou com critério mal formulado. O resultado é um processo que termina antes de cumprir seu objetivo real. Muitas vezes o laço parece “funcionar”, mas abandona a iteração em um ponto logicamente inadequado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de erro é especialmente importante porque break costuma parecer intuitivo. O estudante acha que está apenas controlando melhor o fluxo, mas, se o critério não refletir corretamente o objetivo do laço, o resultado é uma iteração truncada. Em processos de busca, validação ou acumulação, isso pode comprometer totalmente a lógica."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição aqui é que break deve responder a uma pergunta muito clara: o laço já pode parar porque sua missão foi cumprida ou inviabilizada?"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Erro de continue opaco ou desnecessário"
+    },
+    {
+      "type": "paragraph",
+      "text": "Continue pode ser muito útil para ignorar certos casos locais e seguir com o restante da repetição. O problema surge quando seu uso torna o laço opaco. Isso acontece quando o programador espalha muitos continues pelo bloco, usa critérios pouco claros ou pula partes da iteração sem que o leitor compreenda rapidamente o motivo. Em vez de simplificar, o recurso passa a fragmentar a leitura."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em alguns casos, o continue também é usado sem real necessidade, quando uma estrutura condicional simples dentro do bloco já comunicaria melhor o comportamento. O resultado é que a intenção do processo fica menos visível, e o leitor precisa reconstruir o fluxo com esforço adicional."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é importante: continue é valioso quando torna explícita uma exclusão local natural. Se ele só aumenta a dificuldade de leitura, provavelmente o desenho do laço pode ser melhorado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Erro de escolher o laço inadequado para o problema"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nem todo processo iterativo combina igualmente bem com qualquer tipo de laço. Um erro relativamente comum é escolher for, while ou do...while por hábito, sem perguntar qual estrutura melhor representa a lógica do processo. Em alguns casos, while comunicaria melhor a continuidade condicional. Em outros, for comunicaria melhor a regularidade do percurso. Em cenários específicos, do...while expressaria melhor a primeira execução obrigatória."
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando a escolha da estrutura não acompanha a natureza do problema, o código pode continuar correto, mas ficar artificial, menos legível ou mais difícil de revisar. Isso mostra que a revisão de laços não deve olhar apenas para o corpo da repetição, mas também para a fidelidade da estrutura escolhida ao processo modelado."
+    },
+    {
+      "type": "paragraph",
+      "text": "A maturidade do programador aparece justamente quando ele pergunta não só se o laço funciona, mas se ele representa bem a lógica do processo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Erro de perder a visibilidade do propósito do laço"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um laço pode estar tecnicamente correto e ainda assim ser ruim porque o leitor não consegue perceber com clareza o seu propósito. Isso acontece quando o estado é mal nomeado, a condição é opaca, a atualização fica escondida ou o corpo do laço mistura responsabilidades demais. O resultado é um processo iterativo cuja intenção se perde em detalhes operacionais."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de erro é muito relevante para a formação profissional. Em software real, não basta que o laço termine. É desejável que alguém consiga entender relativamente rápido o que ele percorre, por que continua, por que termina e o que está sendo transformado a cada passo. Quando essa leitura falha, o laço se torna fonte de manutenção difícil e revisão custosa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, a qualidade editorial da repetição deve ser tratada como requisito técnico, e não como luxo estilístico."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Estudo de caso: busca interrompida cedo demais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um laço que percorre uma lista à procura de um item com certa propriedade. O autor, por engano, coloca um break ao encontrar um caso parcial que ainda não satisfaz totalmente o critério. O laço para cedo, o programa continua rodando e nada acusa sintaxe errada. Ainda assim, a busca fracassou logicamente. Esse estudo de caso mostra como laços podem falhar silenciosamente por causa de interrupções mal alinhadas ao objetivo real da iteração."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse cenário é extremamente didático porque mostra um tipo de erro muito real em desenvolvimento profissional. O problema não está no break em si. Está em usá-lo sem que o ponto de parada represente realmente o encerramento legítimo do problema. Em revisões de laço, essa é uma pergunta crucial: o critério de saída antecipa corretamente o fim do objetivo?"
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é direta: em repetição, parar antes do tempo é tão problemático quanto continuar além do necessário."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns desta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escrever laços sem atualização adequada do estado.",
+        "Definir limites com sinais errados, gerando uma iteração a mais ou a menos.",
+        "Escolher ponto de partida incompatível com o percurso desejado.",
+        "Atualizar o estado em direção contrária à condição de parada.",
+        "Usar break cedo demais ou sem critério alinhado ao objetivo do laço.",
+        "Usar continue de forma opaca, tornando o fluxo mais difícil de entender.",
+        "Escolher a estrutura iterativa por hábito, e não pela lógica do processo.",
+        "Escrever laços cujo propósito é pouco visível para quem lê."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Revise sempre a tríade: ponto de partida, condição e atualização.",
+        "Pergunte em voz mental como o laço termina e por que ele não termina cedo demais.",
+        "Teste pequenas variações de limite para observar como uma mudança de sinal altera o comportamento.",
+        "Ao usar break, justifique explicitamente o motivo da interrupção antecipada.",
+        "Ao usar continue, verifique se ele realmente simplifica ou se apenas fragmenta o fluxo.",
+        "Escolha entre while, do...while e for com base na forma do processo, não por reflexo.",
+        "Releia o laço como narrativa: o que ele percorre, o que observa e o que transforma a cada volta?"
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 6"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo reconhecer os riscos de laço infinito, limite incorreto e atualização inadequada.",
+        "Percebo a importância do ponto de partida na lógica iterativa.",
+        "Entendo que break e continue podem melhorar ou piorar o fluxo dependendo do uso.",
+        "Reconheço que a escolha da estrutura iterativa deve refletir a natureza do processo.",
+        "Percebo a diferença entre laço que roda e laço que representa corretamente o problema.",
+        "Estou preparado para consolidar o capítulo com exercícios comentados na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de estudar as principais estruturas de repetição e mapear suas armadilhas mais comuns, o próximo passo é consolidar tudo isso em exercícios comentados. Na próxima parte, o capítulo se encerrará com exemplos práticos que permitirão ao leitor revisar while, do...while, for, break, continue e os erros mais importantes da lógica iterativa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa conclusão é essencial porque estruturas de repetição não se tornam seguras apenas com explicação teórica. Elas se tornam seguras quando o leitor aprende a reconhecer o comportamento do fluxo em exemplos concretos e a revisar criticamente o próprio desenho iterativo."
+    }
+  ]
+}

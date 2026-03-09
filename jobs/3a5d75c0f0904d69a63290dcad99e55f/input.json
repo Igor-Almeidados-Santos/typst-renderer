@@ -1,0 +1,1063 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 8 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "8",
+    "chapter_title": "Objetos e modelagem por propriedades",
+    "part_number": "3",
+    "part_title": "Métodos em objetos e comportamento associado",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 8 — Objetos e modelagem por propriedades"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Métodos em objetos e comportamento associado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é um objeto e de estudar o acesso, a leitura e a atualização de propriedades, o leitor está pronto para entrar em uma dimensão ainda mais rica dessa estrutura: a associação entre dados e comportamento. Até aqui, o objeto foi tratado principalmente como entidade composta por atributos nomeados. Agora ele começará a ser visto também como estrutura capaz de abrigar operações relacionadas ao seu próprio contexto. É exatamente nesse ponto que surgem os métodos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é muito importante porque aproxima a modelagem do código da forma como muitas entidades do mundo real são entendidas. Um usuário não apenas possui nome e email; ele pode autenticar-se, encerrar sessão ou atualizar seu perfil. Um produto não apenas possui preço e estoque; ele pode aplicar desconto, atualizar disponibilidade ou exibir um resumo de si mesmo. Um pedido não apenas tem status; ele pode avançar de etapa, calcular total ou registrar confirmação. Em todos esses casos, os dados e as ações relacionadas a eles aparecem fortemente conectados."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é apresentar o conceito de método em objetos com profundidade conceitual e clareza editorial. O leitor compreenderá o que significa dizer que uma função está associada a um objeto, por que isso é útil para modelagem e como esse tipo de organização fortalece a coesão entre atributos e comportamento. Ao final, o objeto deixará de parecer apenas um agrupamento de propriedades e passará a ser entendido como uma entidade que também pode oferecer ações coerentes com seu próprio estado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: entidades do domínio não apenas têm atributos, elas também realizam ações"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o estudante aprende objetos pela primeira vez, é comum pensar neles apenas como coleções de propriedades. Essa visão é útil, mas incompleta. Em software real, as entidades que modelamos raramente existem como conjuntos passivos de dados sem comportamento associado. Um usuário pode ser ativado ou desativado. Um carrinho de compras pode adicionar itens e calcular subtotal. Uma conta pode verificar saldo. Um formulário pode validar campos. Em todos esses casos, a entidade não é só aquilo que ela tem. É também aquilo que ela faz ou pode fazer dentro da lógica do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que os métodos ajudam a resolver. Eles permitem associar ações relevantes ao próprio objeto, em vez de espalhar toda a lógica relacionada a essa entidade por funções externas desconectadas da estrutura principal. Isso não elimina outros estilos possíveis de organização, mas oferece uma forma muito expressiva de manter unidos os dados e certos comportamentos que pertencem ao mesmo núcleo semântico."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber, portanto, que métodos não são apenas funções colocadas dentro de objetos por conveniência. Eles representam uma estratégia de modelagem em que comportamento faz parte da identidade prática da entidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é um método em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, um método é uma função armazenada como propriedade de um objeto. Isso significa que, assim como uma propriedade pode guardar string, número ou booleano, ela também pode guardar uma função. Quando essa função está ligada ao objeto e é usada como ação pertencente a ele, chamamos essa propriedade funcional de método."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  saudacao: function () {\n    console.log(\"Olá, usuário!\");\n  }\n};\n\nusuario.saudacao();",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  saudacao"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Olá, usuário!\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "usuario."
+          },
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, saudacao é uma propriedade cujo valor é uma função. Ao ser chamada por meio do objeto, ela passa a representar um comportamento associado à entidade usuario. O ponto mais importante aqui não é ainda aprofundar todos os detalhes técnicos das funções, o que será tratado em capítulo próprio, mas compreender a função estrutural do método como ação vinculada ao objeto."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve internalizar a seguinte ideia: propriedades descrevem o que a entidade tem; métodos podem descrever o que ela faz."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Por que associar comportamento ao objeto melhora a modelagem"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando certos comportamentos pertencem claramente ao contexto de uma entidade, associá-los ao objeto pode tornar o código mais coeso e mais legível. Em vez de manter dados de um lado e ações relacionadas a esses dados totalmente espalhadas por outro, o programador reúne sob a mesma estrutura aquilo que faz parte do mesmo núcleo de sentido. Isso facilita a leitura porque o leitor encontra, em um mesmo lugar, atributos relevantes e operações coerentes com eles."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ganho de coesão é muito importante para a formação. Ele mostra que modelagem boa não depende apenas de organizar dados, mas também de organizar responsabilidades. Se o objeto representa um pedido, pode ser bastante expressivo que certas ações de consulta ou atualização pertençam a ele. Se o objeto representa um produto, pode ser natural que operações ligadas ao cálculo de exibição ou à atualização de estoque estejam semanticamente próximas dessa entidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve ver os métodos como forma de aproximar estrutura e responsabilidade dentro da modelagem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Chamando um método"
+    },
+    {
+      "type": "paragraph",
+      "text": "Assim como acessamos propriedades com notação por ponto, também chamamos métodos por meio do nome do objeto, seguido do nome da propriedade funcional e de parênteses. Essa chamada indica que não estamos apenas lendo um valor, mas executando a função associada àquela propriedade."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const produto = {\n  titulo: \"Notebook\",\n  exibirTitulo: function () {\n    console.log(this.titulo);\n  }\n};\n\nproduto.exibirTitulo();",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " produto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Notebook\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  exibirTitulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "this"
+          },
+          {
+            "kind": "plain",
+            "text": ".titulo);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "produto."
+          },
+          {
+            "kind": "function",
+            "text": "exibirTitulo"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo já antecipa um ponto importante: o método pode se relacionar com as propriedades do próprio objeto. Ao chamar produto.exibirTitulo(), o programa não apenas executa uma função qualquer. Executa uma ação pensada para aquela entidade e para seus dados internos."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que a chamada de método é uma forma de pedir que o objeto realize uma ação ligada ao seu contexto."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Métodos e leitura do próprio estado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos aspectos mais importantes dos métodos é que eles frequentemente operam sobre o estado do próprio objeto. Em vez de agir como funções genéricas sem contexto, muitos métodos existem justamente para consultar, exibir, validar ou transformar informações da entidade em que estão definidos. Isso reforça muito a ligação entre dados e comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é decisivo porque mostra que o método não é apenas “uma função dentro do objeto”. Ele costuma ser uma função que faz sentido por causa daquele objeto específico. Se o método exibe o título do produto, calcula um desconto ou retorna uma mensagem baseada no nome do usuário, seu valor nasce do fato de estar associado a uma entidade concreta com propriedades próprias."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa associação entre comportamento e estado será aprofundada ainda mais quando estudarmos com mais atenção o papel de this em funções de objeto."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Uma primeira leitura introdutória de this"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos métodos, aparece a palavra this para se referir ao próprio objeto no contexto daquela chamada. Em nível introdutório, é útil pensar que this aponta para a entidade que está executando o método naquele momento. Assim, quando um método usa this.nome ou this.titulo, está acessando a propriedade correspondente do objeto em cujo contexto ele foi chamado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  apresentar: function () {\n    console.log(\"Olá, eu sou \" + this.nome);\n  }\n};\n\nusuario.apresentar();",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  apresentar"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Olá, eu sou \""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "this"
+          },
+          {
+            "kind": "plain",
+            "text": ".nome);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "usuario."
+          },
+          {
+            "kind": "function",
+            "text": "apresentar"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é extremamente importante porque mostra a força dos métodos como ações conectadas ao próprio estado da entidade. A saudação não depende de um valor solto qualquer. Depende do nome pertencente ao objeto usuario. O método usa esse atributo interno para construir seu comportamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por ora, o leitor não precisa aprofundar todas as nuances avançadas de this. Basta compreender seu papel introdutório como referência ao contexto do objeto na chamada do método."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Métodos também podem alterar propriedades"
+    },
+    {
+      "type": "paragraph",
+      "text": "Além de consultar ou exibir o estado do objeto, um método também pode alterar propriedades da própria entidade. Isso o torna ainda mais importante para a modelagem de estado, porque a ação associada ao objeto passa a poder modificar a situação interna representada por ele."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const pedido = {\n  status: \"criado\",\n  aprovar: function () {\n    this.status = \"aprovado\";\n  }\n};\n\npedido.aprovar();\nconsole.log(pedido.status);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " pedido "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  status"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"criado\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  aprovar"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "this"
+          },
+          {
+            "kind": "plain",
+            "text": ".status "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"aprovado\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "pedido."
+          },
+          {
+            "kind": "function",
+            "text": "aprovar"
+          },
+          {
+            "kind": "plain",
+            "text": "();"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido.status);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, o método aprovar não apenas lê o estado do objeto. Ele o transforma. Esse tipo de desenho é muito comum em software real, porque entidades frequentemente possuem operações que alteram seu próprio estado de maneira coerente com a lógica do domínio."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição central aqui é que métodos podem ser instrumentos de governança do estado da entidade, e não apenas de exibição de informações."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Métodos como parte da narrativa da entidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um objeto possui métodos bem nomeados, o código tende a se aproximar muito da linguagem do domínio. Expressões como pedido.aprovar(), usuario.apresentar(), carrinho.calcularTotal() ou produto.aplicarDesconto() já comunicam bastante sobre a intenção do fluxo. Essa proximidade entre estrutura do código e linguagem do problema é uma das grandes forças da modelagem com objetos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem valor editorial enorme. O leitor passa a enxergar a entidade como algo que carrega não apenas informações, mas também um conjunto de capacidades coerentes com sua natureza. O código se torna mais narrativo e, em muitos casos, mais fácil de revisar."
+    },
+    {
+      "type": "paragraph",
+      "text": "Assim, métodos não apenas executam ações. Eles ajudam a contar a história do objeto dentro do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: um carrinho que calcula total"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um objeto carrinho com uma coleção de itens e um método calcularTotal. Esse cenário resume bem a utilidade dos métodos. O carrinho não é apenas uma estrutura que contém dados. Ele oferece uma operação coerente com sua própria função no domínio. Em vez de espalhar o cálculo em qualquer parte do programa, o código o associa à entidade que faz sentido semântico para essa responsabilidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é importante porque mostra uma aplicação extremamente real do que está sendo aprendido. Em projetos profissionais, é muito comum que certos comportamentos façam mais sentido quando colocados junto da entidade que governam. Isso tende a melhorar organização, legibilidade e manutenção."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: quando uma ação pertence naturalmente à entidade, modelá-la como método pode fortalecer bastante a clareza do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O valor editorial de nomear métodos com verbos claros"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se propriedades costumam representar substantivos, estados ou características, métodos tendem a se beneficiar muito de nomes com força verbal: aprovar, calcular, validar, apresentar, atualizar, ativar, desativar. Essa escolha melhora a legibilidade porque deixa claro que se trata de uma ação. Além disso, aproxima a estrutura do código da linguagem de comportamento do domínio."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse cuidado editorial é especialmente importante porque métodos entram diretamente na narrativa do fluxo. Um nome ruim enfraquece a compreensão do que a entidade faz. Um nome bom torna a leitura muito mais fluida e mais fiel ao problema."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve levar esta regra adiante: se o método representa uma ação, seu nome deve deixar isso evidente com a maior naturalidade possível."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que método é apenas função em qualquer lugar, sem perceber sua ligação semântica com o objeto.",
+        "Não distinguir claramente propriedades de dados e propriedades funcionais.",
+        "Usar métodos sem relação real com a entidade modelada, enfraquecendo a coesão do objeto.",
+        "Ignorar que muitos métodos operam sobre o próprio estado da entidade.",
+        "Tratar this como detalhe misterioso em vez de referência introdutória ao contexto do objeto.",
+        "Dar nomes pouco expressivos aos métodos, dificultando a leitura da ação."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe métodos sempre à ideia de comportamento pertencente ao objeto.",
+        "Pergunte se a ação modelada faz sentido semântico dentro da entidade em que está sendo colocada.",
+        "Use nomes verbais claros para métodos.",
+        "Observe quando o método apenas lê o estado e quando também o altera.",
+        "Pratique a leitura introdutória de this como referência ao próprio objeto na chamada.",
+        "Evite transformar o objeto em um amontoado arbitrário de funções sem unidade de propósito."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é um método em um objeto.",
+        "Reconheço a diferença entre propriedade de dado e propriedade funcional.",
+        "Consigo chamar métodos e compreender sua ligação com a entidade modelada.",
+        "Percebo que métodos podem ler e alterar o estado do próprio objeto.",
+        "Tenho uma noção introdutória do papel de this em métodos.",
+        "Estou preparado para estudar objetos aninhados, arrays de objetos e modelagem composta na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende propriedades, acesso, atualização e métodos em objetos, o próximo passo é entrar em modelagens mais ricas, nas quais objetos convivem com outros objetos e com arrays. Na próxima parte, veremos objetos aninhados, arrays de objetos e estruturas compostas muito comuns no JavaScript real."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é decisiva porque a modelagem profissional raramente para em objetos totalmente isolados. O programa começará a representar entidades mais complexas, com relações internas e coleções de entidades semelhantes dentro de estruturas maiores."
+    }
+  ]
+}

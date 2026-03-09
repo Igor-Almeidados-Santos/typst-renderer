@@ -1,0 +1,1661 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 11 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 11,
+    "chapter_title": "Assíncrono: eventos, timers e o modelo mental do JavaScript",
+    "part_number": 5,
+    "part_title": "Concorrência com Promises: all, allSettled, race e padrões de paralelismo seguro",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 11 — Assíncrono: eventos, timers e o modelo mental do JavaScript"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Concorrência com Promises: all, allSettled, race e padrões de paralelismo seguro"
+    },
+    {
+      "type": "paragraph",
+      "text": "Até aqui, você encadeou Promises em sequência. Mas muitas vezes o melhor é rodar tarefas em paralelo: buscar vários recursos, carregar configurações e dados ao mesmo tempo, validar múltiplos campos simultaneamente. Nesta parte, você vai dominar as ferramentas de concorrência do JavaScript: Promise.all, Promise.allSettled, Promise.race e Promise.any. O objetivo é entender quando cada uma é apropriada e quais são os riscos: falha rápida, cancelamento (ou falta dele) e como limitar paralelismo quando necessário."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Estou esperando 3 coisas, mas poderia fazer em paralelo”"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando você faz await/then em sequência sem necessidade, você soma tempos. Se as tarefas são independentes, você pode disparar todas e esperar o conjunto. Isso reduz latência percebida."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Preparando um mock de Promises (simulação)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nfunction esperar(ms, value, shouldFail = false) {\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (shouldFail) reject(new Error('falhou: ' + value));\n      else resolve(value);\n    }, ms);\n  });\n}\n\nconst p1 = esperar(200, 'A');\nconst p2 = esperar(100, 'B');\nconst p3 = esperar(150, 'C');",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "(ms, value, shouldFail "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "false"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Promise"
+          },
+          {
+            "kind": "plain",
+            "text": "((resolve, reject) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (shouldFail) "
+          },
+          {
+            "kind": "function",
+            "text": "reject"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'falhou: '"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " value));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "      "
+          },
+          {
+            "kind": "keyword",
+            "text": "else"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "(value);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    }, ms);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " p1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " p2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'B'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " p3 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "150"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'C'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Promise.all: tudo ou nada (falha rápido)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Promise.all resolve quando todas resolvem. Se uma falhar, ele rejeita imediatamente (fail fast). Use quando você precisa de todos os resultados para continuar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "Promise.all([p1, p2, p3])\n  .then((vals) => console.log('all:', vals))\n  .catch((e) => console.log('all erro:', e.message));\n\nPromise.all([esperar(50, 'ok'), esperar(60, 'x', true)])\n  .then((vals) => console.log(vals))\n  .catch((e) => console.log('falhou rápido:', e.message));",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "all"
+          },
+          {
+            "kind": "plain",
+            "text": "([p1, p2, p3])"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((vals) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'all:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", vals))"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "((e) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'all erro:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", e.message));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "all"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "50"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": "), "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "60"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'x'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ")])"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((vals) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(vals))"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "((e) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'falhou rápido:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", e.message));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Promise.allSettled: sempre traz o resultado de todas"
+    },
+    {
+      "type": "paragraph",
+      "text": "allSettled nunca rejeita por causa de uma Promise do conjunto. Ele retorna um array com status 'fulfilled'/'rejected'. Use quando você quer tentar tudo e coletar sucessos e falhas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "Promise.allSettled([\n  esperar(50, 'ok'),\n  esperar(60, 'x', true),\n  esperar(40, 'y')\n]).then((results) => {\n  console.log(results);\n});",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "allSettled"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "50"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": "),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "60"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'x'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": "),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "40"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'y'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "])."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((results) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(results);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Promise.race: a primeira que terminar (sucesso ou erro)"
+    },
+    {
+      "type": "paragraph",
+      "text": "race resolve ou rejeita com a primeira Promise que finalizar. Use para timeouts simples ou para escolher a fonte mais rápida."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "Promise.race([\n  esperar(200, 'lento'),\n  esperar(80, 'rapido')\n]).then((v) => console.log('race:', v));\n\nPromise.race([\n  esperar(80, 'boom', true),\n  esperar(200, 'ok')\n]).catch((e) => console.log('race erro:', e.message));",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "race"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'lento'"
+          },
+          {
+            "kind": "plain",
+            "text": "),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "80"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'rapido'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "])."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((v) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'race:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", v));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "race"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "80"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'boom'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": "),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "])."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "((e) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'race erro:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", e.message));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Promise.any: a primeira que resolver (ignora rejeições)"
+    },
+    {
+      "type": "paragraph",
+      "text": "any resolve com a primeira Promise que cumprir (fulfilled). Se todas rejeitarem, rejeita com AggregateError. Use quando você tem alternativas e basta uma dar certo."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "Promise.any([\n  esperar(50, 'x', true),\n  esperar(80, 'y', true),\n  esperar(100, 'ok')\n]).then((v) => console.log('any:', v));",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "any"
+          },
+          {
+            "kind": "plain",
+            "text": "(["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "50"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'x'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": "),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "80"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'y'"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": "),"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "])."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((v) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'any:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", v));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Padrão de timeout com Promise.race"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um padrão comum é correr uma operação contra um timeout. Isso não cancela a operação original, mas evita que você espere para sempre."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function withTimeout(promise, ms) {\n  const timeout = new Promise((_, reject) => {\n    setTimeout(() => reject(new Error('timeout')), ms);\n  });\n  return Promise.race([promise, timeout]);\n}\n\nwithTimeout(esperar(200, 'ok'), 100)\n  .then((v) => console.log(v))\n  .catch((e) => console.log('timeout:', e.message));",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "withTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(promise, ms) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " timeout "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Promise"
+          },
+          {
+            "kind": "plain",
+            "text": "((_, reject) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "reject"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Error"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'timeout'"
+          },
+          {
+            "kind": "plain",
+            "text": ")), ms);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "race"
+          },
+          {
+            "kind": "plain",
+            "text": "([promise, timeout]);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "withTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": "), "
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((v) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(v))"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "keyword",
+            "text": "catch"
+          },
+          {
+            "kind": "plain",
+            "text": "((e) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'timeout:'"
+          },
+          {
+            "kind": "plain",
+            "text": ", e.message));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Boas práticas (nível júnior)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Use all quando precisar de todos; use allSettled quando quiser tentar tudo e coletar falhas.",
+        "Use race/any para escolher o mais rápido (ou o primeiro sucesso).",
+        "Entenda que race/timeout não cancela automaticamente a operação perdedora.",
+        "Evite explodir paralelismo (1000 requests de uma vez). Para isso, limite concorrência (veremos padrão na Parte 6).",
+        "Trate erros com clareza: diferencie erro de rede/timeout/validação e registre contexto."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Checklist profissional (Parte 5)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei quando usar Promise.all vs allSettled.",
+        "Eu entendo Promise.race e consigo usar para timeout simples.",
+        "Eu sei o que Promise.any faz e o que acontece se todas falharem.",
+        "Eu entendo que concorrência não cancela automaticamente operações.",
+        "Eu consigo escolher o padrão correto para paralelismo seguro."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 6, você vai aprender async/await: escrever Promises com sintaxe de código linear, tratamento de erro com try/catch e padrões de concorrência com await."
+    }
+  ]
+}

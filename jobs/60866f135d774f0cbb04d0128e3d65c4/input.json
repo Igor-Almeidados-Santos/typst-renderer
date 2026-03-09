@@ -1,0 +1,801 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 9 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "9",
+    "chapter_title": "Funções em profundidade",
+    "part_number": "2",
+    "part_title": "Parâmetros, argumentos e entrada de dados",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 9 — Funções em profundidade"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Parâmetros, argumentos e entrada de dados"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é uma função e por que ela existe como unidade de comportamento nomeado e reutilizável, o leitor está pronto para aprofundar uma das ideias mais importantes do tema: a capacidade de a função receber dados de entrada e trabalhar com eles. É exatamente nesse ponto que entram parâmetros e argumentos. Sem essa flexibilidade, as funções seriam úteis apenas para comportamentos fixos. Com ela, passam a operar sobre valores variados, adaptando-se a contextos diferentes sem perder a identidade estrutural do comportamento que encapsulam."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque grande parte do valor prático das funções em JavaScript depende de sua capacidade de receber dados externos. Um cálculo precisa saber sobre quais números deve operar. Uma saudação precisa saber para quem será exibida. Uma validação precisa receber o valor que será analisado. Uma transformação de texto precisa saber qual texto transformar. Em todos esses casos, a função não pode ser apenas um bloco fechado. Ela precisa ter pontos de entrada por onde o fluxo entrega os dados de que o comportamento depende."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é construir o modelo mental correto sobre parâmetros e argumentos antes de avançar para retornos, escopo e formas mais sofisticadas de composição funcional. O leitor compreenderá a diferença entre o nome que recebe o valor dentro da definição da função e o valor concreto enviado no momento da chamada. Ao final, deixará de ver as funções apenas como comportamentos fixos e passará a entendê-las como estruturas reutilizáveis capazes de operar sobre entradas diversas com clareza e consistência."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: o mesmo comportamento precisa funcionar com dados diferentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função de saudação que exibe uma mensagem para uma pessoa. Se ela estiver presa a um nome fixo, sua utilidade será muito limitada. Para cumprimentar outra pessoa, o programador teria de reescrever a lógica ou criar funções quase idênticas para cada caso. O mesmo vale para cálculos, validações, transformações e praticamente qualquer comportamento reaproveitável. O valor da função aumenta enormemente quando ela pode operar sobre dados diferentes sem precisar ser reescrita a cada uso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que parâmetros e argumentos resolvem. Eles permitem separar a estrutura do comportamento dos dados específicos que esse comportamento vai processar em cada chamada. A função continua sendo a mesma em sua intenção, mas os valores sobre os quais ela atua podem variar. Isso torna o código muito mais flexível e reutilizável."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber desde já que a verdadeira força de uma função não está apenas em poder ser chamada várias vezes, mas em poder ser chamada com entradas diferentes para cumprir a mesma responsabilidade estrutural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que são parâmetros em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, parâmetros são os nomes que aparecem na definição da função para representar os dados que ela espera receber quando for executada. Eles funcionam como variáveis locais de entrada, preparando o interior da função para trabalhar com valores que ainda serão fornecidos no momento da chamada."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function saudacao(nome) {\n  console.log(\"Olá, \" + nome + \"!\");\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Olá, \""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " nome "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"!\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, nome é um parâmetro. Ele não é ainda uma pessoa específica. É o lugar simbólico em que a função espera receber um valor quando for chamada. A função está preparada para operar sobre qualquer dado que venha ocupar esse lugar, desde que faça sentido para a lógica escrita em seu interior."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve associar parâmetro à ideia de espaço nomeado de entrada dentro da definição da função."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. O que são argumentos em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se os parâmetros representam os lugares de entrada definidos pela função, os argumentos são os valores concretos enviados para esses lugares no momento da chamada. Em outras palavras, o parâmetro é o nome interno que espera um valor; o argumento é o valor efetivamente passado quando a função é executada."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function saudacao(nome) {\n  console.log(\"Olá, \" + nome + \"!\");\n}\n\nsaudacao(\"Ana\");\nsaudacao(\"Carlos\");",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "(nome) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Olá, \""
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " nome "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"!\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "saudacao"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Carlos\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, nome continua sendo o parâmetro da função. Já \"Ana\" e \"Carlos\" são argumentos enviados em chamadas diferentes. Isso ilustra muito bem a flexibilidade da função: sua estrutura permanece a mesma, mas os dados processados mudam conforme os argumentos fornecidos."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição aqui é simples e essencial: parâmetro pertence à definição; argumento pertence à chamada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. A função permanece; as entradas mudam"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos pontos mais importantes para o modelo mental correto é perceber que a função não precisa mudar de identidade para trabalhar com entradas diferentes. A lógica encapsulada permanece a mesma. O que varia são os argumentos recebidos em cada execução. Isso fortalece enormemente a reutilização, porque o mesmo comportamento pode ser aplicado a múltiplos contextos com pequenas variações de dado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa característica é decisiva para a qualidade do código. Em vez de criar uma função para cada nome, um cálculo para cada par de números ou uma validação para cada valor específico, o programador cria uma estrutura geral de comportamento e a torna flexível por meio dos parâmetros. Isso reduz repetição e amplia a capacidade de adaptação da função."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a pensar em função parametrizada como uma forma de comportamento abstrato que ganha concretude a cada chamada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Múltiplos parâmetros: mais de uma entrada para o mesmo comportamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Muitas funções precisam receber mais de um dado de entrada. Nesses casos, a definição pode declarar múltiplos parâmetros, cada um representando um papel específico dentro do comportamento. Isso permite que a função trabalhe com relações entre valores, e não apenas com um único dado isolado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function somar(a, b) {\n  console.log(a + b);\n}\n\nsomar(5, 3);\nsomar(10, 20);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "(a, b) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "somar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "number",
+            "text": "20"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, a função espera dois parâmetros: a e b. Em cada chamada, dois argumentos são fornecidos. O ponto essencial aqui não é apenas a soma em si, mas o fato de que a função define a estrutura de um comportamento relacional: combinar dois valores que chegarão pela entrada."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve perceber que cada parâmetro introduz uma dimensão adicional de flexibilidade ao comportamento encapsulado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. A ordem dos argumentos importa"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando uma função recebe mais de um parâmetro, a ordem em que os argumentos são passados na chamada costuma ser importante. Isso acontece porque cada argumento será associado ao parâmetro correspondente pela posição em que aparece. Se o programador inverter a ordem, poderá alterar completamente o significado do comportamento executado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque mostra que parâmetros não são apenas uma lista de nomes. Eles representam papéis específicos na lógica da função. Se a função espera, por exemplo, nome e idade, não basta fornecer dois valores quaisquer. É necessário respeitar a ordem em que o comportamento foi modelado."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: em funções com múltiplas entradas, a clareza dos parâmetros e a atenção à ordem dos argumentos são partes essenciais da corretude do comportamento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Parâmetros dão nome ao papel do dado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro comum de iniciantes é pensar nos parâmetros apenas como espaços genéricos para qualquer valor. Embora eles realmente recebam dados, seu papel vai além disso. Um bom parâmetro nomeia a função daquele dado dentro do comportamento. Em uma função como somar(a, b), os nomes ainda podem ser muito genéricos para fins didáticos. Mas em funções mais reais, nomes como preco, desconto, email, mensagem ou usuario tornam muito mais claro o papel da entrada no contexto da lógica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto reforça a dimensão editorial das funções. Parâmetros bem nomeados não apenas recebem valores. Eles explicam ao leitor que tipo de informação a função espera e como aquela entrada participa do comportamento. Isso melhora muito legibilidade, manutenção e revisão."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve aprender cedo que a boa nomeação dos parâmetros faz parte da qualidade da função, e não apenas de sua aparência."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: calcular desconto para preços diferentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine uma função que precise calcular o preço final de um produto a partir de um valor original e de uma porcentagem de desconto. Esse cenário resume muito bem a utilidade dos parâmetros. Não faria sentido criar uma função diferente para cada preço ou para cada percentual possível. O comportamento estrutural é o mesmo: aplicar um desconto. O que varia são os dados usados em cada chamada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente valioso porque mostra como a função parametrizada une reutilização e flexibilidade. O código descreve uma regra geral de comportamento, e os argumentos tornam essa regra aplicável a situações específicas. Esse é um dos padrões mais importantes de todo o JavaScript real."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: parâmetros transformam funções em ferramentas capazes de atuar sobre múltiplos cenários sem perder identidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Parâmetros e clareza do domínio"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quanto mais uma função participa de lógica real do domínio, mais importante se torna o uso de parâmetros com nomes semanticamente fortes. Uma função chamada aplicarDesconto(preco, percentual) comunica muito melhor sua intenção do que algo genérico como fn(a, b). Essa diferença não é cosmética. Ela altera profundamente a facilidade de leitura do código e a capacidade do time de compreender rapidamente o papel das entradas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é central porque funções passam a organizar comportamentos importantes do sistema. Se as entradas forem mal nomeadas, a compreensão do comportamento também será prejudicada. O código perde poder explicativo justamente onde deveria ganhar mais clareza."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em programação profissional, parâmetros são parte da interface semântica da função com o restante do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que uma boa entrada de função costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que uma boa definição de parâmetros costuma comunicar pelo menos três coisas: que tipo de dado a função espera, qual papel esse dado desempenha no comportamento e em que ordem as entradas precisam ser fornecidas. Esses elementos ajudam o leitor a entender como chamar a função e o que esperar da lógica executada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a olhar para a assinatura da função como parte da arquitetura do comportamento. A assinatura não é apenas um detalhe sintático; é a porta de entrada da função para o restante do sistema. Quanto mais clara essa porta, mais reutilizável e mais inteligível tende a ser o comportamento encapsulado."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa função, portanto, não apenas executa bem. Ela também comunica bem como deve ser usada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir parâmetros com argumentos, como se fossem exatamente a mesma coisa.",
+        "Achar que a função muda de identidade a cada argumento recebido.",
+        "Ignorar a importância da ordem dos argumentos em funções com múltiplas entradas.",
+        "Usar parâmetros com nomes genéricos demais, enfraquecendo a semântica da função.",
+        "Não perceber que parâmetros dão flexibilidade ao mesmo comportamento estrutural.",
+        "Subestimar o valor dos parâmetros como interface de entrada da função."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe parâmetros à definição e argumentos à chamada.",
+        "Pergunte sempre quais dados a função precisa receber para cumprir sua responsabilidade.",
+        "Pratique funções simples com uma e com várias entradas para fixar a relação entre assinatura e chamada.",
+        "Use nomes de parâmetros que comuniquem o papel semântico do dado.",
+        "Observe como a mesma função pode ser reutilizada com argumentos diferentes.",
+        "Prepare-se para estudar retorno e o que a função devolve ao fluxo na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo a diferença entre parâmetros e argumentos.",
+        "Reconheço que a mesma função pode operar sobre entradas diferentes sem mudar de identidade.",
+        "Percebo a importância da ordem dos argumentos em funções com múltiplos parâmetros.",
+        "Entendo que parâmetros bem nomeados melhoram a legibilidade da função.",
+        "Reconheço os parâmetros como interface de entrada do comportamento encapsulado.",
+        "Estou preparado para estudar retorno e saída de funções na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende como a função recebe dados de entrada, o próximo passo é estudar o que ela pode devolver ao fluxo. Na próxima parte, entraremos em retorno, valores produzidos pela função e a diferença entre executar uma ação e devolver um resultado utilizável por outras partes do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é decisiva porque completa a ideia da função como unidade de comportamento flexível: ela não apenas recebe entradas, mas também pode produzir saídas que alimentam novos cálculos, decisões e composições dentro do sistema."
+    }
+  ]
+}

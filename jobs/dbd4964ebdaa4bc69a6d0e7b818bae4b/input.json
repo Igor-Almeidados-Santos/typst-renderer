@@ -1,0 +1,681 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 10 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "10",
+    "chapter_title": "Callbacks e composição inicial de comportamento",
+    "part_number": "3",
+    "part_title": "Callbacks em eventos, temporização e reação a contexto",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 10 — Callbacks e composição inicial de comportamento"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Callbacks em eventos, temporização e reação a contexto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é um callback e de estudá-lo como ferramenta prática de customização de lógica em mecanismos genéricos, o leitor está pronto para avançar para uma dimensão ainda mais característica do JavaScript: callbacks em contextos que controlam não apenas a estrutura do processo, mas também o momento da execução. Até aqui, o callback já foi entendido como comportamento fornecido a outro contexto para ser chamado conforme a lógica desse contexto. Agora ele começará a ser visto também como resposta a acontecimentos, sinais e momentos definidos por mecanismos externos ao fluxo linear principal."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é muito importante porque JavaScript é uma linguagem fortemente marcada por reatividade e por composição de comportamento em torno de eventos e temporizadores. Interfaces gráficas, interações do usuário, temporizações e várias APIs funcionam com base na ideia de que o programa registra um comportamento e outro mecanismo decide quando acioná-lo. Sem compreender isso, o leitor entende callbacks apenas no nível do percurso de arrays e perde uma parte central da identidade prática da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é apresentar callbacks em contextos de eventos e temporização com profundidade conceitual e clareza editorial. O leitor compreenderá por que esses cenários dependem tanto da delegação de comportamento, verá como o fluxo do programa muda quando a execução passa a reagir a acontecimentos e entenderá que callbacks não servem apenas para parametrizar lógica sobre dados, mas também para organizar respostas a contextos dinâmicos. Ao final, deixará de ver o callback apenas como peça de composição sobre coleções e passará a reconhecê-lo como ferramenta de reação controlada a sinais do ambiente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: certos comportamentos precisam acontecer quando algo ocorre, e não imediatamente"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos cenários reais, o programa não quer executar um comportamento naquele instante em que o código é lido de cima para baixo. Ele quer registrar o que deve acontecer quando algo ocorrer depois. Pode ser um clique do usuário, o pressionamento de uma tecla, o término de um tempo de espera, a chegada de um dado ou outro tipo de acontecimento. Nesses casos, o fluxo deixa de ser apenas “faça isto agora” e passa a ser “quando isso acontecer, faça aquilo”."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que callbacks resolvem nesses contextos. O programador entrega uma função a um mecanismo de evento ou de temporização, e esse mecanismo decide chamá-la no momento apropriado. O comportamento, portanto, não está sendo executado imediatamente pelo ponto onde foi escrito; está sendo registrado para execução futura ou contextual."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que isso muda profundamente a forma de pensar o fluxo. O programa passa a organizar reações, não apenas ações lineares."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Callback como resposta registrada"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma forma muito útil de entender callbacks em eventos e temporização é vê-los como respostas registradas. O programa informa ao sistema qual comportamento deve acontecer quando certo contexto futuro ou externo se realizar. Em vez de executar já, ele deixa pronta uma resposta comportamental que ficará disponível para ser acionada quando necessário."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa leitura é muito importante porque ajuda a evitar uma confusão comum. O callback não está sendo fornecido apenas como dado qualquer. Ele está sendo registrado como reação possível a uma situação. Isso aproxima o estudante da lógica reativa do JavaScript, em que muitas partes do sistema funcionam como observação e resposta a mudanças ou sinais."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a associar callback, nesses contextos, à ideia de comportamento preparado para ser disparado por um acontecimento."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Temporização: registrar um comportamento para mais tarde"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um exemplo clássico desse padrão aparece em temporizadores. O programa pode querer executar certo comportamento não imediatamente, mas depois de um intervalo. Nesses casos, a função é passada como callback a um mecanismo de temporização, que a acionará quando o tempo definido for atingido."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "setTimeout(function () {\n  console.log(\"Executado depois do tempo definido.\");\n}, 1000);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Executado depois do tempo definido.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}, "
+          },
+          {
+            "kind": "number",
+            "text": "1000"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, a função não executa no instante em que é escrita como parte do argumento. Ela é entregue ao mecanismo de temporização, que decidirá quando chamá-la após o intervalo indicado. O ponto central aqui é a delegação do controle temporal da execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição é clara: o callback permite separar a definição da resposta do momento em que essa resposta será efetivamente acionada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Evento: registrar um comportamento para quando o usuário agir"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro exemplo extremamente importante aparece em eventos de interface. Em aplicações com navegador, por exemplo, o programa pode registrar o que deve acontecer quando um botão for clicado. Nesse caso, o comportamento é passado como callback para um sistema de eventos, que o executará quando a ação do usuário ocorrer."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "botao.addEventListener(\"click\", function () {\n  console.log(\"Botão clicado.\");\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "botao."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"click\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " () {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Botão clicado.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo que o estudante ainda não esteja trabalhando profundamente com DOM nesta etapa, o exemplo é muito valioso como modelo mental. Ele mostra que o programa não está clicando no botão por si mesmo. Está apenas registrando a lógica que deverá ser executada se e quando o clique acontecer. Essa distinção é decisiva para compreender programação orientada a eventos."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve ver aqui uma das expressões mais clássicas do JavaScript como linguagem de resposta a interação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. O contexto externo controla o tempo da execução"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em callbacks de arrays, o contexto receptor já controlava a execução segundo a lógica do percurso. Em eventos e temporização, esse controle ganha uma dimensão adicional: o tempo. O programa principal já não determina diretamente o instante exato em que o callback rodará. Esse momento depende do mecanismo externo que recebeu a função — um temporizador, um sistema de evento ou outra infraestrutura semelhante."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque aprofunda a ideia de delegação de controle. O callback não é apenas uma função passada adiante; é uma função cuja execução está sujeita à ocorrência de algo além da linha principal imediata do código. Essa mudança de perspectiva prepara o leitor para compreender por que JavaScript é tão fortemente associado a modelos reativos e assíncronos."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: em muitos cenários da linguagem, programar é registrar respostas e confiar o disparo delas a outro mecanismo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Callback em eventos não é chamado por você no momento do registro"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um erro muito comum entre iniciantes é imaginar que, ao registrar um callback em um evento ou temporizador, o comportamento já está sendo executado ali mesmo. Na verdade, o que acontece nesse ponto é o registro da função, não sua execução imediata. O sistema guarda aquela referência comportamental para acioná-la quando a condição apropriada se cumprir."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse erro é especialmente importante porque o leitor precisa consolidar, mais uma vez, a diferença entre fornecer comportamento e executá-lo. O callback é entregue ao sistema como possibilidade de resposta. O momento da execução pertence ao mecanismo que o recebeu."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa distinção é uma das chaves para não se perder quando o fluxo deixa de ser puramente linear."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Arrow functions nesses contextos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Assim como em callbacks de arrays, arrow functions aparecem com enorme frequência em eventos e temporização, especialmente quando o comportamento registrado é curto. Isso acontece porque a escrita mais concisa se encaixa muito bem em trechos em que a função é fornecida como resposta localizada a um contexto específico."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "setTimeout(() => {\n  console.log(\"Executado com arrow function.\");\n}, 1000);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Executado com arrow function.\""
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}, "
+          },
+          {
+            "kind": "number",
+            "text": "1000"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo reforça a continuidade entre capítulos. O callback continua sendo callback, mas a forma de escrita pode variar. O leitor deve se acostumar a encontrar arrow functions com muita frequência exatamente nesses contextos em que o comportamento é curto, local e entregue a outro mecanismo."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição importante é que a forma sintática muda, mas a lógica de delegação de comportamento permanece."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Estudo de caso: reagir ao clique e executar lógica específica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um sistema em que o clique em um botão deve acionar uma validação, exibir uma mensagem ou iniciar uma transformação nos dados da interface. O evento de clique é a infraestrutura de disparo. O callback é a lógica específica que deve rodar nesse momento. Esse cenário resume muito bem a força do modelo: o sistema principal sabe detectar o acontecimento, mas a ação concreta é entregue pelo programador como comportamento registrável."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é didaticamente poderoso porque mostra que callbacks em eventos representam uma parceria entre mecanismo geral e resposta específica. O programa não implementa a infraestrutura do clique do zero. Ele fornece o comportamento que quer acoplar a esse acontecimento."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: em contextos orientados a eventos, o callback é a ponte entre o acontecimento e a reação desejada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. O valor editorial de ler o fluxo reativo com clareza"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando callbacks passam a depender de acontecimentos e momentos futuros, a leitura do fluxo pode se tornar mais difícil para o iniciante. Por isso, o código precisa comunicar com clareza quem está registrando o comportamento, qual contexto irá acioná-lo e que tipo de situação disparará essa execução. Essa clareza é fundamental para evitar que o leitor se perca em uma sequência de funções encaixadas sem entender a lógica temporal envolvida."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto tem grande valor editorial porque programação reativa e orientada a eventos tende a afastar o código da leitura linear mais simples. Quanto melhor a nomeação e o enquadramento do callback, mais legível se torna o modelo de reação. O leitor consegue reconstruir o fluxo em termos de acontecimentos, e não apenas de linhas consecutivas de execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em software profissional, clareza temporal e contextual na leitura de callbacks é parte essencial da manutenibilidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O que um bom callback de evento ou temporização costuma comunicar"
+    },
+    {
+      "type": "paragraph",
+      "text": "Mesmo em nível introdutório, já é possível perceber que um bom callback em eventos ou temporização costuma comunicar pelo menos três coisas importantes: a que acontecimento ou momento ele responde, qual comportamento realiza quando acionado e por que essa lógica faz sentido como reação registrada em vez de execução imediata. Esses elementos ajudam o leitor a entender tanto o papel do callback quanto o papel do mecanismo que o dispara."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é valiosa porque ensina o estudante a avaliar a qualidade do desenho reativo. A pergunta correta não é apenas “há um callback aqui?”, mas “o callback está claramente ligado ao contexto que o acionará e à reação que representa?”. Quando a resposta é sim, a estrutura tende a ser muito mais compreensível."
+    },
+    {
+      "type": "paragraph",
+      "text": "O bom callback reativo, portanto, não apenas espera um acontecimento. Ele comunica bem a relação entre esse acontecimento e a resposta preparada."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que registrar um callback em temporizador ou evento é o mesmo que executá-lo imediatamente.",
+        "Não perceber que o contexto externo controla o momento da execução.",
+        "Reduzir callbacks apenas a percursos de array, sem enxergar sua importância em eventos e temporização.",
+        "Confundir registro de resposta com ação já realizada.",
+        "Ler a seta ou a função passada e ignorar o acontecimento que a disparará.",
+        "Subestimar a dificuldade de leitura temporal em fluxos orientados a eventos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe callbacks em eventos e temporização à ideia de resposta registrada.",
+        "Ao ler um trecho com callback reativo, pergunte: o que disparará esta função e quando?",
+        "Diferencie com firmeza registro de comportamento e execução efetiva do comportamento.",
+        "Reconheça que o contexto controlador do tempo faz parte central da lógica.",
+        "Use nomes claros para o que está sendo registrado e para o acontecimento esperado.",
+        "Prepare-se para aprofundar limites, vantagens e armadilhas dos callbacks nas próximas partes do capítulo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo callbacks em eventos e temporização em nível introdutório e conceitual.",
+        "Reconheço que o contexto externo controla o momento da execução do callback.",
+        "Percebo a diferença entre registrar e executar um comportamento.",
+        "Reconheço a forte presença de arrow functions nesses contextos.",
+        "Entendo o callback como ponte entre acontecimento e reação desejada.",
+        "Estou preparado para estudar limites, armadilhas e organização mais madura do uso de callbacks na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende callbacks em composição prática e em contextos de reação a eventos e tempo, o próximo passo é mapear as armadilhas e os limites desse modelo. Na próxima parte, veremos por que callbacks são poderosos, mas também por que seu uso desorganizado pode tornar o fluxo difícil de ler e manter."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa continuidade é essencial porque a maturidade em JavaScript não está apenas em usar callbacks, mas em usá-los com clareza estrutural suficiente para que o comportamento continue inteligível à medida que o sistema cresce."
+    }
+  ]
+}

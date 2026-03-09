@@ -1,0 +1,1165 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 11 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 11,
+    "chapter_title": "Assíncrono: eventos, timers e o modelo mental do JavaScript",
+    "part_number": 8,
+    "part_title": "Fechamento do Capítulo 11: resumo executivo, erros clássicos e checklist final",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 11 — Assíncrono: eventos, timers e o modelo mental do JavaScript"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Fechamento do Capítulo 11: resumo executivo, erros clássicos e checklist final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o capítulo que destrava o JavaScript do mundo real: assíncrono. A partir daqui, você consegue escrever interfaces responsivas, lidar com atrasos, concorrência e erros sem travar a UI — e com um modelo mental que evita bugs de ordem e corrida. Nesta parte final, você revisa o essencial e fecha com um checklist final para seguir para rede/fetch no próximo capítulo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Resumo executivo (o que você deve levar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "No browser, seu código roda no thread principal; trabalho pesado síncrono trava a UI.",
+        "Event loop: o motor esvazia o call stack e depois executa callbacks enfileirados.",
+        "Tasks (eventos, setTimeout) rodam depois; microtasks (Promises/queueMicrotask) rodam antes das tasks, ao esvaziar o stack.",
+        "setTimeout(…, 0) não é imediato: ele aguarda o stack esvaziar e a fila.",
+        "Timers têm drift sob carga; cancelamento (clearTimeout/clearInterval) é parte do contrato.",
+        "Promises representam resultado futuro: resolve/reject; then/catch/finally organizam fluxo.",
+        "Concorrência: Promise.all (tudo ou nada), allSettled (coletar tudo), race (primeiro a terminar), any (primeiro sucesso).",
+        "async/await é sintaxe sobre Promises: use try/catch e evite await em sequência quando dava para paralelizar.",
+        "Cancelamento e estado: em UI, trate corrida (clique duplo) e invalide resultados atrasados (jobId/AbortController)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Erros clássicos (e correções rápidas)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Esquecer que Promise roda como microtask"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "console.log('A');\nsetTimeout(() => console.log('D'), 0);\nPromise.resolve().then(() => console.log('C'));\nconsole.log('B');\n// A, B, C, D",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'D'"
+          },
+          {
+            "kind": "plain",
+            "text": "), "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "Promise."
+          },
+          {
+            "kind": "function",
+            "text": "resolve"
+          },
+          {
+            "kind": "plain",
+            "text": "()."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'C'"
+          },
+          {
+            "kind": "plain",
+            "text": "));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'B'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// A, B, C, D"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Esquecer return dentro de then (quebra sequência)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function esperar(ms, v) {\n  return new Promise((r) => setTimeout(() => r(v), ms));\n}\n\nesperar(10, 'A')\n  .then(() => {\n    esperar(10, 'B'); // esqueceu return\n  })\n  .then((v) => {\n    console.log('v=', v); // v vira undefined\n  });\n\n// Correto:\nesperar(10, 'A')\n  .then(() => esperar(10, 'B'))\n  .then((v) => console.log('v=', v));",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "(ms, v) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "new"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "Promise"
+          },
+          {
+            "kind": "plain",
+            "text": "((r) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "r"
+          },
+          {
+            "kind": "plain",
+            "text": "(v), ms));"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'B'"
+          },
+          {
+            "kind": "plain",
+            "text": "); "
+          },
+          {
+            "kind": "comment",
+            "text": "// esqueceu return"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  })"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((v) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'v='"
+          },
+          {
+            "kind": "plain",
+            "text": ", v); "
+          },
+          {
+            "kind": "comment",
+            "text": "// v vira undefined"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  });"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Correto:"
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": ")"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'B'"
+          },
+          {
+            "kind": "plain",
+            "text": "))"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ."
+          },
+          {
+            "kind": "function",
+            "text": "then"
+          },
+          {
+            "kind": "plain",
+            "text": "((v) "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'v='"
+          },
+          {
+            "kind": "plain",
+            "text": ", v));"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.3 await em sequência quando podia ser paralelo"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "async function lento() {\n  const a = await esperar(100, 'A');\n  const b = await esperar(100, 'B');\n  return a + b; // ~200ms\n}\n\nasync function rapido() {\n  const p1 = esperar(100, 'A');\n  const p2 = esperar(100, 'B');\n  const [a, b] = await Promise.all([p1, p2]);\n  return a + b; // ~100ms\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "lento"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " b "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'B'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b; "
+          },
+          {
+            "kind": "comment",
+            "text": "// ~200ms"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "async"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "rapido"
+          },
+          {
+            "kind": "plain",
+            "text": "() {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " p1 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " p2 "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "esperar"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "number",
+            "text": "100"
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "'B'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " [a, b] "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "await"
+          },
+          {
+            "kind": "plain",
+            "text": " Promise."
+          },
+          {
+            "kind": "function",
+            "text": "all"
+          },
+          {
+            "kind": "plain",
+            "text": "([p1, p2]);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " a "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " b; "
+          },
+          {
+            "kind": "comment",
+            "text": "// ~100ms"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.4 Cancelamento inexistente (timers vazando)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const id = setInterval(() => console.log('tick'), 1000);\n// Em UI, sempre tenha um caminho para:\n// clearInterval(id);",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " id "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "setInterval"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'tick'"
+          },
+          {
+            "kind": "plain",
+            "text": "), "
+          },
+          {
+            "kind": "number",
+            "text": "1000"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Em UI, sempre tenha um caminho para:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// clearInterval(id);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Checklist final do Capítulo 11 (sinal verde)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei explicar event loop, call stack e filas de callbacks.",
+        "Eu sei a diferença entre tasks e microtasks e consigo prever ordem de execução.",
+        "Eu sei usar setTimeout/setInterval e sempre planejo cancelamento.",
+        "Eu sei dividir trabalho pesado em lotes para não travar a UI.",
+        "Eu entendo Promises (resolve/reject) e uso then/catch/finally com intenção.",
+        "Eu sei usar Promise.all/allSettled/race/any conforme a necessidade.",
+        "Eu uso async/await com try/catch e evito await em sequência quando podia paralelizar.",
+        "Eu trato corrida em UI: clique duplo, resultado atrasado, cancelamento lógico (jobId)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Conexão com o Capítulo 12"
+    },
+    {
+      "type": "paragraph",
+      "text": "No Capítulo 12, você vai entrar em rede e comunicação: fetch, headers, timeouts, AbortController e consumo de JSON em requests/responses. O modelo mental deste capítulo é a base para escrever clientes de API confiáveis sem travar a UI."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o Capítulo 11 com todas as 8 partes previstas. Próximo passo: Capítulo 12 — Parte 1."
+    }
+  ]
+}

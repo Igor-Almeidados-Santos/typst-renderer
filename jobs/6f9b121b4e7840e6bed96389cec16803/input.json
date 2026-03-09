@@ -1,0 +1,503 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 4 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "4",
+    "chapter_title": "Variáveis, constantes e gerenciamento de estado",
+    "part_number": "4",
+    "part_title": "Escopo inicial de variáveis",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      11,
+      61,
+      145
+    ],
+    "brand_accent": [
+      57,
+      192,
+      237
+    ],
+    "brand_ink": [
+      15,
+      23,
+      42
+    ],
+    "brand_muted": [
+      100,
+      116,
+      139
+    ],
+    "brand_line": [
+      203,
+      213,
+      225
+    ],
+    "brand_tint": [
+      234,
+      244,
+      255
+    ],
+    "brand_paper": [
+      248,
+      250,
+      252
+    ],
+    "color_body": [
+      30,
+      41,
+      59
+    ],
+    "color_heading": [
+      11,
+      61,
+      145
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      15,
+      23,
+      42
+    ],
+    "color_code_text": [
+      226,
+      232,
+      240
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      11,
+      61,
+      145
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      30,
+      41,
+      59
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Variáveis, constantes e gerenciamento de estado"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Escopo inicial de variáveis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que significa armazenar dados, diferenciar var, let e const e separar declaração, atribuição e reatribuição, o estudante precisa enfrentar um dos conceitos mais importantes para a leitura correta de programas: o escopo. Muitos erros e confusões no início da jornada com JavaScript não surgem porque a sintaxe foi mal escrita, mas porque o programador tentou acessar um identificador fora da região em que ele realmente existe de forma utilizável. Em outras palavras, o problema não está sempre no valor em si, mas no lugar do código a partir do qual se tenta enxergar esse valor. É exatamente isso que o conceito de escopo ajuda a organizar."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, escopo é a região do programa em que um identificador pode ser acessado com sentido e validade. Quando o estudante declara uma variável ou constante, esse nome não passa automaticamente a existir de maneira irrestrita em qualquer ponto do código. Sua disponibilidade depende do lugar em que foi declarado e das regras da linguagem para aquela forma de declaração. Assim, escopo não é detalhe secundário. Ele define onde o dado vive de maneira útil dentro do programa."
+    },
+    {
+      "type": "paragraph",
+      "text": "A intuição inicial mais importante é simples: um programa não é um espaço plano em que todos os nomes ficam disponíveis em toda parte. Ele é organizado em regiões. Algumas informações existem em contextos mais amplos. Outras pertencem apenas a blocos ou funções específicas. Algumas nascem em um trecho e morrem ao sair dele. Essa ideia muda radicalmente a maneira como o iniciante lê o código. Em vez de perguntar apenas que valor este identificador contém, ele passa a perguntar também onde esse identificador pode ser alcançado legitimamente."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse passo é decisivo porque muitos exemplos iniciais ainda são pequenos e lineares. Neles, o estudante pode ter a impressão de que basta declarar algo e pronto: o nome passa a existir como recurso universal do arquivo. Essa percepção é enganosa. À medida que o código cresce, com funções, blocos condicionais, laços e trechos internos mais delimitados, o escopo se torna uma das estruturas mais importantes da linguagem. Começar a entendê-lo agora, em sua forma inicial, prepara o terreno para todos os capítulos seguintes."
+    },
+    {
+      "type": "paragraph",
+      "text": "No estudo introdutório, três noções de escopo costumam ser especialmente úteis: escopo global, escopo de função e escopo de bloco. O escopo global diz respeito a identificadores acessíveis a partir de uma região muito ampla do programa, frequentemente visível a várias partes do código naquele contexto. O escopo de função se refere aos identificadores declarados dentro de uma função, válidos naquela função e em regiões internas a ela, mas não automaticamente fora dela. O escopo de bloco está ligado a trechos delimitados por chaves, como if, for e outras estruturas que criam regiões mais específicas de existência do identificador."
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste momento do livro, o foco está em construir a percepção inicial dessas camadas, e não em esgotar cada detalhe avançado. O ponto central é que a linguagem organiza a visibilidade dos nomes segundo a estrutura do código. Isso significa que dois identificadores com o mesmo nome podem até existir em regiões diferentes sem representar exatamente a mesma coisa, e que um nome válido em um ponto pode simplesmente não existir em outro. A leitura correta do programa depende de respeitar essa geografia interna do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "A escolha entre var, let e const influencia diretamente esse tema. Como já foi antecipado na parte anterior, let e const se comportam com escopo de bloco em muitos contextos modernos da linguagem, enquanto var possui um comportamento histórico mais ligado ao escopo de função. Essa diferença é uma das razões pelas quais var pode gerar confusão maior para iniciantes. Let e const costumam alinhar melhor a disponibilidade do identificador à região visual do bloco onde ele aparece, o que torna a leitura mais previsível em muitos casos simples e intermediários."
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma estrutura condicional. Se o estudante declara uma constante com let ou const dentro do bloco de um if, esse identificador pertence àquele bloco e não deve ser lido como automaticamente disponível fora dele. Essa regra ajuda a manter o dado próximo do contexto em que faz sentido. O valor nasce onde é necessário e permanece ligado àquela região do raciocínio. Essa proximidade entre sentido lógico e existência técnica melhora muito a clareza do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse vínculo entre escopo e sentido é extremamente importante. Um identificador que só faz sentido dentro de uma decisão específica não precisa existir em regiões maiores do programa. Da mesma forma, um dado local a uma função não deve, em princípio, vazar indiscriminadamente para fora dela. O escopo funciona, portanto, como mecanismo de organização semântica. Ele reduz ruído, protege o programa de dependências acidentais e ajuda o leitor a entender onde cada pedaço de informação realmente pertence."
+    },
+    {
+      "type": "paragraph",
+      "text": "Do ponto de vista do iniciante, uma boa metáfora é pensar no escopo como um mapa de salas. Nem toda pessoa que entra em um prédio tem acesso a todas as salas. Algumas áreas são públicas, outras pertencem a setores específicos, e outras ainda só fazem sentido dentro de um contexto muito delimitado. Da mesma forma, nem todo identificador deve ser acessado de qualquer lugar. O fato de o nome existir em uma parte do programa não significa que ele esteja legitimamente disponível em outra."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa percepção também melhora a depuração. Quando o estudante recebe uma mensagem indicando que certa variável não está definida ou não pode ser acessada naquele ponto, o problema pode não estar na inexistência absoluta do identificador, mas no fato de que ele foi declarado em outra região do código. Em vez de concluir apenas que algo sumiu misteriosamente, o programador passa a investigar se aquele nome pertence de fato ao escopo atual. Essa mudança de pergunta aumenta muito a qualidade do diagnóstico."
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro ganho importante é a redução de acoplamento mental. Sem noção de escopo, o aluno tende a escrever identificadores em regiões muito amplas por conveniência, tornando o programa mais difícil de entender. Com a noção de escopo, ele começa a limitar a existência dos dados ao espaço em que realmente são necessários. Essa disciplina melhora organização e facilita manutenção. Quanto menos um nome precisa existir em regiões amplas, menor a chance de uso indevido, colisão semântica ou dependência confusa."
+    },
+    {
+      "type": "paragraph",
+      "text": "É importante perceber também que escopo não é apenas mecanismo de restrição; ele é também ferramenta de estruturação do pensamento. Um programa com escopos bem usados comunica melhor sua arquitetura. O leitor percebe o que pertence ao fluxo geral, o que é local a uma função, o que existe apenas durante uma decisão e o que desaparece ao fim de um bloco. Em outras palavras, o escopo ajuda a linguagem a representar hierarquia de raciocínio, e não apenas limite técnico de acesso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Na prática, isso significa que o estudante deve começar a ler blocos e funções não apenas como agrupamentos visuais de linhas, mas como regiões que também organizam a vida dos identificadores. Cada vez que surge um bloco novo, vale perguntar que nomes nascerão aqui, quais só fazem sentido aqui e quais precisarão ser acessados fora daqui. Essa pergunta ajuda a evitar tanto declarações amplas demais quanto tentativas de acesso fora do contexto adequado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro aspecto importante é que a clareza do escopo melhora a confiança na interpretação do estado. Quando se sabe em que região um valor existe, torna-se mais fácil rastrear sua origem, seu uso e suas mudanças. Sem essa clareza, o programa parece um espaço difuso em que valores aparecem e desaparecem sem lógica. Com ela, a leitura passa a respeitar uma topologia interna coerente. O dado não está simplesmente em algum lugar; ele pertence a uma região específica do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "No nível profissional, o domínio inicial de escopo é uma das bases para entender funções, closures, encapsulamento, modularidade e vários outros temas centrais da linguagem. No entanto, esse futuro mais sofisticado só se sustenta se o iniciante começar bem. E começar bem, aqui, significa entender que declarar um identificador é também decidir em que região do programa ele deverá viver. Essa decisão nunca é neutra. Ela afeta segurança, clareza, manutenção e previsibilidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em síntese, escopo é a região do programa em que um identificador existe de forma válida e acessível. Compreender isso significa abandonar a ideia de que todos os nomes do código vivem em um espaço único e irrestrito. O estudante passa a enxergar o programa como território organizado em regiões, cada uma com seus dados próprios, suas responsabilidades e seus limites. Esse é um passo essencial para ler JavaScript com maturidade crescente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Problema real"
+    },
+    {
+      "type": "paragraph",
+      "text": "O iniciante frequentemente tenta usar identificadores fora da região em que foram declarados e se surpreende quando o programa não os encontra. Como ainda vê o código como um espaço plano, não percebe que a existência útil de um nome depende do lugar em que ele nasceu. O problema real é estudar armazenamento de dados sem compreender a geografia interna do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Fundamentação teórica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Escopo é a região do código em que um identificador pode ser acessado validamente. JavaScript organiza essa visibilidade segundo a estrutura do programa, incluindo contextos globais, funções e blocos. A forma de declaração escolhida também influencia esse comportamento, especialmente na distinção entre var e as formas modernas let e const."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Modelo mental correto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Declarar um identificador não significa torná-lo universal no programa. Significa fazê-lo existir em uma região específica do fluxo. Ler o código corretamente exige perguntar não apenas o que este nome contém, mas também onde ele realmente existe de forma útil e legítima."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Arquitetura conceitual"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Escopo global: região ampla de visibilidade no contexto do programa.",
+        "Escopo de função: região ligada ao interior de uma função.",
+        "Escopo de bloco: região delimitada por chaves em estruturas específicas.",
+        "Visibilidade: possibilidade de acesso legítimo ao identificador.",
+        "Região de vida: espaço do código em que o nome existe com sentido.",
+        "Limite de acesso: ponto a partir do qual o identificador deixa de estar disponível."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Exemplo prático comentado"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const curso = 'JavaScript';\n\nif (true) {\n  const modulo = 'Escopo';\n  console.log(curso);\n  console.log(modulo);\n}\n\nconsole.log(curso);\n// console.log(modulo);",
+      "theme": {
+        "bg": [
+          15,
+          23,
+          42
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          226,
+          232,
+          240
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " curso "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'JavaScript'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " modulo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Escopo'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(curso);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(modulo);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(curso);"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// console.log(modulo);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, curso foi declarado em uma região mais ampla e pode ser acessado tanto fora quanto dentro do bloco if. Já modulo foi declarado dentro do bloco e só faz sentido ali. A última linha comentada mostra exatamente o limite de escopo: fora do bloco, esse identificador não deve ser tratado como disponível. O exemplo ilustra como a estrutura do código organiza a geografia dos nomes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Estudo de caso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um pequeno programa em que uma variável é criada apenas para ajudar a calcular um resultado dentro de uma condição específica. Se o estudante tenta usar esse identificador fora da condição, demonstra que ainda não está lendo o programa por regiões de sentido. Quando entende o escopo, percebe que certos dados são locais ao contexto em que nasceram e não devem ser transportados mentalmente para fora dele sem justificativa estrutural. Esse caso mostra como escopo é, ao mesmo tempo, limite técnico e organização semântica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Erros comuns"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Assumir que toda variável declarada passa a existir em qualquer ponto do código.",
+        "Tentar acessar identificadores locais de bloco fora do bloco.",
+        "Ignorar a diferença entre o comportamento histórico de var e o comportamento moderno de let e const.",
+        "Declarar dados em regiões amplas demais por conveniência.",
+        "Ler blocos apenas como agrupamentos visuais, sem perceber que também delimitam vida de identificadores."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Boas práticas"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Declarar identificadores o mais próximo possível da região em que fazem sentido.",
+        "Usar let e const para alinhar melhor escopo e clareza em código moderno inicial.",
+        "Ler cada bloco perguntando que nomes nascem e morrem ali.",
+        "Investigar erros de acesso pensando primeiro em escopo antes de supor outros problemas.",
+        "Tratar o escopo como parte da arquitetura do raciocínio, e não apenas como regra técnica isolada."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Checklist profissional"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que é escopo em JavaScript.",
+        "Consigo diferenciar, em nível inicial, escopo global, de função e de bloco.",
+        "Percebo que a existência útil de um identificador depende da região do código.",
+        "Reconheço a importância de declarar dados perto do lugar em que serão usados.",
+        "Estou preparado para aprofundar o comportamento de hoisting na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com o escopo inicial estabelecido, o próximo passo será enfrentar um tema clássico do JavaScript que costuma parecer confuso no começo: o hoisting. A próxima parte explicará esse comportamento de forma acessível, conectando-o à declaração, ao escopo e ao momento em que certos identificadores se tornam utilizáveis dentro do fluxo do programa."
+    }
+  ]
+}

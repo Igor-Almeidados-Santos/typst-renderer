@@ -1,0 +1,1171 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 6 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "6",
+    "chapter_title": "Estruturas de repetição e controle iterativo do fluxo",
+    "part_number": "5",
+    "part_title": "Break, continue e controle fino dos laços",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 6 — Estruturas de repetição e controle iterativo do fluxo"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Break, continue e controle fino dos laços"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o significado geral da repetição e estudar while, do...while e for em profundidade, o leitor está pronto para avançar para um aspecto muito importante do controle iterativo: a capacidade de interromper ou desviar o fluxo de um laço antes que ele siga simplesmente até o fim natural do seu critério de continuidade. É exatamente nesse ponto que entram break e continue. Esses recursos dão ao programador um nível mais fino de controle sobre o comportamento do laço, permitindo encerrar a repetição mais cedo ou pular determinadas iterações sem abandonar o processo por completo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tema é fundamental porque muitos processos iterativos reais não seguem uma regularidade totalmente linear até o fim. Em diversos cenários, o programa pode precisar parar assim que encontrar o que procura, ou ignorar certos casos específicos e continuar o restante da repetição. Sem mecanismos como break e continue, o código teria de recorrer a estruturas mais artificiais, condições de parada excessivamente embutidas ou lógica muito mais opaca para representar esses desvios. Em outras palavras, break e continue existem para tornar o fluxo iterativo mais fiel ao comportamento real do problema."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é estudar esses dois recursos com profundidade técnica e clareza editorial. O leitor verá o que cada um faz, em que se diferenciam, quando seu uso melhora o código e quando começa a prejudicar a legibilidade. Ao final, break e continue deixarão de parecer apenas “comandos de interrupção” e passarão a ser entendidos como ferramentas de modelagem precisa do percurso iterativo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: nem todo laço precisa ir até o fim do jeito mais linear possível"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o estudante aprende laços pela primeira vez, é comum que os exemplos mostrem iterações completas, do início ao fim, sempre executando o bloco inteiro em cada volta até que a condição deixe de ser satisfeita. Essa abordagem é útil para introdução, mas é simplificada demais para muitos problemas reais. Na prática, o programa pode precisar parar antes porque já encontrou o item desejado, ou pode precisar ignorar certas ocorrências porque elas não devem participar do processamento daquele ciclo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que break e continue resolvem. O break permite interromper o laço antes do encerramento natural previsto pelo cabeçalho ou pela condição principal. O continue permite pular a continuação da iteração atual e seguir para a próxima. Em ambos os casos, a repetição deixa de ser uma marcha cega até o fim e passa a admitir decisões internas mais refinadas."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve perceber que isso amplia o poder expressivo dos laços, mas também exige mais responsabilidade na escrita. Quanto mais flexível o fluxo, maior o risco de torná-lo confuso se o controle fino for mal usado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é break em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, break é uma instrução que interrompe imediatamente a execução do laço atual, encerrando o processo iterativo naquele ponto e fazendo o fluxo seguir para a instrução seguinte fora da estrutura. Em outras palavras, quando o programa executa break dentro de um laço, ele não espera que a condição natural do laço fique falsa. Ele decide sair antes."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "for (let i = 1; i <= 5; i = i + 1) {\n  if (i === 3) {\n    break;\n  }\n\n  console.log(i);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (i "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(i);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, o laço poderia ir até 5. No entanto, quando i chega a 3, o break encerra imediatamente a repetição. Os valores posteriores já não são processados. Esse caso mostra com clareza a essência do recurso: a lógica interna do laço encontrou uma razão suficiente para parar antes do limite originalmente previsto."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande pergunta que o leitor deve aprender a fazer é: por que, neste problema, faz sentido interromper o laço aqui e não seguir até o fim?"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Quando break costuma fazer sentido"
+    },
+    {
+      "type": "paragraph",
+      "text": "Break costuma ser especialmente útil quando o programa está procurando algo, validando uma condição cujo primeiro caso suficiente já resolve a questão ou interrompendo um processo assim que um cenário decisivo ocorre. Em todos esses casos, continuar iterando depois que o objetivo já foi atingido pode ser desnecessário, menos eficiente ou menos fiel à lógica do problema."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por exemplo, se um laço procura o primeiro usuário com determinada propriedade, pode fazer muito sentido encerrar a busca assim que esse usuário for encontrado. Do mesmo modo, se uma rotina precisa interromper um processo ao detectar um erro grave, break pode representar esse comportamento com muita clareza."
+    },
+    {
+      "type": "paragraph",
+      "text": "O valor do break, portanto, não está em “parar por parar”, mas em tornar explícito que a iteração já cumpriu ou inviabilizou seu propósito naquele ponto."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. O que é continue em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, continue é uma instrução que interrompe apenas a iteração atual e faz o laço avançar imediatamente para a próxima volta, se houver. Diferentemente de break, ele não encerra o laço inteiro. Apenas diz: este ciclo atual não deve continuar executando o restante do bloco; passe para o próximo."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "for (let i = 1; i <= 5; i = i + 1) {\n  if (i === 3) {\n    continue;\n  }\n\n  console.log(i);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "; i "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " i "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (i "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "continue"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(i);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, quando i chega a 3, a iteração atual é interrompida, e o restante do bloco não executa para aquele valor. No entanto, o laço continua com 4 e 5. Essa diferença em relação ao break é central. Continue não encerra o processo. Ele apenas ignora o trecho restante da volta atual."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve aprender a distinguir com firmeza essas duas ideias: sair do laço inteiro e pular apenas uma iteração são comportamentos muito diferentes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Break e continue como decisões internas ao laço"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma forma muito útil de pensar esses recursos é vê-los como decisões internas ao percurso iterativo. O cabeçalho do laço continua descrevendo o mecanismo geral de repetição. Mas, dentro do corpo, o programa ganha a capacidade de decidir que certos estados justificam encerramento imediato ou salto para a próxima volta. Isso torna o laço mais adaptável ao problema real."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é importante porque mostra que o fluxo iterativo não é determinado apenas pelo cabeçalho do laço. O corpo também pode influenciar decisivamente o percurso, desde que o programador use essas ferramentas com intenção clara. Isso amplia o poder expressivo da linguagem, mas também aumenta a necessidade de leitura cuidadosa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em laços bem escritos, o uso de break ou continue deve parecer consequência natural do problema, e não truque inesperado escondido no bloco."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Estudo de caso: encontrar o primeiro valor desejado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um laço percorrendo vários elementos à procura do primeiro item que satisfaça determinado critério. Assim que esse item for encontrado, continuar iterando perde sentido. O problema não pede “ver todos os casos”. Pede “parar no primeiro caso suficiente”. Esse é um cenário clássico para break."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "for (let numero = 1; numero <= 10; numero = numero + 1) {\n  if (numero === 6) {\n    console.log(\"Valor encontrado:\", numero);\n    break;\n  }\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " numero "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "; numero "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "10"
+          },
+          {
+            "kind": "plain",
+            "text": "; numero "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " numero "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (numero "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "6"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Valor encontrado:\""
+          },
+          {
+            "kind": "plain",
+            "text": ", numero);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "break"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Aqui o laço não continua até 10 depois de encontrar o número 6, porque o problema já foi resolvido. Esse tipo de situação ajuda muito o leitor a perceber o sentido funcional do break. Não se trata de interromper por capricho, mas de alinhar o fluxo ao objetivo real da iteração."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa leitura é muito importante para evitar que o estudante veja break como simples botão de fuga em vez de recurso semântico de controle iterativo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Estudo de caso: ignorar casos específicos sem parar o processo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora imagine um laço que deve processar vários valores, mas ignorar alguns deles sem interromper o restante da repetição. Esse é um contexto clássico para continue. O objetivo não é encerrar o laço inteiro, mas dizer que certas iterações não merecem processamento completo."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "for (let numero = 1; numero <= 5; numero = numero + 1) {\n  if (numero === 3) {\n    continue;\n  }\n\n  console.log(\"Processando número:\", numero);\n}",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "for"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " numero "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "; numero "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "5"
+          },
+          {
+            "kind": "plain",
+            "text": "; numero "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " numero "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " (numero "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ") {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "continue"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "\"Processando número:\""
+          },
+          {
+            "kind": "plain",
+            "text": ", numero);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, o valor 3 é ignorado, mas os demais continuam sendo processados normalmente. Isso mostra o papel exato do continue: filtrar a iteração atual sem destruir o processo como um todo. Quando bem usado, ele deixa claro que alguns casos devem ser pulados, enquanto o restante do percurso continua válido."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição principal aqui é que continue é ferramenta de exclusão local, não de encerramento global."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. O perigo da opacidade: muitos desvios escondidos no laço"
+    },
+    {
+      "type": "paragraph",
+      "text": "Embora break e continue sejam úteis, seu uso excessivo ou mal distribuído pode tornar o laço difícil de ler. Quando há múltiplos pontos de saída, várias continuações parciais e critérios pouco claros espalhados pelo bloco, o fluxo iterativo deixa de ser previsível. O leitor precisa ficar mapeando vários pontos de desvio para entender o que realmente acontece em cada volta."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse problema não significa que break ou continue sejam ruins. Significa apenas que o poder de alterar o percurso do laço deve ser usado com disciplina. A clareza do processo continua sendo o critério central. Se os desvios estiverem atrapalhando a leitura mais do que ajudando a modelar o problema, é sinal de que a estrutura precisa ser revista."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em programação profissional, controle fino só é valioso quando permanece inteligível para quem revisa o código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Break e continue não substituem bom desenho do laço"
+    },
+    {
+      "type": "paragraph",
+      "text": "Outro ponto muito importante é que break e continue não devem ser usados para mascarar um laço mal concebido. Às vezes o programador escreve uma estrutura iterativa mal ajustada e passa a corrigir seu comportamento com vários desvios internos, como se esses recursos fossem remendos universais. Esse caminho tende a piorar o código. O ideal é primeiro desenhar bem o laço principal — ponto de partida, condição e atualização — e só depois acrescentar interrupções ou saltos quando eles realmente forem parte natural da lógica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação tem muito valor formativo porque ensina o estudante a não tratar recursos de fluxo como atalhos para improviso estrutural. Break e continue devem expressar necessidade real do problema, e não servir de correção permanente para um cabeçalho mal pensado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em outras palavras, controle fino é etapa de refinamento, não substituto de arquitetura básica bem feita."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Legibilidade e intenção explícita"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um bom uso de break ou continue costuma ser aquele em que o leitor consegue perceber rapidamente por que o fluxo foi interrompido ou por que determinada iteração foi ignorada. Isso depende tanto da clareza da condição quanto da clareza dos nomes de estado observados. Quando a instrução aparece apoiada em um critério bem nomeado e logicamente forte, ela tende a ser compreensível. Quando surge a partir de estados opacos ou critérios fracos, o laço fica nebuloso."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto reforça uma ideia que atravessa todo o livro: técnica e escrita caminham juntas. Um laço bem controlado é também um laço bem narrado para o leitor. O programador não escreve apenas para a engine; escreve para a futura compreensão humana do processo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, break e continue devem comunicar intenção com a mesma honestidade editorial exigida de qualquer outra estrutura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns desta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Confundir break com continue, como se ambos apenas “pulassem” alguma parte do laço.",
+        "Usar break quando o problema exige apenas ignorar uma iteração e continuar o processo.",
+        "Usar continue quando o laço deveria ser encerrado integralmente.",
+        "Espalhar múltiplos desvios pelo laço sem clareza suficiente sobre o fluxo.",
+        "Tratar break e continue como remendos para um laço mal desenhado.",
+        "Escrever critérios opacos que tornam difícil entender por que a interrupção ou o salto aconteceram."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ao ver break, pergunte: por que o laço inteiro deve parar aqui?",
+        "Ao ver continue, pergunte: por que apenas esta iteração deve ser ignorada?",
+        "Compare exemplos equivalentes para fixar a diferença entre encerramento do laço e salto de iteração.",
+        "Use nomes claros para o estado observado nas condições que controlam break ou continue.",
+        "Evite introduzir muitos pontos de desvio em um mesmo laço enquanto estiver aprendendo.",
+        "Pense nesses recursos como decisões internas precisas, e não como botões genéricos de controle."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que break faz em um laço e por que ele encerra a repetição atual por completo.",
+        "Entendo o que continue faz e por que ele apenas pula a iteração corrente.",
+        "Reconheço cenários típicos em que break e continue fazem sentido.",
+        "Percebo o risco de tornar o fluxo opaco com desvios demais.",
+        "Entendo que esses recursos não substituem um laço bem projetado desde o início.",
+        "Estou preparado para estudar erros clássicos de repetição e armadilhas iterativas na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor domina as principais formas de laço e os mecanismos básicos de controle fino do fluxo iterativo, o próximo passo é estudar os erros e armadilhas mais comuns em repetição: laços infinitos, limites mal desenhados, atualizações incorretas, uso inadequado de break e continue e outros problemas de modelagem iterativa. Na próxima parte, faremos esse mapeamento crítico."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa continuidade é importante porque laços não costumam falhar apenas por sintaxe. Eles falham muito por desenho lógico. E é justamente essa camada que o leitor precisa aprender a revisar com mais rigor."
+    }
+  ]
+}

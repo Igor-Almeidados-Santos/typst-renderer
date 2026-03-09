@@ -1,0 +1,1635 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 8 — Parte 4",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "8",
+    "chapter_title": "Objetos e modelagem por propriedades",
+    "part_number": "4",
+    "part_title": "Objetos aninhados, arrays de objetos e modelagem composta",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 8 — Objetos e modelagem por propriedades"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 4 — Objetos aninhados, arrays de objetos e modelagem composta"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é um objeto, estudar acesso e atualização de propriedades e entrar na ideia de métodos como comportamento associado à entidade, o leitor está pronto para avançar para uma camada muito mais próxima da modelagem real de software: objetos que contêm outros objetos, objetos que contêm arrays e arrays compostos por objetos. Até aqui, os exemplos trabalharam principalmente com entidades relativamente simples. Agora o foco se desloca para estruturas compostas, em que a informação deixa de ser plana e passa a refletir relações internas mais ricas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é decisivo porque sistemas reais raramente trabalham apenas com objetos isolados e rasos. Um usuário pode ter um endereço, e esse endereço pode ser modelado como outro objeto. Um pedido pode ter um cliente e uma lista de itens. Um carrinho pode conter vários produtos representados individualmente por objetos. Uma configuração pode trazer blocos internos de preferências agrupadas. Em todos esses casos, a modelagem passa a combinar estruturas diferentes para representar melhor a complexidade do domínio."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é mostrar como objetos e arrays se combinam para formar estruturas compostas, mais próximas do trabalho real em JavaScript. O leitor compreenderá por que objetos aninhados existem, como arrays de objetos se tornam tão comuns, que tipo de raciocínio de acesso e percurso essas estruturas exigem e por que a clareza da modelagem cresce em importância à medida que a profundidade dos dados aumenta. Ao final, o objeto deixará de ser visto apenas como entidade simples e passará a ser compreendido como peça de uma arquitetura de dados mais rica e hierárquica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: entidades reais costumam ter partes internas e coleções associadas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma entidade do mundo real raramente se resume a um pequeno conjunto plano de propriedades independentes. Um usuário pode ter nome, email e, além disso, um endereço composto por rua, cidade e estado. Um produto pode ter título, preço e uma lista de categorias. Um pedido pode ter número, status e vários itens, cada um com nome, quantidade e valor. Nesses casos, a modelagem mais fiel não surge ao espalhar tudo em propriedades planas demais, mas ao reconhecer que algumas informações formam subestruturas ou coleções internas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que a modelagem composta resolve. Ela permite organizar os dados em camadas, respeitando a forma como certas partes pertencem a outras e como certos elementos aparecem em grupos. Em vez de um objeto excessivamente achatado ou de um conjunto de variáveis soltas, o programador passa a estruturar a informação segundo suas relações internas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa capacidade é central para a programação profissional, porque os dados reais do domínio quase sempre carregam hierarquias, agrupamentos e repetições significativas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é um objeto aninhado em termos introdutórios"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos introdutórios, um objeto aninhado é um objeto que aparece como valor de uma propriedade de outro objeto. Isso significa que uma entidade pode conter internamente outra estrutura de propriedades, preservando a semântica daquele subbloco de informação. Em vez de transformar tudo em uma lista plana de atributos, o programador mantém agrupadas as partes que pertencem ao mesmo contexto interno."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  endereco: {\n    rua: \"Rua das Flores\",\n    cidade: \"São Paulo\",\n    estado: \"SP\"\n  }\n};\n\nconsole.log(usuario);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  endereco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    rua"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Rua das Flores\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    cidade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"São Paulo\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    estado"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"SP\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, endereco não é apenas uma string ou número. É outro objeto, com suas próprias propriedades internas. Isso torna a modelagem mais expressiva, porque o endereço aparece como unidade coerente dentro da entidade usuário, e não como um amontoado de atributos espalhados sem relação explícita."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve começar a ver objetos aninhados como forma de preservar agrupamentos semânticos dentro da entidade maior."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Acesso em profundidade: navegar por camadas da estrutura"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um objeto contém outro objeto, o acesso aos dados passa a exigir navegação por camadas. Em vez de consultar apenas uma propriedade simples, o programador precisa atravessar o caminho estrutural até chegar ao valor desejado. Isso significa combinar acessos por ponto ou colchetes de forma encadeada."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  endereco: {\n    rua: \"Rua das Flores\",\n    cidade: \"São Paulo\",\n    estado: \"SP\"\n  }\n};\n\nconsole.log(usuario.endereco.cidade);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  endereco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    rua"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Rua das Flores\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    cidade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"São Paulo\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    estado"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"SP\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario.endereco.cidade);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de acesso é muito importante porque mostra que a leitura de objetos compostos depende de compreender a hierarquia da modelagem. O programa não está apenas lendo um valor solto. Está atravessando uma estrutura organizada para chegar a uma propriedade mais interna."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura aqui exige que o leitor entenda claramente a composição do objeto e não apenas a sintaxe do acesso."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Arrays dentro de objetos: coleções pertencentes à entidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Além de conter outros objetos, um objeto também pode conter arrays como propriedades. Isso é extremamente comum quando a entidade possui uma coleção de elementos associados a ela. Um usuário pode ter uma lista de permissões. Um carrinho pode ter uma lista de itens. Um curso pode ter uma lista de aulas. Nesses casos, o array deixa de ser uma coleção solta e passa a ser parte interna do estado da entidade."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  permissoes: [\"ler\", \"escrever\", \"compartilhar\"]\n};\n\nconsole.log(usuario.permissoes);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  permissoes"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          },
+          {
+            "kind": "string",
+            "text": "\"ler\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"escrever\""
+          },
+          {
+            "kind": "plain",
+            "text": ", "
+          },
+          {
+            "kind": "string",
+            "text": "\"compartilhar\""
+          },
+          {
+            "kind": "plain",
+            "text": "]"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario.permissoes);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é muito importante porque mostra a convivência natural entre objeto e array. A entidade usuario mantém um atributo nomeado que, por sua vez, representa uma coleção linear de dados relacionados. Isso amplia bastante a capacidade de modelagem da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve perceber que, nesse tipo de estrutura, as ferramentas estudadas em capítulos anteriores continuam vivas. O array ainda tem índices, length, percursos e transformações. Apenas passou a viver dentro de um contexto semântico maior."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Arrays de objetos: uma das estruturas mais comuns do JavaScript real"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se objetos podem conter arrays, o inverso também é extremamente frequente: arrays podem conter objetos. Essa é uma das combinações mais importantes de toda a programação em JavaScript, porque muitas coleções reais são, na prática, listas de entidades. Uma lista de usuários é um array de objetos usuário. Uma lista de produtos é um array de objetos produto. Um conjunto de mensagens é um array de objetos mensagem."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const produtos = [\n  { titulo: \"Notebook\", preco: 3500 },\n  { titulo: \"Mouse\", preco: 120 },\n  { titulo: \"Teclado\", preco: 250 }\n];\n\nconsole.log(produtos);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " produtos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Notebook\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3500"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Mouse\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "120"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Teclado\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "250"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(produtos);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa estrutura é extremamente valiosa porque combina dois níveis de modelagem: o array representa a coleção linear, e cada objeto representa a entidade individual com suas propriedades significativas. Em termos práticos, isso permite percorrer listas de dados ricos sem perder a semântica de cada item."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve internalizar cedo que arrays de objetos estão entre os formatos mais importantes do trabalho cotidiano com dados, APIs e interfaces."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Percorrer arrays de objetos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um array contém objetos, o percurso da coleção passa a envolver dois níveis de compreensão: o laço percorre os elementos da lista, e cada elemento pode ter propriedades internas relevantes. Isso significa que a iteração já não lida apenas com números, strings ou valores simples, mas com entidades compostas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const produtos = [\n  { titulo: \"Notebook\", preco: 3500 },\n  { titulo: \"Mouse\", preco: 120 },\n  { titulo: \"Teclado\", preco: 250 }\n];\n\nprodutos.forEach(function (produto) {\n  console.log(produto.titulo);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " produtos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Notebook\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3500"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Mouse\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "120"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Teclado\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "250"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "produtos."
+          },
+          {
+            "kind": "function",
+            "text": "forEach"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (produto) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(produto.titulo);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, cada elemento do array produtos é um objeto com propriedades próprias. O percurso não se limita a visitar itens genéricos. Ele visita entidades com significado. Isso é muito importante para o amadurecimento do leitor, porque mostra como listas e objetos se articulam para representar conjuntos ricos de dados."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição central aqui é que a iteração sobre coleções compostas exige ler, ao mesmo tempo, a lógica do array e a semântica do objeto individual."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Atualizar propriedades dentro de estruturas compostas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando a modelagem se torna composta, a atualização do estado também pode acontecer em profundidade. O programa pode alterar uma propriedade de um objeto interno ou de um item dentro de um array de objetos. Isso mostra que o gerenciamento de estado deixa de ser apenas leitura e escrita de propriedades superficiais e passa a envolver navegação mais cuidadosa pela estrutura."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const pedido = {\n  numero: 123,\n  cliente: {\n    nome: \"Ana\"\n  },\n  itens: [\n    { nome: \"Notebook\", quantidade: 1 },\n    { nome: \"Mouse\", quantidade: 2 }\n  ]\n};\n\npedido.itens[1].quantidade = 3;\nconsole.log(pedido.itens[1]);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " pedido "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  numero"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "123"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  cliente"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  itens"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    { nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Notebook\""
+          },
+          {
+            "kind": "plain",
+            "text": ", quantidade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    { nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Mouse\""
+          },
+          {
+            "kind": "plain",
+            "text": ", quantidade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ]"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "pedido.itens["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "].quantidade "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido.itens["
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": "]);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo ilustra muito bem o nível de detalhe que a modelagem composta alcança. O programa acessa o array de itens dentro do pedido, localiza um dos objetos da coleção e altera sua propriedade quantidade. Essa capacidade é extremamente útil, mas exige um modelo mental bem organizado da estrutura."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que, quanto mais rica a composição, mais importante se torna a clareza da modelagem e da navegação pelos dados."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Objetos compostos e coerência semântica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma das grandes vantagens da modelagem composta é permitir que o código se aproxime mais fielmente da realidade semântica do domínio. Endereço pode ser um objeto dentro de usuário. Itens pode ser um array dentro de pedido. Permissões pode ser um array em usuário. Cada parte fica agrupada conforme seu papel, em vez de se espalhar numa estrutura plana e difícil de interpretar."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa coerência semântica é muito valiosa porque reduz ambiguidades e melhora a legibilidade do código. O leitor consegue perceber mais facilmente que certas informações pertencem a um mesmo bloco lógico e que certas coleções estão associadas a uma entidade maior. Em vez de um mapa raso de propriedades soltas, a estrutura passa a refletir relações mais reais entre os dados."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em modelagem profissional, essa fidelidade ao domínio é uma virtude importante."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: pedido com cliente e itens"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um objeto pedido que contém propriedades simples como numero e status, um objeto cliente com dados da pessoa compradora e um array itens com os produtos envolvidos. Esse cenário resume muito bem o valor da modelagem composta. Não faz sentido tratar tudo como variáveis isoladas nem como uma lista linear única. O problema real pede camadas: uma entidade principal, um subobjeto para o cliente e uma coleção de itens associados."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é muito valioso porque representa exatamente o tipo de estrutura que aparece com frequência em APIs, bancos de dados, integrações e interfaces. O leitor precisa começar a ver esse tipo de composição como algo natural e recorrente, não como exceção avançada da linguagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: boa modelagem composta aproxima o formato do dado da realidade do problema representado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O valor editorial de nomear bem estruturas aninhadas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quanto mais composta a estrutura, mais importante se torna a qualidade dos nomes. Em objetos aninhados e arrays de objetos, bons nomes reduzem drasticamente a carga cognitiva da leitura. Um acesso como pedido.cliente.nome ou pedido.itens[0].quantidade é muito mais inteligível quando cada parte da cadeia de acesso comunica claramente seu papel no domínio."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é crucial porque a profundidade estrutural pode aumentar rapidamente a complexidade de leitura. Se os nomes forem ruins, o código se torna opaco. Se forem bons, a navegação pelos dados se torna quase narrativa. O leitor acompanha a estrutura como quem percorre a própria lógica da entidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em software profissional, modelagem composta bem nomeada é uma forma poderosa de clareza arquitetural."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que objetos aninhados e arrays de objetos são casos raros ou avançados demais, quando na verdade são estruturas muito comuns.",
+        "Perder de vista a diferença entre o nível da coleção e o nível da entidade dentro da coleção.",
+        "Misturar em uma única estrutura plana dados que fariam mais sentido agrupados em subobjetos.",
+        "Ter dificuldade de navegar por acessos compostos por não compreender a hierarquia da modelagem.",
+        "Atualizar propriedades internas sem clareza sobre em que nível da estrutura a alteração está ocorrendo.",
+        "Subestimar a importância dos nomes em estruturas compostas."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Associe objetos aninhados à ideia de agrupamento semântico interno.",
+        "Associe arrays de objetos à ideia de coleções de entidades ricas.",
+        "Ao ler uma estrutura composta, identifique claramente seus níveis: entidade principal, subobjetos e coleções internas.",
+        "Pratique acessos compostos até que a navegação por camadas se torne natural.",
+        "Use nomes claros para cada bloco da estrutura, de modo que a leitura da cadeia de acesso continue legível.",
+        "Prepare-se para combinar esse tipo de modelagem com percursos e transformações mais ricas nas próximas partes."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 4"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo o que são objetos aninhados em nível introdutório e conceitual.",
+        "Reconheço arrays de objetos como uma das estruturas mais comuns do JavaScript real.",
+        "Consigo navegar por acessos compostos em objetos e coleções internas.",
+        "Percebo que estruturas compostas representam melhor muitos problemas do domínio.",
+        "Entendo que atualização de estado pode ocorrer em diferentes camadas da modelagem.",
+        "Estou preparado para estudar iteração, transformação e leitura orientada sobre objetos compostos na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende como objetos e arrays se combinam em estruturas compostas, o próximo passo é estudar como percorrer, consultar e transformar essas modelagens de forma mais sistemática. Na próxima parte, veremos iteração sobre objetos compostos, leitura orientada e padrões iniciais de processamento de entidades mais ricas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é essencial porque a modelagem não se encerra na forma dos dados. Ela continua na maneira como o programa navega por essas estruturas e extrai delas o comportamento necessário ao fluxo."
+    }
+  ]
+}

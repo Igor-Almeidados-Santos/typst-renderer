@@ -1,0 +1,607 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 5 — Parte 8",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 5,
+    "chapter_title": "Controle de fluxo: decisões bem feitas",
+    "part_number": 8,
+    "part_title": "Fechamento do Capítulo 5: resumo executivo, erros clássicos e checklist final",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 5 — Controle de fluxo: decisões bem feitas"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 8 — Fechamento do Capítulo 5: resumo executivo, erros clássicos e checklist final"
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o capítulo que transforma condições em comportamento. Controle de fluxo é o que dá “inteligência” ao programa: escolher caminhos, bloquear estados inválidos, e manter regras consistentes. Se você dominar este capítulo, você vai escrever decisões previsíveis e fáceis de manter — a marca de um júnior sólido. Nesta parte final, você vai revisar os conceitos essenciais, reconhecer erros clássicos rapidamente e fechar com um checklist final — o seu sinal verde para o Capítulo 6 (laços e repetição)."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Resumo executivo (o que você deve levar)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "if/else decide fluxo com base em uma expressão convertida para boolean (truthy/falsy).",
+        "else if é ideal para faixas e múltiplos casos mutuamente exclusivos (ordem importa).",
+        "switch é ideal para casos discretos (valores exatos) e compara com ===.",
+        "switch exige break/return para evitar fall-through acidental.",
+        "Ternário é expressão: use para escolher valores; evite ternário aninhado para muitos casos.",
+        "Guard clauses (retorno cedo) eliminam estados inválidos e evitam pirâmide de if.",
+        "Separar validação (regras) do processamento (happy path) melhora legibilidade e reduz bugs.",
+        "Extrair regras para funções booleanas (is/has/can) torna o código auditável.",
+        "Decisões complexas devem ter rastreabilidade: saber por que um resultado aconteceu (motivos)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Erros clássicos (e a causa real)"
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.1 Pirâmide de if (indentação crescente)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: validação e processamento misturados, falta de retorno cedo. Correção: guard clauses e happy path curto."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function ok(user) {\n  if (!user) return 'negado';\n  if (!user.ativo) return 'negado';\n  if (!user.permissoes?.includes('ADMIN')) return 'negado';\n  return 'ok';\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "ok"
+          },
+          {
+            "kind": "plain",
+            "text": "(user) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "user) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'negado'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "user.ativo) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'negado'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "if"
+          },
+          {
+            "kind": "plain",
+            "text": " ("
+          },
+          {
+            "kind": "operator",
+            "text": "!"
+          },
+          {
+            "kind": "plain",
+            "text": "user.permissoes"
+          },
+          {
+            "kind": "operator",
+            "text": "?"
+          },
+          {
+            "kind": "plain",
+            "text": "."
+          },
+          {
+            "kind": "function",
+            "text": "includes"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'ADMIN'"
+          },
+          {
+            "kind": "plain",
+            "text": ")) "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'negado'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'ok'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.2 Ordem errada em else if"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: condição mais geral antes da mais específica. Correção: ordenar do mais específico (ou maior) para o mais geral (ou menor), conforme o caso."
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.3 Fall-through em switch"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: break/return faltando. Correção: usar break ou return em cada case (padrão mais limpo)."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "function dia(n) {\n  switch (n) {\n    case 1: return 'Seg';\n    case 2: return 'Ter';\n    default: return 'Inválido';\n  }\n}",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "function",
+            "text": "dia"
+          },
+          {
+            "kind": "plain",
+            "text": "(n) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "switch"
+          },
+          {
+            "kind": "plain",
+            "text": " (n) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Seg'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "case"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Ter'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    "
+          },
+          {
+            "kind": "keyword",
+            "text": "default"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "'Inválido'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "2.4 Ternário aninhado ilegível"
+    },
+    {
+      "type": "paragraph",
+      "text": "Causa: tentar representar muitos casos em uma expressão. Correção: usar else if ou switch."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Padrões recomendados (o “jeito júnior”)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Valide cedo, retorne cedo: elimine estados inválidos no topo do fluxo.",
+        "Mantenha o happy path sem indentação excessiva.",
+        "Use else if para faixas e switch para casos discretos.",
+        "Em switch, prefira return em cada case para dispensar break.",
+        "Use ternário apenas para escolher valores (mensagens, classes, textos).",
+        "Nomeie regras: isMaior, hasPermissao, canComprar.",
+        "Evite condições gigantes: quebre em variáveis ou funções de regra.",
+        "Quando houver regras de negócio, registre motivo/estado para depuração e auditoria."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Checklist final do Capítulo 5 (sinal verde)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu consigo escrever if/else com condições claras e previsíveis.",
+        "Eu sei usar else if para faixas e sei que a ordem dos testes importa.",
+        "Eu sei quando usar switch e sei que ele compara com ===.",
+        "Eu sei evitar fall-through e consigo usar fall-through intencional com comentário.",
+        "Eu uso guard clauses para validar entradas e evitar pirâmide de if.",
+        "Eu uso ternário para escolher valores e evito aninhar ternários para muitos casos.",
+        "Eu consigo separar regras de ações e extrair regras para funções booleanas.",
+        "Eu consigo refatorar decisões complexas para um fluxo legível e auditável."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Conexão com o Capítulo 6"
+    },
+    {
+      "type": "paragraph",
+      "text": "No Capítulo 6, você entra em laços e repetição: for, while, do...while, break e continue. Controle de fluxo continua sendo o coração, mas agora aplicado a coleções e tarefas repetitivas. O domínio de validação, condições e legibilidade que você construiu aqui vai evitar bugs clássicos de loop (off-by-one, loops infinitos e condições mal definidas)."
+    },
+    {
+      "type": "paragraph",
+      "text": "Você concluiu o Capítulo 5 com todas as 8 partes previstas. Próximo passo: Capítulo 6 — Parte 1."
+    }
+  ]
+}

@@ -1,0 +1,453 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 12 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 12,
+    "chapter_title": "Rede e APIs: fetch, HTTP e consumo seguro de JSON",
+    "part_number": 1,
+    "part_title": "HTTP sem mistério: request/response, métodos, status e headers (modelo mental)",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 12 — Rede e APIs: fetch, HTTP e consumo seguro de JSON"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — HTTP sem mistério: request/response, métodos, status e headers (modelo mental)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora você entra no coração das aplicações modernas: comunicação com APIs. Antes de usar fetch, você precisa do modelo mental de HTTP. Sem esse modelo, você vira refém de “tentativa e erro” quando um request falha, quando um status não é 200, ou quando CORS aparece. Nesta parte, você vai aprender HTTP como contrato: cliente envia um request (método, URL, headers, corpo) e servidor responde (status, headers, corpo). O foco é entender o porquê das decisões e como isso aparece no JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: “Recebi 404/401/500 e não sei o que fazer”"
+    },
+    {
+      "type": "paragraph",
+      "text": "No mundo real, a maioria das respostas não é 200. Status codes informam a categoria do resultado: sucesso, redirecionamento, erro do cliente (você pediu errado ou não tem permissão) e erro do servidor. Se você entende status, você entende rapidamente onde investigar."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. O que é HTTP (definição útil)"
+    },
+    {
+      "type": "paragraph",
+      "text": "HTTP é um protocolo de request/response. O cliente pede um recurso (URL) com um método (GET, POST etc.). O servidor responde com um status code (200, 404 etc.), headers (metadados) e um corpo (body) opcional (JSON, HTML, etc.)."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Request: método + URL + headers + body (opcional).",
+        "Response: status + headers + body (opcional).",
+        "URL: identifica recurso (ex.: /api/pedidos/101).",
+        "Headers: metadados (ex.: Content-Type, Authorization).",
+        "Body: dados (ex.: JSON) em POST/PUT e em responses."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Métodos HTTP (intenção)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "GET: ler recurso (não deve ter efeitos colaterais).",
+        "POST: criar recurso ou executar ação (geralmente com body).",
+        "PUT: substituir recurso inteiro.",
+        "PATCH: atualizar parcialmente.",
+        "DELETE: remover recurso."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Status codes (mapa prático)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "2xx: sucesso (200 OK, 201 Created, 204 No Content).",
+        "3xx: redirecionamento (301/302).",
+        "4xx: erro do cliente (400 inválido, 401 não autenticado, 403 proibido, 404 não encontrado, 429 rate limit).",
+        "5xx: erro do servidor (500, 502, 503)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Headers essenciais"
+    },
+    {
+      "type": "paragraph",
+      "text": "Headers dizem como interpretar o body e como autenticar/autorizar. Dois deles aparecem toda hora:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Content-Type: formato do body enviado (ex.: application/json).",
+        "Accept: formato esperado na resposta (ex.: application/json).",
+        "Authorization: credencial (ex.: Bearer <token>)."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Exemplo de request/response (forma mental)"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "content": "GET /api/pedidos/101 HTTP/1.1\nAccept: application/json\n\nHTTP/1.1 200 OK\nContent-Type: application/json\n\n{\"ok\":true,\"data\":{\"id\":101,\"total\":120.5}}",
+      "segments": [
+        [
+          {
+            "kind": "plain",
+            "text": "GET "
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "api"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "pedidos"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "number",
+            "text": "101"
+          },
+          {
+            "kind": "plain",
+            "text": " HTTP"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "number",
+            "text": "1.1"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "Accept"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " application"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "json"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "HTTP"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "number",
+            "text": "1.1"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "200"
+          },
+          {
+            "kind": "plain",
+            "text": " OK"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "Content"
+          },
+          {
+            "kind": "operator",
+            "text": "-"
+          },
+          {
+            "kind": "plain",
+            "text": "Type"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " application"
+          },
+          {
+            "kind": "operator",
+            "text": "/"
+          },
+          {
+            "kind": "plain",
+            "text": "json"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "{"
+          },
+          {
+            "kind": "string",
+            "text": "\"ok\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": "true,"
+          },
+          {
+            "kind": "string",
+            "text": "\"data\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": "{"
+          },
+          {
+            "kind": "string",
+            "text": "\"id\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "number",
+            "text": "101"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          },
+          {
+            "kind": "string",
+            "text": "\"total\""
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "number",
+            "text": "120.5"
+          },
+          {
+            "kind": "plain",
+            "text": "}}"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Boas práticas para consumir APIs"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Nunca assuma 200: trate status e mensagens de erro.",
+        "Separe camada de rede (fetch) da camada de domínio (parse/normalização).",
+        "Use contratos consistentes (ok/data/error) quando você controla a API.",
+        "Logue contexto (endpoint, status, requestId) em erros.",
+        "Planeje timeouts e cancelamento (AbortController) para UI responsiva."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Checklist profissional (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu entendo HTTP como request/response com método, URL, headers e body.",
+        "Eu sei a intenção dos métodos GET/POST/PUT/PATCH/DELETE.",
+        "Eu sei interpretar status 2xx/3xx/4xx/5xx e investigar o lado certo.",
+        "Eu sei para que servem Content-Type, Accept e Authorization.",
+        "Eu consigo ler um exemplo de request/response e mapear para fetch.",
+        "Eu sei que consumir API exige tratar erro, validar JSON e planejar cancelamento."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 2, você vai usar fetch de verdade: GET/POST, headers, JSON, tratamento de status (response.ok), e o padrão de cliente de API com parse robusto."
+    }
+  ]
+}

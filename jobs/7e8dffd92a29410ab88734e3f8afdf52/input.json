@@ -1,0 +1,826 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 4 — Parte 7",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "4",
+    "chapter_title": "Variáveis, constantes e gerenciamento de estado",
+    "part_number": "7",
+    "part_title": "Quando usar var, let e const na prática",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 4 — Variáveis, constantes e gerenciamento de estado"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 7 — Quando usar var, let e const na prática"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o armazenamento em memória, estudar var, let e const em profundidade, organizar escopo, tempo de vida, reatribuição, hoisting, boas práticas de nomeação e a diferença entre reatribuição e mutação interna de estruturas, o leitor está pronto para transformar teoria em decisão prática. Esta parte responde a uma pergunta que aparece constantemente no dia a dia do desenvolvimento: afinal, quando usar cada forma de declaração?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa pergunta parece simples, mas não deve ser tratada com respostas superficiais. Dizer apenas “use const sempre” ou “use let quando mudar” tem algum valor inicial, mas ainda não basta para formar um programador júnior maduro. A escolha entre var, let e const comunica intenção, influencia previsibilidade, afeta legibilidade e se relaciona diretamente com a forma como o estado do programa é organizado. Portanto, decidir bem não é um detalhe de estilo. É uma parte real da qualidade do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é estabelecer critérios práticos, tecnicamente corretos e editorialmente sólidos para essa escolha. O leitor verá como alinhar a forma de declaração ao comportamento esperado do estado, como evitar usos arbitrários e como transformar a escolha entre var, let e const em parte do raciocínio profissional sobre clareza e manutenção."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: declarar sem critério enfraquece a intenção do código"
+    },
+    {
+      "type": "paragraph",
+      "text": "É muito comum que iniciantes escolham formas de declaração por reflexo. Às vezes usam let para tudo. Às vezes repetem var por imitação de exemplos antigos. Em outros casos, adotam const sem realmente pensar no comportamento da estrutura associada. O resultado é que a sintaxe deixa de comunicar intenção. O leitor do código vê uma declaração, mas não recebe uma pista confiável sobre estabilidade, mutabilidade esperada ou contexto de uso daquele estado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que esta parte resolve. Se a forma de declaração não conversa com o papel da informação no programa, a legibilidade se deteriora. O código continua executável, mas perde precisão semântica. E sem precisão semântica, cresce o custo de leitura, revisão e manutenção. Em software profissional, isso importa muito."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, escolher entre var, let e const deve ser entendido como decisão de design lógico e editorial, não apenas como detalhe sintático."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Um critério inicial muito útil: perguntar se haverá reatribuição"
+    },
+    {
+      "type": "paragraph",
+      "text": "Entre os critérios práticos mais úteis para código moderno, um dos mais importantes é perguntar se o identificador precisará receber novo valor ao longo do fluxo. Essa pergunta não resolve tudo sozinha, mas organiza muito bem a decisão inicial. Se a resposta for não, const tende a ser a escolha mais clara. Se a resposta for sim, let tende a ser a escolha apropriada. Esse raciocínio ajuda a alinhar sintaxe e intenção."
+    },
+    {
+      "type": "paragraph",
+      "text": "O valor desse critério está na sua simplicidade inteligente. Ele não depende de decorar uma tabela grande nem de entrar imediatamente em todos os casos extremos. Ele força o programador a pensar sobre o papel do estado. A informação deve permanecer estável depois de definida? Ou deve evoluir ao longo do fluxo? Esse tipo de pergunta melhora a qualidade do código porque transforma a declaração em uma decisão semântica."
+    },
+    {
+      "type": "paragraph",
+      "text": "Mais adiante, o leitor verá casos em que outros fatores também importam, especialmente quando o contexto envolve objetos, arrays e mutação interna. Ainda assim, esta pergunta inicial continua sendo uma excelente bússola prática."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Quando const tende a ser a melhor escolha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Const tende a ser a melhor escolha quando o identificador não deve ser reatribuído depois da definição inicial. Isso é muito comum em nomes de configuração, valores derivados que não precisam ser redefinidos, resultados de cálculos já consolidados, dependências estáveis dentro de um bloco de lógica e referências que não devem mudar de alvo ao longo do trecho considerado."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const nomeProjeto = \"JavaScript do Zero ao Júnior\";\nconst imposto = 0.2;\nconst mensagemBoasVindas = \"Bem-vindo ao sistema\";",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " nomeProjeto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"JavaScript do Zero ao Júnior\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " imposto "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0.2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " mensagemBoasVindas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Bem-vindo ao sistema\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesses exemplos, const comunica estabilidade de vínculo. O leitor entende que os nomes foram pensados para permanecer associados àquele valor durante o contexto em que existem. Isso melhora a leitura porque reduz a expectativa de mudança. Quem revisa o código não precisa ficar procurando reatribuições futuras como se elas fossem parte natural do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Do ponto de vista editorial, const tem uma virtude importante: ele transforma estabilidade em informação legível no próprio texto do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Quando let tende a ser a melhor escolha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Let tende a ser a melhor escolha quando o estado foi pensado para mudar ao longo do fluxo. Isso acontece em contadores, acumuladores, etapas de processo, status temporários, dados que evoluem durante uma rotina e várias outras situações em que a reatribuição faz parte natural da lógica."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "let tentativas = 0;\ntentativas = tentativas + 1;\n\nlet etapaAtual = 1;\netapaAtual = 2;",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " tentativas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "tentativas "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " tentativas "
+          },
+          {
+            "kind": "operator",
+            "text": "+"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "let"
+          },
+          {
+            "kind": "plain",
+            "text": " etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "etapaAtual "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Aqui o uso de let não é apenas permitido; ele é semanticamente coerente. O nome indica algo que participa de transformação no tempo. Forçar const nesses cenários geraria conflito com a própria natureza do estado representado. Portanto, let deve ser visto como instrumento de estado mutável controlado, e não como escolha genérica para qualquer situação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa diferença é muito importante para um júnior bem formado: mutabilidade deve ser uma decisão clara, não um padrão implícito sem reflexão."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Quando var aparece e como pensar seu uso"
+    },
+    {
+      "type": "paragraph",
+      "text": "Var continua aparecendo em código legado, em materiais antigos e em certos contextos específicos de manutenção ou leitura histórica do ecossistema. Por isso, o desenvolvedor júnior precisa entendê-lo. No entanto, para a maior parte do código moderno escrito com foco em previsibilidade e clareza, let e const costumam ser preferíveis justamente por oferecerem um modelo de escopo e uso mais alinhado à organização contemporânea do JavaScript."
+    },
+    {
+      "type": "paragraph",
+      "text": "Isso não significa tratar var como erro moral ou como algo inválido. O correto é entendê-lo como parte histórica real da linguagem, com comportamento que pode ser necessário conhecer para ler, corrigir ou evoluir sistemas existentes. Porém, quando o objetivo é escrever código novo com melhor previsibilidade em muitos cenários, a preferência moderna por let e const faz sentido técnico e pedagógico."
+    },
+    {
+      "type": "paragraph",
+      "text": "A maturidade está em não demonizar var, mas também não escolhê-lo por desatenção ou mera repetição de padrões antigos quando há alternativas mais claras."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. O caso especial de const com objetos e arrays"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos pontos mais importantes na prática é lembrar que const não significa imutabilidade total do conteúdo de objetos e arrays. Significa que o identificador não será reatribuído para outro valor ou outra referência. Assim, declarar um objeto com const pode ser excelente quando a intenção é manter estável o vínculo do nome, mesmo que certas propriedades internas da estrutura ainda precisem ser alteradas ao longo do fluxo."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  idade: 18\n};\n\nusuario.idade = 19;\nconsole.log(usuario);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  idade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "18"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "usuario.idade "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "19"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo mostra por que o critério de escolha precisa ser mais refinado do que slogans simplificados. O nome usuario não será reatribuído para outro objeto, então const continua fazendo sentido. A mutação acontece no conteúdo interno da estrutura, e isso precisa ser entendido como questão separada. O leitor profissional aprende a distinguir estabilidade do vínculo e mutabilidade da estrutura."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa nuance é decisiva para evitar confusões comuns e para escrever código mais semanticamente preciso."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Evitando let por padrão automático"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um hábito problemático muito comum é declarar tudo com let “por segurança”, como se a possibilidade de mudança fosse sempre uma vantagem. Esse hábito enfraquece o código porque comunica menos. Se todo identificador é potencialmente mutável na forma da declaração, o leitor perde uma pista importante sobre quais estados realmente foram pensados para mudar e quais não deveriam ser redefinidos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao usar const sempre que a reatribuição não é necessária, o programador melhora a legibilidade e impõe a si mesmo uma disciplina útil de design. Ele torna explícito onde a mutabilidade é parte do problema e onde a estabilidade é parte da intenção. Essa distinção reduz ruído e ajuda inclusive na revisão do código."
+    },
+    {
+      "type": "paragraph",
+      "text": "Portanto, let deve ser usado quando a mudança é necessária, e não apenas como escolha automática por inércia."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Evitando const por dogmatismo"
+    },
+    {
+      "type": "paragraph",
+      "text": "No extremo oposto, também é um erro usar const como bandeira ideológica sem considerar a natureza do estado. Se o valor associado ao nome precisa realmente ser reatribuído ao longo da lógica, insistir em const apenas para seguir uma regra rígida cria atrito artificial. O código começa a lutar contra o próprio problema que está tentando resolver."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa prática não é idolatrar uma palavra-chave, mas escolher a forma que melhor representa a intenção do estado. Em muitos trechos, const será realmente a melhor decisão. Em outros, let será mais honesto e funcional. A maturidade do programador está justamente em saber distinguir esses contextos."
+    },
+    {
+      "type": "paragraph",
+      "text": "A escolha correta não é a mais ideológica; é a mais coerente com a vida esperada da informação no programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Critério profissional resumido para código moderno"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em contexto moderno, uma regra prática muito útil pode ser formulada assim: use const por padrão quando o identificador não precisar de reatribuição; use let quando a reatribuição fizer parte da lógica; conheça var para leitura, manutenção e compreensão histórica da linguagem, mas evite escolhê-lo por reflexo em novo código quando seu comportamento menos previsível não trouxer benefício claro para o contexto."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse resumo é útil porque organiza a decisão sem empobrecer demais o entendimento. Ele não transforma a escolha em receita cega, mas em ponto de partida consciente. A partir dele, o estudante pode analisar cada caso real com mais precisão e menos improviso."
+    },
+    {
+      "type": "paragraph",
+      "text": "O importante é que essa regra não seja decorada como mantra vazio. Ela precisa ser conectada aos conceitos já estudados: escopo, reatribuição, mutabilidade, legibilidade e intenção de estado."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Estudo de caso: três estados, três decisões"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um pequeno programa com três necessidades. Primeiro, um contador de passos que muda durante a execução. Segundo, uma URL base de API que não deve ser redefinida dentro daquele contexto. Terceiro, um trecho antigo do projeto em manutenção que já usa var e precisa ser entendido antes de ser refatorado. Cada uma dessas situações pede uma postura diferente. O contador aponta para let. A URL estável aponta para const. O código legado exige compreensão de var."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso mostra que a escolha não é abstrata. Ela nasce do papel da informação no fluxo real do programa. O desenvolvedor júnior competente não pergunta apenas “qual palavra-chave eu gosto mais?”, mas “que tipo de vida este estado terá?”. Essa é a pergunta certa."
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando essa pergunta se torna hábito, a declaração deixa de ser um gesto mecânico e passa a ser parte da arquitetura do código."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Quando a clareza editorial deve prevalecer"
+    },
+    {
+      "type": "paragraph",
+      "text": "Há situações em que duas escolhas tecnicamente possíveis parecem funcionar, mas uma delas comunica melhor a intenção do estado ao leitor. Nesses casos, a clareza editorial deve ter peso forte. Em desenvolvimento profissional, não basta que o código rode. É desejável que ele conte a verdade sobre si mesmo. Um identificador estável declarado com const conta essa verdade melhor do que um let desnecessariamente permissivo. Um estado mutável declarado com let conta essa verdade melhor do que uma tentativa rígida de forçar const em contexto inadequado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa ênfase na clareza não é exagero literário. É uma forma de reduzir custo futuro de leitura, manutenção e correção. O melhor código geralmente não é apenas o que funciona, mas o que torna seu próprio comportamento mais compreensível."
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse sentido, escolher bem entre var, let e const é também um ato de escrita técnica responsável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Usar let para tudo por hábito, sem refletir sobre necessidade real de reatribuição.",
+        "Usar const por dogmatismo, mesmo quando o estado precisa mudar ao longo do fluxo.",
+        "Tratar var como completamente irrelevante, ignorando sua presença em código legado.",
+        "Achar que const torna automaticamente imutável o conteúdo interno de objetos e arrays.",
+        "Escolher a forma de declaração sem relacioná-la ao papel do estado no programa.",
+        "Confundir estilo pessoal com critério técnico de clareza."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pergunte sempre se o identificador realmente precisará de reatribuição.",
+        "Use const como escolha natural para vínculos estáveis.",
+        "Use let quando a mudança fizer parte do modelo do problema.",
+        "Estude var com seriedade para leitura de código existente, mas sem tomá-lo como padrão automático do código novo.",
+        "Ao lidar com objetos e arrays, separe estabilidade do nome e mutabilidade do conteúdo.",
+        "Faça da escolha da declaração uma decisão semântica, e não apenas um reflexo sintático."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Checklist profissional da Parte 7"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Consigo justificar quando usar const em código moderno.",
+        "Consigo justificar quando usar let em estados que evoluem ao longo do fluxo.",
+        "Reconheço o papel histórico e prático de var em leitura de código legado.",
+        "Entendo por que const com objeto não implica imutabilidade profunda automática.",
+        "Percebo que a escolha entre var, let e const comunica intenção ao leitor.",
+        "Estou preparado para consolidar o capítulo com exercícios comentados na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "15. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de organizar os critérios práticos de escolha entre var, let e const, o capítulo está pronto para se encerrar com exercícios comentados. Na próxima parte, consolidaremos armazenamento, escopo, reatribuição, hoisting, nomeação, mutabilidade e escolha de declaração em situações práticas orientadas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa conclusão é importante porque transforma todos os conceitos do capítulo em leitura aplicada. O estudante passará a observar não apenas a sintaxe das declarações, mas a lógica que justifica cada decisão sobre o estado do programa."
+    }
+  ]
+}

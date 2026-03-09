@@ -1,0 +1,1293 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 8 — Parte 2",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "8",
+    "chapter_title": "Objetos e modelagem por propriedades",
+    "part_number": "2",
+    "part_title": "Acesso, leitura e atualização de propriedades",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 8 — Objetos e modelagem por propriedades"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 2 — Acesso, leitura e atualização de propriedades"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é um objeto e por que ele existe como forma de representar entidades compostas por atributos nomeados, o leitor está pronto para estudar a camada operacional mais imediata dessa estrutura: como acessar, ler e atualizar suas propriedades. Até aqui, o objeto foi apresentado como unidade semântica de modelagem. Agora ele começará a ser tratado também como estrutura viva dentro do fluxo do programa, cujos dados podem ser observados, consultados e modificados conforme a lógica da aplicação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse passo é decisivo porque um objeto só se torna realmente útil quando o programador consegue interagir com suas propriedades de forma natural. Não basta declarar que um usuário possui nome, email e idade. É preciso saber ler esses valores, alterá-los quando o estado da entidade muda e compreender as diferentes formas de acesso que a linguagem oferece. Sem isso, o objeto continuaria sendo apenas uma fotografia estrutural, e não uma ferramenta prática de trabalho sobre dados do domínio."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo desta parte é estudar as principais formas de acesso e atualização de propriedades com profundidade conceitual e clareza editorial. O leitor compreenderá a diferença entre notação por ponto e notação por colchetes, verá quando cada uma faz mais sentido e entenderá como a mutação de propriedades se conecta ao gerenciamento de estado estudado em capítulos anteriores. Ao final, o objeto deixará de ser apenas uma entidade descrita no código e passará a ser entendido como estrutura acessível e transformável com intenção clara."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: não basta representar a entidade, é preciso interagir com seus atributos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Modelar dados em um objeto já é um grande avanço em relação ao uso disperso de variáveis ou à tentativa de representar entidades com arrays. No entanto, esse ganho estrutural ainda é incompleto se o programador não souber como acessar cada propriedade e usá-la no fluxo do programa. Em sistemas reais, a aplicação precisa exibir o nome de um usuário, atualizar o status de um pedido, consultar a configuração ativa, modificar o preço de um produto, verificar se determinada propriedade está presente e assim por diante. Tudo isso depende de acesso e manipulação concretos das propriedades."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real que esta parte resolve. O objeto não deve ser visto apenas como uma estrutura declarada e estática. Ele precisa se tornar operacional. O programa precisa ser capaz de ler uma propriedade específica, usá-la em expressões, transformá-la e, em muitos casos, alterá-la de acordo com a evolução do estado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve começar a perceber que a utilidade prática dos objetos depende diretamente da naturalidade com que se acessam e modificam seus atributos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Acesso por ponto: a forma mais direta e comum"
+    },
+    {
+      "type": "paragraph",
+      "text": "A forma mais comum e mais intuitiva de acessar uma propriedade de objeto em JavaScript é a notação por ponto. Nela, o nome do objeto vem seguido de ponto e do nome da propriedade desejada. Essa forma é particularmente clara quando o programador conhece de antemão o nome do atributo que quer consultar ou alterar."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  idade: 25,\n  email: \"ana@email.com\"\n};\n\nconsole.log(usuario.nome);\nconsole.log(usuario.idade);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  idade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "25"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  email"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"ana@email.com\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario.nome);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario.idade);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, o acesso por ponto torna explícita a leitura dos atributos nome e idade da entidade usuario. O valor dessa notação está na sua legibilidade. O leitor consegue enxergar com rapidez não apenas qual objeto está em jogo, mas também qual propriedade está sendo consultada."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa clareza faz da notação por ponto a forma preferencial em muitos trechos de código bem escrito, especialmente quando a propriedade já é conhecida e seu nome é estável."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Atualização por ponto: modificar o estado da entidade"
+    },
+    {
+      "type": "paragraph",
+      "text": "A mesma notação por ponto também pode ser usada para atualizar uma propriedade existente. Nesse caso, o programador aponta para o atributo desejado e atribui a ele um novo valor. Isso mostra de forma muito concreta como objetos participam do estado mutável do programa."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  idade: 25,\n  email: \"ana@email.com\"\n};\n\nusuario.idade = 26;\nconsole.log(usuario);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  idade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "25"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  email"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"ana@email.com\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "usuario.idade "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "26"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, a entidade continua sendo o mesmo objeto lógico usuario, mas o conteúdo da propriedade idade foi alterado. Isso é muito importante para a compreensão do estado. O programador não está trocando o nome do objeto por outro objeto diferente neste ponto introdutório; está modificando uma parte interna da estrutura representada."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição central aqui é que objetos frequentemente representam entidades cujo estado pode evoluir, e a atualização de propriedades é uma das formas mais comuns dessa evolução."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Acesso por colchetes: quando o nome da propriedade entra como valor"
+    },
+    {
+      "type": "paragraph",
+      "text": "Além da notação por ponto, JavaScript também oferece a notação por colchetes para acessar propriedades. Nessa forma, o nome da propriedade aparece como uma string ou como o resultado de uma expressão colocada entre colchetes. Isso é especialmente útil quando o nome do atributo não está fixo diretamente no código, mas vem de uma variável ou precisa ser calculado dinamicamente."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  idade: 25\n};\n\nconsole.log(usuario[\"nome\"]);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  idade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "25"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario["
+          },
+          {
+            "kind": "string",
+            "text": "\"nome\""
+          },
+          {
+            "kind": "plain",
+            "text": "]);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Neste exemplo, o resultado obtido corresponde à leitura da propriedade nome, mas a forma de acesso é diferente. O ponto importante aqui é perceber que a notação por colchetes trata o nome da propriedade de forma mais flexível, permitindo que ele entre em cena como dado ou expressão."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve entender essa diferença desde já, porque ela será muito valiosa quando o código começar a depender de escolhas dinâmicas de atributos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Quando os colchetes fazem mais sentido do que o ponto"
+    },
+    {
+      "type": "paragraph",
+      "text": "A notação por colchetes se torna especialmente importante quando o nome da propriedade está guardado em uma variável. Nesse caso, usar ponto não produz o comportamento desejado, porque o ponto espera um nome escrito literalmente no código, e não o valor contido em outra variável."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  idade: 25\n};\n\nconst propriedade = \"nome\";\nconsole.log(usuario[propriedade]);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  idade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "25"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " propriedade "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"nome\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario[propriedade]);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Aqui, o programa não está acessando literalmente uma propriedade chamada propriedade. Está usando o valor armazenado nessa variável para decidir qual atributo consultar. Esse comportamento mostra por que a notação por colchetes é mais do que uma alternativa estilística. Em certos contextos, ela é a forma correta de modelar o acesso."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição importante é esta: ponto é ótimo para nomes estáveis e conhecidos; colchetes são muito úteis quando o nome da propriedade precisa vir de forma dinâmica."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Leitura e atualização como operações de estado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Sempre que o programa lê uma propriedade ou altera seu valor, está operando sobre o estado da entidade representada pelo objeto. Esse ponto conecta diretamente o capítulo atual aos temas anteriores sobre gerenciamento de estado, mutabilidade e clareza de modelagem. O objeto deixa de ser apenas descrição e se torna peça ativa do fluxo lógico."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa observação é muito importante porque impede o estudante de tratar acesso e atualização como detalhes periféricos da sintaxe. Na prática, boa parte do trabalho com objetos consiste precisamente em ler certos atributos para decidir algo e atualizá-los quando a situação da entidade muda. O objeto funciona como núcleo de informações coerentes que o programa consulta e transforma ao longo do tempo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Assim, aprender acesso e atualização de propriedades é aprender também a governar entidades de estado mais rico."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. O que acontece ao acessar uma propriedade inexistente"
+    },
+    {
+      "type": "paragraph",
+      "text": "Nem toda tentativa de acesso encontra uma propriedade definida dentro do objeto. Se o programador consulta um atributo que não existe naquela estrutura, a linguagem não inventa automaticamente um valor útil para ele. Em termos introdutórios, o resultado revela justamente a ausência daquele dado na entidade considerada. Esse comportamento é muito importante porque ajuda a diferenciar entre um atributo realmente presente e outro apenas imaginado pelo código."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  idade: 25\n};\n\nconsole.log(usuario.profissao);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  idade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "25"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario.profissao);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é didaticamente valioso porque mostra que o objeto possui fronteiras semânticas. Ele contém o que foi modelado e não contém automaticamente tudo o que o programador gostaria que existisse. Essa consciência será muito importante quando o código começar a trabalhar com propriedades opcionais, verificações de presença e estruturas mais dinâmicas."
+    },
+    {
+      "type": "paragraph",
+      "text": "A grande lição é que objetos precisam ser lidos com atenção ao que realmente foi modelado neles."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Adicionar novas propriedades ao objeto"
+    },
+    {
+      "type": "paragraph",
+      "text": "Além de ler e atualizar propriedades existentes, JavaScript também permite adicionar novas propriedades a um objeto em muitos contextos. Isso mostra que a estrutura pode crescer semanticamente ao longo do fluxo, ganhando novos atributos quando a lógica do programa exige."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const usuario = {\n  nome: \"Ana\",\n  idade: 25\n};\n\nusuario.ativo = true;\nconsole.log(usuario);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " usuario "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  idade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "25"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "usuario.ativo "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "keyword",
+            "text": "true"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(usuario);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, o objeto passa a contar também com a propriedade ativo. O valor dessa operação está em mostrar que objetos podem evoluir estruturalmente e não apenas alterar valores internos já existentes. No entanto, essa flexibilidade deve ser usada com critério, para que a modelagem não se torne caótica ou excessivamente imprevisível."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber aqui mais uma faceta da mutabilidade dos objetos: a entidade não apenas muda de estado; em alguns casos, pode ganhar novos atributos ao longo da execução."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: atualizar o status de um pedido"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um sistema que representa um pedido como objeto com propriedades como numero, status e valorTotal. Ao longo do fluxo, o pedido passa por diferentes estados: criado, em análise, aprovado, enviado. Esse cenário ilustra muito bem a utilidade prática do acesso e da atualização por propriedade. O programa precisa consultar o status atual para decidir o fluxo e modificá-lo quando a situação do pedido evolui."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é importante porque aproxima a sintaxe do problema real. A atualização de propriedades deixa de parecer exercício escolar e passa a se revelar como forma natural de governar entidades do domínio. Em software profissional, isso aparece o tempo todo: usuários são autenticados, produtos têm estoque alterado, formulários mudam de etapa, pedidos mudam de status."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: objetos ganham valor prático quando o programa consegue ler e transformar suas propriedades com clareza e coerência."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O valor editorial de tornar o acesso legível"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o código acessa ou modifica propriedades de objeto, a legibilidade depende fortemente da qualidade do nome do objeto e do nome das propriedades envolvidas. Um trecho como pedido.status ou usuario.email comunica muito melhor sua intenção do que expressões genéricas baseadas em nomes vagos. Isso se torna ainda mais importante quando o objeto participa de regras de negócio ou condições do fluxo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto reforça, mais uma vez, a integração entre técnica e escrita. O acesso por ponto é particularmente poderoso não apenas porque funciona bem, mas porque torna a leitura muito próxima da linguagem do domínio. O código passa a quase “falar” sobre a entidade que representa. Em muitos contextos, isso reduz bastante a carga cognitiva da revisão."
+    },
+    {
+      "type": "paragraph",
+      "text": "O leitor deve levar esta regra adiante: se o objeto representa bem a entidade e as propriedades são bem nomeadas, o acesso tende a se tornar muito mais expressivo."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Tratar ponto e colchetes como formas idênticas em todos os contextos, sem perceber a utilidade específica de cada uma.",
+        "Usar notação por ponto quando o nome da propriedade vem de forma dinâmica.",
+        "Confundir atualização de valor com troca completa da entidade.",
+        "Ignorar que o acesso a uma propriedade inexistente revela ausência do dado modelado.",
+        "Adicionar propriedades sem critério, tornando a estrutura semântica do objeto confusa.",
+        "Subestimar o papel da boa nomeação na legibilidade do acesso e da atualização."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pratique leitura e atualização de propriedades com notação por ponto até que se tornem naturais.",
+        "Use colchetes conscientemente quando o nome da propriedade vier de variável ou expressão.",
+        "Associe cada acesso à pergunta: que atributo desta entidade estou consultando?",
+        "Associe cada atualização à pergunta: que parte do estado desta entidade está mudando?",
+        "Observe com atenção o que acontece quando uma propriedade não existe no objeto.",
+        "Mantenha nomes claros para objetos e propriedades, de modo que o acesso comunique intenção."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 2"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo a diferença entre notação por ponto e notação por colchetes.",
+        "Consigo acessar e atualizar propriedades conhecidas de um objeto.",
+        "Reconheço quando o nome da propriedade precisa ser dinâmico.",
+        "Percebo que objetos podem ganhar novas propriedades ao longo do fluxo.",
+        "Entendo o papel do acesso e da atualização na governança do estado da entidade.",
+        "Estou preparado para estudar métodos em objetos e comportamento associado a propriedades na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já compreende como acessar e atualizar propriedades, o próximo passo é estudar uma dimensão ainda mais rica dos objetos: a possibilidade de associar comportamento a essas estruturas por meio de métodos. Na próxima parte, veremos como funções podem aparecer dentro de objetos e como isso amplia muito a capacidade de modelar entidades com dados e ações relacionadas."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa transição é muito importante porque leva o objeto além da descrição de atributos. Ele começará a se aproximar de uma entidade capaz não apenas de conter informações, mas também de oferecer operações ligadas ao seu próprio contexto interno."
+    }
+  ]
+}

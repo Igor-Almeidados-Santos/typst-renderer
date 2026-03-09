@@ -1,0 +1,503 @@
+{
+  "metadata": {
+    "book_title": "JavaScript Vanilla do Zero ao Júnior",
+    "title": "Capítulo 11 — Parte 1",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": 11,
+    "chapter_title": "Assíncrono: eventos, timers e o modelo mental do JavaScript",
+    "part_number": 1,
+    "part_title": "Por que assíncrono existe: thread única, event loop e não travar a UI",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      45,
+      108,
+      223
+    ],
+    "brand_accent": [
+      255,
+      106,
+      43
+    ],
+    "brand_ink": [
+      11,
+      16,
+      32
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      31,
+      42,
+      68
+    ],
+    "brand_tint": [
+      234,
+      241,
+      255
+    ],
+    "brand_paper": [
+      251,
+      251,
+      253
+    ],
+    "color_body": [
+      17,
+      24,
+      39
+    ],
+    "color_heading": [
+      11,
+      16,
+      32
+    ],
+    "color_heading_muted": [
+      55,
+      65,
+      81
+    ],
+    "color_heading_rule": [
+      31,
+      42,
+      68
+    ],
+    "color_code_bg": [
+      11,
+      16,
+      32
+    ],
+    "color_code_text": [
+      229,
+      231,
+      235
+    ],
+    "color_code_border": [
+      31,
+      42,
+      68
+    ],
+    "color_code_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_code_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_header_bg": [
+      17,
+      27,
+      51
+    ],
+    "color_table_header_text": [
+      247,
+      223,
+      30
+    ],
+    "color_table_body_bg": [
+      251,
+      251,
+      253
+    ],
+    "color_table_body_text": [
+      17,
+      24,
+      39
+    ],
+    "font_title": "Exo",
+    "font_heading": "Exo",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 11 — Assíncrono: eventos, timers e o modelo mental do JavaScript"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 1 — Por que assíncrono existe: thread única, event loop e não travar a UI"
+    },
+    {
+      "type": "paragraph",
+      "text": "Até aqui, quase tudo foi síncrono: uma linha depois da outra. Mas aplicações reais conversam com o mundo: cliques, timers, rede, arquivos. Essas coisas acontecem depois. No navegador, o JavaScript executa seu código no thread principal (um passo de cada vez). Se você bloqueia esse thread com trabalho pesado, a página congela: clique não responde, animação trava, scroll engasga. Assíncrono existe para manter o app responsivo enquanto ele espera eventos e operações externas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. Problema real: quando o site trava"
+    },
+    {
+      "type": "paragraph",
+      "text": "Se você roda um loop grande ou um cálculo pesado no thread principal, você impede o navegador de processar eventos e renderizar frames. O objetivo deste capítulo é te dar um modelo mental que evita travamentos: call stack, filas e event loop."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Modelo mental mínimo: call stack + fila de tarefas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Pense em duas peças: (1) call stack — onde as funções do seu código executam uma dentro da outra; (2) task queue — fila de callbacks para rodar “depois”. O motor executa tudo do call stack até esvaziar. Só então ele pega o próximo callback da fila e executa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. setTimeout: agendar para depois (mesmo com 0ms)"
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "'use strict';\n\nconsole.log('A');\n\nsetTimeout(() => {\n  console.log('C (timeout)');\n}, 0);\n\nconsole.log('B');\n\n// Ordem:\n// A\n// B\n// C (timeout)",
+      "segments": [
+        [
+          {
+            "kind": "string",
+            "text": "'use strict'"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'A'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "function",
+            "text": "setTimeout"
+          },
+          {
+            "kind": "plain",
+            "text": "(() "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'C (timeout)'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "}, "
+          },
+          {
+            "kind": "number",
+            "text": "0"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'B'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// Ordem:"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// A"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// B"
+          }
+        ],
+        [
+          {
+            "kind": "comment",
+            "text": "// C (timeout)"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Por que? Porque o callback do setTimeout vai para a fila e só roda quando o call stack estiver vazio. Esse detalhe explica muitos bugs de ordem."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Eventos: o navegador chama seu código mais tarde"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um listener de clique é um callback. Você registra a função agora, mas ela só executa quando o evento acontece e o motor estiver pronto para pegar a tarefa na fila."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const btn = document.querySelector('button');\n\nbtn.addEventListener('click', () => {\n  console.log('clicou');\n});\n\nconsole.log('listener registrado');",
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " btn "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " document."
+          },
+          {
+            "kind": "function",
+            "text": "querySelector"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'button'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "btn."
+          },
+          {
+            "kind": "function",
+            "text": "addEventListener"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'click'"
+          },
+          {
+            "kind": "plain",
+            "text": ", () "
+          },
+          {
+            "kind": "operator",
+            "text": "=>"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'clicou'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "string",
+            "text": "'listener registrado'"
+          },
+          {
+            "kind": "plain",
+            "text": ");"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Regra prática: não trave a UI"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Evite loops pesados no thread principal (especialmente em cliques/inputs).",
+        "Divida trabalho em pedaços com setTimeout/queueMicrotask (veremos mais adiante).",
+        "Prefira operações assíncronas para rede e I/O; mostre estado de carregamento na UI.",
+        "Meça e limite: se algo pode demorar, trate como assíncrono no design."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Checklist profissional (Parte 1)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Eu sei explicar que o JS no browser executa no thread principal e pode travar a UI.",
+        "Eu sei o que é call stack e por que callbacks rodam depois.",
+        "Eu entendo por que setTimeout(…, 0) não roda imediatamente.",
+        "Eu entendo eventos como callbacks enfileirados para execução.",
+        "Eu sei que performance e responsividade dependem de evitar trabalho pesado síncrono."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Na Parte 2, você vai aprofundar microtasks vs tasks (Promises e queueMicrotask) e entender ordem de execução com exemplos práticos."
+    }
+  ]
+}

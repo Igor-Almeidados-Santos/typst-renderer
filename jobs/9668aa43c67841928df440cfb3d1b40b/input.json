@@ -1,0 +1,814 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 2 — Parte 3",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "2",
+    "chapter_title": "Preparando o ambiente e escrevendo os primeiros programas",
+    "part_number": "3",
+    "part_title": "Scripts internos, externos, defer, async e ordem de carregamento",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 2 — Preparando o ambiente e escrevendo os primeiros programas"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 3 — Scripts internos, externos, defer, async e ordem de carregamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de aprender como incluir JavaScript em páginas HTML, o estudante encontra um refinamento que costuma gerar muitas dúvidas no início: não basta apenas conectar o script ao documento; é preciso entender quando e como esse script será carregado e executado. A forma de inclusão influencia diretamente o comportamento da página. Um código correto pode falhar se for executado cedo demais. Um arquivo bem escrito pode gerar efeitos inesperados se a ordem de carregamento não corresponder à dependência real entre os elementos do documento e o script."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esta parte existe para resolver justamente esse problema. O objetivo é construir um modelo mental claro sobre scripts internos e externos, sobre os atributos defer e async e sobre a ordem em que o navegador encontra, baixa e executa os arquivos. Esse tema é muito importante porque ele conecta o estudante ao fluxo real do navegador. Sem esse entendimento, vários erros futuros parecerão arbitrários. Com ele, o programador começa a perceber que muitos problemas não vêm da lógica do código, mas do momento em que o código entra em ação."
+    },
+    {
+      "type": "paragraph",
+      "text": "Ao longo desta parte, não estudaremos ainda todas as profundidades possíveis de performance web, mas construiremos a base correta para interpretar os cenários mais comuns. O estudante aprenderá por que alguns scripts bloqueiam o carregamento, por que outros aguardam a construção do documento, por que certos arquivos podem executar em ordem não intuitiva e como essas escolhas afetam a previsibilidade da página."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: o momento de execução muda o resultado"
+    },
+    {
+      "type": "paragraph",
+      "text": "Um dos erros mais frustrantes para quem está começando acontece quando o código parece correto, mas não funciona como esperado porque foi executado no momento errado. O estudante tenta selecionar um elemento da página, registrar um evento ou alterar um conteúdo, mas o navegador ainda não construiu a parte necessária do documento. Em outros casos, dois scripts dependem um do outro, porém são carregados em ordem incompatível. A falha, então, não está na sintaxe nem na intenção lógica central, mas na temporalidade da execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de problema revela um princípio decisivo da programação no navegador: o tempo importa. A página não aparece de uma só vez em um estado absoluto e completo antes de qualquer script agir. O navegador vai processando recursos, construindo o documento, aplicando estilos, buscando arquivos e executando scripts conforme encontra determinadas instruções. Se o estudante ignora esse fluxo, passa a interpretar várias falhas como mistério, quando elas têm explicação técnica bastante clara."
+    },
+    {
+      "type": "paragraph",
+      "text": "Por isso, compreender ordem de carregamento não é detalhe avançado demais para o início. É uma base prática para evitar erros recorrentes e para formar um raciocínio mais maduro sobre a interação entre HTML e JavaScript."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Relembrando scripts internos e externos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Antes de entrar em defer e async, vale retomar a diferença entre scripts internos e externos. Scripts internos são escritos diretamente dentro da tag script no próprio arquivo HTML. Scripts externos são mantidos em um arquivo separado e referenciados por meio do atributo src. Ambas as formas permitem ao navegador executar JavaScript, mas cada uma delas se integra ao documento com implicações diferentes para organização, manutenção e, em alguns casos, comportamento de carregamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "O script interno torna a conexão muito visível, porque o código está no mesmo documento. Isso pode ser útil em exemplos pequenos. Já o script externo favorece a separação de responsabilidades, a reutilização e uma organização mais profissional. No entanto, independentemente de ser interno ou externo, a grande questão prática permanece: em que ponto do fluxo da página esse código será executado?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa pergunta é o coração desta parte. O estudante precisa deixar de pensar apenas em existência do script e passar a pensar em temporalidade do script."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. O comportamento tradicional de uma tag script comum"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o navegador encontra uma tag script tradicional durante a análise do HTML, o comportamento clássico é interromper temporariamente a progressão da leitura do documento para processar aquele script. Se o código está embutido, ele pode ser executado imediatamente. Se o script aponta para um arquivo externo, o navegador pode precisar buscar esse arquivo antes de prosseguir. Em ambos os casos, o fluxo do documento fica afetado por essa presença."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse comportamento ajuda a entender por que a posição da tag script dentro do HTML historicamente teve tanta importância. Se o script aparece cedo demais e tenta interagir com elementos que ainda não foram interpretados, o resultado pode falhar. Por outro lado, esse bloqueio também existe porque o script pode modificar o próprio documento e influenciar o restante do carregamento. Ou seja, a interrupção não é capricho do navegador; é consequência do papel potencialmente transformador do script."
+    },
+    {
+      "type": "paragraph",
+      "text": "Para o iniciante, a lição central é simples e profunda: um script tradicional não é neutro. Ele participa ativamente do ritmo de construção da página. É por isso que a ordem e a posição do script importam tanto."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Colocar o script no final do body: a solução clássica"
+    },
+    {
+      "type": "paragraph",
+      "text": "Durante muito tempo, uma solução prática muito comum foi posicionar a tag script no final do body, isto é, depois que o HTML principal da página já tivesse sido interpretado. Isso aumentava a chance de os elementos visuais e estruturais já estarem disponíveis quando o JavaScript tentasse interagir com eles. Para muitos exemplos iniciais e para bastante código tradicional, essa abordagem funcionou muito bem."
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Exemplo</title>\n</head>\n<body>\n  <h1 id=\"titulo\">Página inicial</h1>\n\n  <script src=\"script.js\"></script>\n</body>\n</html>",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<!"
+          },
+          {
+            "kind": "plain",
+            "text": "DOCTYPE html"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "html lang"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"pt-BR\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "meta charset"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"UTF-8\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "title"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": "Exemplo"
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "title"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "head"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "h1 id"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"titulo\""
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          },
+          {
+            "kind": "plain",
+            "text": "Página inicial"
+          },
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "h1"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"script.js\""
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "body"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ],
+        [
+          {
+            "kind": "operator",
+            "text": "</"
+          },
+          {
+            "kind": "plain",
+            "text": "html"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nessa estrutura, quando o navegador chega ao script, a maior parte do documento já foi construída. Isso reduz o risco de o código tentar acessar elementos que ainda não existem do ponto de vista do navegador. Para o estudante, essa estratégia é uma forma intuitiva de alinhar ordem do HTML e momento da execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "Contudo, essa não é a única forma de resolver o problema, nem sempre é a mais moderna. Com o amadurecimento das práticas de carregamento, atributos como defer e async passaram a oferecer alternativas mais explícitas e flexíveis."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. O atributo defer e seu papel no carregamento"
+    },
+    {
+      "type": "paragraph",
+      "text": "O atributo defer foi criado para indicar que o navegador pode buscar o arquivo de script sem bloquear a análise do HTML da mesma forma que um script tradicional faria, mas deve adiar a execução do código até que o documento tenha sido completamente analisado. Em termos práticos, isso permite que o HTML seja construído primeiro, enquanto o script externo é carregado em paralelo, com execução posterior e mais previsível."
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<script src=\"script.js\" defer></script>",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"script.js\""
+          },
+          {
+            "kind": "plain",
+            "text": " defer"
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse comportamento resolve muitos dos problemas clássicos de timing. Como a execução ocorre depois que o documento foi analisado, o script tem maior probabilidade de encontrar os elementos que precisa manipular. Além disso, scripts com defer mantêm a ordem relativa em que aparecem no HTML, o que é importante quando há dependência entre múltiplos arquivos."
+    },
+    {
+      "type": "paragraph",
+      "text": "Para o iniciante, defer representa uma ideia poderosa: separar o ato de baixar o arquivo do ato de executá-lo, sem perder previsibilidade. Essa distinção ajuda bastante a compreender o carregamento moderno de páginas."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. O atributo async e sua lógica diferente"
+    },
+    {
+      "type": "paragraph",
+      "text": "O atributo async também permite que o navegador busque o script externo sem bloquear totalmente a análise do HTML da mesma forma tradicional, mas sua lógica de execução é diferente da de defer. Com async, o script é executado assim que estiver disponível, sem esperar necessariamente o fim da análise do documento e sem garantir a mesma ordem relativa entre múltiplos scripts assíncronos. Isso o torna útil em certos cenários, mas mais delicado quando o código depende de elementos específicos já carregados ou da execução ordenada de outros arquivos."
+    },
+    {
+      "type": "code",
+      "lang": "html",
+      "content": "<script src=\"script.js\" async></script>",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "operator",
+            "text": "<"
+          },
+          {
+            "kind": "plain",
+            "text": "script src"
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "string",
+            "text": "\"script.js\""
+          },
+          {
+            "kind": "plain",
+            "text": " async"
+          },
+          {
+            "kind": "operator",
+            "text": "></"
+          },
+          {
+            "kind": "plain",
+            "text": "script"
+          },
+          {
+            "kind": "operator",
+            "text": ">"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Em termos conceituais, async privilegia disponibilidade rápida do arquivo, mas sacrifica parte da previsibilidade temporal. Se o script terminar de ser baixado cedo, pode executar cedo. Se terminar depois, executará depois. Isso significa que ele não é a melhor escolha quando o código precisa respeitar dependências rígidas ou quando o acesso ao documento exige que a estrutura já esteja pronta."
+    },
+    {
+      "type": "paragraph",
+      "text": "Para o estudante, a principal lição é esta: async não é simplesmente “melhor” ou “mais moderno” do que defer. Ele responde a um problema diferente. Entender esse ponto evita muito uso incorreto por imitação cega de exemplos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Ordem de execução: por que defer e async não são equivalentes"
+    },
+    {
+      "type": "paragraph",
+      "text": "Embora ambos melhorem o carregamento em relação ao bloqueio clássico de scripts tradicionais, defer e async não devem ser confundidos. Scripts com defer aguardam a análise do documento e preservam a ordem em que aparecem. Scripts com async executam assim que estiverem disponíveis e não oferecem a mesma garantia de ordem entre si. Essa diferença é decisiva quando múltiplos scripts participam de uma mesma página."
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine dois arquivos em que o segundo depende de funções definidas pelo primeiro. Com defer, a ordem declarada no HTML tende a ser respeitada, o que favorece previsibilidade. Com async, o segundo poderia, em certos casos, ficar pronto antes e executar antes do primeiro, rompendo a dependência esperada. O problema não está no conteúdo dos scripts, mas no modelo de carregamento escolhido."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse tipo de comparação é valioso porque ensina o aluno a pensar em comportamento sistêmico, e não apenas em trechos isolados. Em desenvolvimento web, a forma como os recursos entram no fluxo do navegador pode ser tão importante quanto o que esses recursos fazem internamente."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Quando usar cada abordagem em contexto introdutório"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em contexto introdutório, há três estratégias principais que o estudante costuma encontrar. A primeira é colocar o script tradicional no final do body. A segunda é usar arquivo externo com defer. A terceira é usar async em situações específicas nas quais a independência temporal do script não prejudica o restante da página. Dentre essas opções, para quem está começando, a combinação de arquivo externo bem organizado com defer costuma oferecer excelente equilíbrio entre clareza, organização e previsibilidade."
+    },
+    {
+      "type": "paragraph",
+      "text": "Isso não significa abolir as outras formas. O script no final do body continua sendo didaticamente útil e historicamente importante. O async também terá seu lugar quando o código não depender da ordem estrutural da página da mesma forma. Mas, como regra de formação inicial, é sensato priorizar aquilo que reduz surpresas e ajuda o aluno a construir um modelo mental estável do carregamento."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em outras palavras, a melhor escolha pedagógica é aquela que torna o fluxo mais compreensível. Neste estágio, previsibilidade vale muito."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: um script que falha por causa da ordem"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere uma página em que o JavaScript tenta selecionar um elemento com id titulo para alterar seu texto. Se o script tradicional for executado antes de o navegador analisar o elemento correspondente no HTML, a tentativa de seleção pode falhar. O estudante pode supor que o problema está na sintaxe do seletor ou no comando de alteração, quando a causa real é simplesmente a antecipação do momento da execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora considere o mesmo código com a tag movida para o final do body ou usando defer. Nesse cenário, a estrutura já terá sido analisada antes da execução, e o mesmo código pode funcionar corretamente. O estudo de caso revela uma lição profissional importante: um comando não existe isoladamente. Ele depende do contexto temporal em que é executado."
+    },
+    {
+      "type": "paragraph",
+      "text": "Aprender essa lição cedo poupa o iniciante de inúmeras frustrações. Em vez de tratar o comportamento do navegador como imprevisível, ele começa a enxergar a lógica do carregamento com muito mais clareza."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. Erros comuns nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Achar que qualquer forma de incluir script produz exatamente o mesmo resultado temporal.",
+        "Tratar defer e async como sinônimos.",
+        "Usar async em scripts que dependem de ordem estável ou de um documento já analisado.",
+        "Esquecer que o script tradicional pode bloquear o fluxo de análise do HTML.",
+        "Concluir que a lógica do código está errada quando o verdadeiro problema é o momento da execução.",
+        "Ignorar a relação entre carregamento do documento e disponibilidade dos elementos da página."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pense sempre em quando o script executa, e não apenas em onde ele está escrito.",
+        "Use exemplos simples para comparar script tradicional, final do body, defer e async.",
+        "Priorize abordagens previsíveis enquanto estiver consolidando o modelo mental.",
+        "Ao encontrar erro de seleção de elementos, investigue primeiro o timing da execução.",
+        "Considere dependências entre múltiplos scripts antes de escolher async.",
+        "Associe carregamento, construção do documento e execução como partes de um mesmo fluxo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Checklist profissional da Parte 3"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo que o momento de execução do script influencia o comportamento da página.",
+        "Consigo explicar o comportamento básico de um script tradicional.",
+        "Reconheço por que posicionar scripts no final do body pode resolver problemas de timing.",
+        "Sei descrever a lógica do atributo defer.",
+        "Sei diferenciar async de defer em termos de ordem e previsibilidade.",
+        "Estou preparado para começar a usar console.log, comentários e inspeção com mais consciência prática."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Com a inclusão do JavaScript no HTML e a ordem de carregamento bem compreendidas, o próximo passo é usar conscientemente os primeiros instrumentos de observação do comportamento do programa. Na próxima parte, trabalharemos com console.log, comentários e inspeção, aprofundando a relação entre escrita, teste e entendimento do código em execução."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa continuação é natural. Primeiro o estudante organizou o ambiente. Depois conectou o script à página. Agora ele está pronto para observar de forma cada vez mais intencional o que o programa faz, usando ferramentas simples, mas fundamentais para toda a formação futura."
+    }
+  ]
+}

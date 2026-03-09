@@ -1,0 +1,1833 @@
+{
+  "metadata": {
+    "book_title": "JavaScript do Zero ao Júnior",
+    "title": "Capítulo 8 — Parte 5",
+    "author": "Mestre André",
+    "language": "pt-BR",
+    "mode": "part",
+    "chapter_number": "8",
+    "chapter_title": "Objetos e modelagem por propriedades",
+    "part_number": "5",
+    "part_title": "Iteração, consulta e leitura orientada em objetos compostos",
+    "brand_primary": [
+      247,
+      223,
+      30
+    ],
+    "brand_secondary": [
+      31,
+      58,
+      138
+    ],
+    "brand_accent": [
+      249,
+      115,
+      22
+    ],
+    "brand_ink": [
+      17,
+      24,
+      39
+    ],
+    "brand_muted": [
+      107,
+      114,
+      128
+    ],
+    "brand_line": [
+      209,
+      213,
+      219
+    ],
+    "brand_tint": [
+      238,
+      244,
+      255
+    ],
+    "brand_paper": [
+      255,
+      253,
+      247
+    ],
+    "color_body": [
+      31,
+      41,
+      55
+    ],
+    "color_heading": [
+      15,
+      23,
+      42
+    ],
+    "color_heading_muted": [
+      51,
+      65,
+      85
+    ],
+    "color_heading_rule": [
+      247,
+      223,
+      30
+    ],
+    "color_code_bg": [
+      11,
+      18,
+      32
+    ],
+    "color_code_text": [
+      229,
+      238,
+      248
+    ],
+    "color_code_border": [
+      30,
+      41,
+      59
+    ],
+    "color_code_header_bg": [
+      17,
+      24,
+      39
+    ],
+    "color_code_header_text": [
+      248,
+      250,
+      252
+    ],
+    "color_table_header_bg": [
+      31,
+      58,
+      138
+    ],
+    "color_table_header_text": [
+      255,
+      255,
+      255
+    ],
+    "color_table_body_bg": [
+      248,
+      250,
+      252
+    ],
+    "color_table_body_text": [
+      31,
+      41,
+      55
+    ],
+    "font_title": "New Computer Modern",
+    "font_heading": "New Computer Modern",
+    "font_body": "New Computer Modern",
+    "font_mono": "New Computer Modern"
+  },
+  "content": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Capítulo 8 — Objetos e modelagem por propriedades"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Parte 5 — Iteração, consulta e leitura orientada em objetos compostos"
+    },
+    {
+      "type": "paragraph",
+      "text": "Depois de compreender o que é um objeto, estudar acesso e atualização de propriedades, entrar em métodos e avançar para objetos aninhados, arrays de objetos e estruturas compostas, o leitor está pronto para uma etapa decisiva da modelagem em JavaScript: percorrer, consultar e ler essas estruturas com intenção. Até aqui, o foco esteve fortemente na forma dos dados. Agora o interesse se desloca para a maneira como o programa navega por eles, extrai informações relevantes e produz comportamento a partir dessa leitura."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse avanço é muito importante porque a modelagem de dados não se encerra na sua declaração. Em software real, objetos compostos precisam ser lidos, validados, percorridos, filtrados, transformados e usados como base para decisões. Um pedido com cliente e itens não existe apenas para ser armazenado. Ele existe para ser processado. Um usuário com endereço e permissões não existe apenas como entidade estrutural. Ele existe para alimentar regras de interface, autorização, exibição e lógica de domínio. É justamente esse movimento do dado armazenado para o dado percorrido que esta parte procura consolidar."
+    },
+    {
+      "type": "paragraph",
+      "text": "O objetivo aqui é mostrar como estruturas compostas pedem leitura em camadas, como arrays de objetos são percorridos em busca de propriedades relevantes e como a boa consulta depende de uma compreensão clara da hierarquia da modelagem. Ao final, o leitor verá que objetos compostos não representam apenas complexidade estática, mas também oportunidades de navegação semântica muito mais rica sobre os dados do programa."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "1. O problema real: modelar bem não basta se o programa não consegue ler a estrutura com clareza"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma estrutura composta bem modelada é um grande avanço em relação a dados dispersos ou mal organizados. No entanto, esse ganho pode ser desperdiçado se o código que a percorre não respeitar sua hierarquia ou se o programador não souber formular perguntas corretas sobre seus diferentes níveis. Um pedido pode ter itens, mas isso só tem valor prático se o programa conseguir percorrer esses itens. Um usuário pode ter permissões, mas isso só importa se o código conseguir consultá-las. Um endereço pode estar agrupado em subobjeto, mas isso só ajuda se a leitura desse subbloco continuar clara."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse é o problema real desta parte. A estrutura foi criada. Agora o programa precisa ser capaz de navegar por ela sem se perder. Isso exige compreender que nem toda leitura ocorre no mesmo nível. Às vezes a consulta é sobre uma propriedade simples do objeto principal. Às vezes sobre um subobjeto. Às vezes sobre uma coleção interna de entidades. Cada caso pede atenção à hierarquia do dado."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que, a partir daqui, modelagem e navegação tornam-se duas faces inseparáveis do trabalho com objetos."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "2. Leitura em camadas: cada nível da estrutura tem seu próprio papel"
+    },
+    {
+      "type": "paragraph",
+      "text": "Uma forma madura de pensar objetos compostos é vê-los como estruturas em camadas. Há um nível principal, que organiza a entidade maior. Dentro dele, podem existir subobjetos com agrupamentos internos e arrays com coleções associadas. Ler bem essa estrutura significa saber em que camada a informação desejada está localizada e como percorrer o caminho correto até ela."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é muito importante porque muitos erros de iniciantes em objetos compostos não vêm da sintaxe do acesso, mas da confusão sobre a própria arquitetura do dado. O programador tenta tratar como propriedade simples algo que está dentro de um subobjeto, ou tenta acessar diretamente uma coleção interna sem antes passar pela entidade que a contém. O problema, então, não está em lembrar pontos e colchetes, mas em compreender a topologia da modelagem."
+    },
+    {
+      "type": "paragraph",
+      "text": "A boa leitura de estruturas compostas começa perguntando: em que nível da entidade está a informação que procuro?"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "3. Consultar propriedades simples e propriedades internas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Considere um objeto pedido com numero, cliente e itens. O número está no nível principal da entidade. Já o nome do cliente pode estar em um subobjeto. Isso significa que perguntas diferentes exigem navegações diferentes. Ler pedido.numero não é o mesmo tipo de leitura que ler pedido.cliente.nome. Embora ambas usem acesso por ponto, elas atravessam níveis distintos da modelagem."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const pedido = {\n  numero: 123,\n  cliente: {\n    nome: \"Ana\"\n  }\n};\n\nconsole.log(pedido.numero);\nconsole.log(pedido.cliente.nome);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " pedido "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  numero"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "123"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  cliente"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Ana\""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido.numero);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(pedido.cliente.nome);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo parece simples, mas é extremamente pedagógico. Ele mostra que a leitura precisa respeitar a forma como o dado foi modelado. O programa não inventa atalhos. Se a informação está aninhada, o acesso também será aninhado. Isso reforça a importância de modelar bem e de entender bem a modelagem criada."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição principal aqui é clara: a profundidade do acesso reflete a profundidade da estrutura."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "4. Arrays de objetos exigem leitura de coleção e de entidade ao mesmo tempo"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um objeto contém um array de objetos ou quando o programa trabalha diretamente com uma lista de entidades, a leitura passa a combinar dois níveis de lógica ao mesmo tempo. Há a lógica da coleção, que envolve percurso, tamanho e iteração. E há a lógica da entidade, que envolve propriedades semânticas de cada item individual. Ler bem um array de objetos é articular essas duas camadas sem perder nenhuma delas."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const produtos = [\n  { titulo: \"Notebook\", preco: 3500 },\n  { titulo: \"Mouse\", preco: 120 },\n  { titulo: \"Teclado\", preco: 250 }\n];\n\nprodutos.forEach(function (produto) {\n  console.log(produto.titulo);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " produtos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Notebook\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3500"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Mouse\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "120"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Teclado\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "250"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "produtos."
+          },
+          {
+            "kind": "function",
+            "text": "forEach"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (produto) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(produto.titulo);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Nesse exemplo, o programa percorre a coleção produtos, mas a informação relevante não está na coleção como abstração vazia. Está nas propriedades de cada entidade individual. O laço ou método de iteração conduz a passagem entre um produto e outro, enquanto o acesso por propriedade extrai o dado semântico de cada item."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve ver esse padrão como uma das formas mais comuns e mais importantes do JavaScript real."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "5. Consulta orientada: encontrar entidade por propriedade"
+    },
+    {
+      "type": "paragraph",
+      "text": "Em muitos cenários, o programa não quer apenas percorrer uma lista de objetos por completo. Ele quer encontrar um item com determinada característica. Isso introduz uma forma particularmente importante de leitura orientada: a consulta por propriedade. O programa passa a perguntar algo como “qual produto tem este título?”, “há algum usuário com esta permissão?” ou “qual item do pedido possui esta referência?”."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const produtos = [\n  { titulo: \"Notebook\", preco: 3500 },\n  { titulo: \"Mouse\", preco: 120 },\n  { titulo: \"Teclado\", preco: 250 }\n];\n\nconst encontrado = produtos.find(function (produto) {\n  return produto.titulo === \"Mouse\";\n});\n\nconsole.log(encontrado);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " produtos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Notebook\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3500"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Mouse\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "120"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Teclado\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "250"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " encontrado "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " produtos."
+          },
+          {
+            "kind": "function",
+            "text": "find"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (produto) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " produto.titulo "
+          },
+          {
+            "kind": "operator",
+            "text": "==="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Mouse\""
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(encontrado);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é muito importante porque mostra a evolução da consulta. O programa já não está perguntando apenas se um valor está presente em uma lista simples, como acontecia com arrays de primitivas. Agora ele procura uma entidade com determinada propriedade. Isso é muito mais próximo do tipo de busca que sistemas reais realizam o tempo todo."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional é clara: quando a coleção é composta por objetos, a busca geralmente ocorre por atributos significativos da entidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "6. Filtrar entidades por critério"
+    },
+    {
+      "type": "paragraph",
+      "text": "Além de encontrar uma entidade específica, o programa muitas vezes precisa selecionar várias entidades que atendam a determinado critério. Esse tipo de operação é especialmente comum com arrays de objetos, pois permite separar subconjuntos relevantes dentro de uma coleção maior. O foco deixa de ser apenas “qual item é este?” e passa a ser “quais itens satisfazem esta condição?”."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const produtos = [\n  { titulo: \"Notebook\", preco: 3500 },\n  { titulo: \"Mouse\", preco: 120 },\n  { titulo: \"Teclado\", preco: 250 }\n];\n\nconst produtosAcessiveis = produtos.filter(function (produto) {\n  return produto.preco <= 300;\n});\n\nconsole.log(produtosAcessiveis);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " produtos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Notebook\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3500"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Mouse\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "120"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Teclado\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "250"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " produtosAcessiveis "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " produtos."
+          },
+          {
+            "kind": "function",
+            "text": "filter"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (produto) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " produto.preco "
+          },
+          {
+            "kind": "operator",
+            "text": "<="
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "300"
+          },
+          {
+            "kind": "plain",
+            "text": ";"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(produtosAcessiveis);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é didaticamente poderoso porque combina coleção, entidade e critério semântico de forma muito clara. O array continua sendo percorrido como lista. Mas a decisão não é posicional; é baseada no atributo preco de cada objeto. Essa leitura orientada por propriedades é uma das marcas da modelagem madura com objetos e arrays combinados."
+    },
+    {
+      "type": "paragraph",
+      "text": "O estudante deve perceber que filtros sobre arrays de objetos são operações naturais da prática profissional."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "7. Transformar entidades em outras formas de leitura"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando o programa trabalha com arrays de objetos, também é muito comum transformar essas entidades em representações mais simples ou mais apropriadas a certo contexto. Por exemplo, uma lista de produtos pode ser transformada em lista apenas de títulos, ou uma coleção de usuários pode ser convertida em mensagens resumidas para exibição. Nesse caso, a leitura não busca apenas encontrar ou filtrar; ela traduz a estrutura em outra forma de saída."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const produtos = [\n  { titulo: \"Notebook\", preco: 3500 },\n  { titulo: \"Mouse\", preco: 120 },\n  { titulo: \"Teclado\", preco: 250 }\n];\n\nconst titulos = produtos.map(function (produto) {\n  return produto.titulo;\n});\n\nconsole.log(titulos);",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " produtos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Notebook\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "3500"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Mouse\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "120"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  { titulo"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Teclado\""
+          },
+          {
+            "kind": "plain",
+            "text": ", preco"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "250"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "];"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " titulos "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " produtos."
+          },
+          {
+            "kind": "function",
+            "text": "map"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (produto) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  "
+          },
+          {
+            "kind": "keyword",
+            "text": "return"
+          },
+          {
+            "kind": "plain",
+            "text": " produto.titulo;"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(titulos);"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo mostra com clareza uma transformação semântica. A coleção original contém entidades completas. A nova coleção contém apenas os títulos extraídos delas. Esse tipo de operação é muito frequente em interfaces, relatórios, validações e preparação de dados para outras camadas do sistema."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição importante é que objetos compostos não apenas são percorridos; eles também podem ser projetados em novas leituras do mesmo conjunto de dados."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "8. Leitura orientada em subcoleções internas"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quando um objeto contém arrays internos, o programa pode precisar percorrer essas subcoleções como parte do processamento da entidade maior. Por exemplo, um pedido pode ter uma lista de itens, e o programa pode querer somar quantidades, exibir nomes ou localizar um item específico dentro dessa coleção interna. Esse tipo de operação exige manter em mente dois contextos: a entidade principal e a lista que pertence a ela."
+    },
+    {
+      "type": "code",
+      "lang": "javascript",
+      "content": "const pedido = {\n  numero: 123,\n  itens: [\n    { nome: \"Notebook\", quantidade: 1 },\n    { nome: \"Mouse\", quantidade: 2 }\n  ]\n};\n\npedido.itens.forEach(function (item) {\n  console.log(item.nome);\n});",
+      "theme": {
+        "bg": [
+          11,
+          18,
+          32
+        ],
+        "border": [
+          30,
+          41,
+          59
+        ],
+        "header_bg": [
+          17,
+          24,
+          39
+        ],
+        "header_text": [
+          248,
+          250,
+          252
+        ],
+        "text": [
+          229,
+          238,
+          248
+        ],
+        "line_number": [
+          148,
+          163,
+          184
+        ],
+        "keyword": null,
+        "string": null,
+        "comment": null,
+        "number": null,
+        "function": null,
+        "operator": null,
+        "plain": null
+      },
+      "segments": [
+        [
+          {
+            "kind": "keyword",
+            "text": "const"
+          },
+          {
+            "kind": "plain",
+            "text": " pedido "
+          },
+          {
+            "kind": "operator",
+            "text": "="
+          },
+          {
+            "kind": "plain",
+            "text": " {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  numero"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "123"
+          },
+          {
+            "kind": "plain",
+            "text": ","
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  itens"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " ["
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    { nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Notebook\""
+          },
+          {
+            "kind": "plain",
+            "text": ", quantidade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "1"
+          },
+          {
+            "kind": "plain",
+            "text": " },"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "    { nome"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "string",
+            "text": "\"Mouse\""
+          },
+          {
+            "kind": "plain",
+            "text": ", quantidade"
+          },
+          {
+            "kind": "operator",
+            "text": ":"
+          },
+          {
+            "kind": "plain",
+            "text": " "
+          },
+          {
+            "kind": "number",
+            "text": "2"
+          },
+          {
+            "kind": "plain",
+            "text": " }"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  ]"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "};"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": ""
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "pedido.itens."
+          },
+          {
+            "kind": "function",
+            "text": "forEach"
+          },
+          {
+            "kind": "plain",
+            "text": "("
+          },
+          {
+            "kind": "keyword",
+            "text": "function"
+          },
+          {
+            "kind": "plain",
+            "text": " (item) {"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "  console."
+          },
+          {
+            "kind": "function",
+            "text": "log"
+          },
+          {
+            "kind": "plain",
+            "text": "(item.nome);"
+          }
+        ],
+        [
+          {
+            "kind": "plain",
+            "text": "});"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse exemplo é extremamente importante porque mostra como a navegação por estruturas compostas se torna parte natural do fluxo. O programa entra no objeto pedido, acessa a coleção itens e, dentro dela, percorre cada entidade item para extrair informações relevantes."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse padrão aparecerá constantemente em aplicações reais e precisa se tornar confortável para o leitor."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "9. Estudo de caso: exibir resumo de um pedido"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine um sistema que precise exibir o número do pedido, o nome do cliente e os nomes dos itens comprados. Esse cenário condensa muito bem o conteúdo desta parte. O programa precisa ler uma propriedade simples do objeto principal, atravessar um subobjeto para obter o nome do cliente e percorrer uma subcoleção para listar os itens. Em outras palavras, a leitura da estrutura exige navegação por múltiplas camadas com papéis diferentes."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse estudo de caso é muito valioso porque mostra como dados compostos funcionam no cotidiano do software. O programa raramente quer “ver o objeto inteiro” de modo bruto. Ele costuma querer produzir leituras específicas e úteis a partir da estrutura. Saber fazer isso com clareza é uma das marcas da boa modelagem aplicada."
+    },
+    {
+      "type": "paragraph",
+      "text": "A lição profissional aqui é clara: objetos compostos ganham valor real quando o programa consegue navegar por eles com intenção e sem perder a legibilidade."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "10. O valor editorial de tornar a navegação legível"
+    },
+    {
+      "type": "paragraph",
+      "text": "Quanto mais profunda a estrutura, mais importante se torna a clareza da navegação. O leitor precisa entender rapidamente o que é entidade principal, o que é subobjeto, o que é coleção interna e o que está sendo consultado em cada ponto. Bons nomes para objetos, propriedades, itens de arrays e resultados intermediários ajudam muito nesse processo."
+    },
+    {
+      "type": "paragraph",
+      "text": "Esse ponto é central porque a complexidade semântica cresce com a profundidade dos dados. Se os nomes forem ruins, a leitura de cadeias como pedido.cliente.nome ou pedido.itens.map(...) se torna cansativa e opaca. Se os nomes forem bons, a navegação quase se transforma em narrativa do domínio. A estrutura fala com mais clareza."
+    },
+    {
+      "type": "paragraph",
+      "text": "Em software profissional, navegação legível em dados compostos é um ativo importante de manutenção e comunicação."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "11. Erros comuns de compreensão nesta etapa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ler estruturas compostas como se todos os dados estivessem no mesmo nível.",
+        "Perder a distinção entre coleção e entidade individual ao percorrer arrays de objetos.",
+        "Buscar valores simples quando o problema real exige consulta por propriedade da entidade.",
+        "Misturar subobjetos e arrays internos sem compreender seu papel estrutural diferente.",
+        "Transformar entidades sem clareza sobre o que está sendo preservado e o que está sendo projetado.",
+        "Subestimar a importância da nomeação em acessos e percursos compostos."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "12. Boas práticas de estudo nesta parte"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ao ler uma estrutura composta, identifique claramente seus níveis antes de tentar processá-la.",
+        "Associe arrays de objetos à ideia de coleções de entidades semânticas.",
+        "Pratique buscas, filtros e transformações usando propriedades relevantes dos objetos.",
+        "Mantenha clareza sobre quando está lendo a coleção e quando está lendo a entidade dentro dela.",
+        "Use nomes muito claros para blocos internos e resultados intermediários.",
+        "Prepare-se para consolidar essas leituras em exercícios comentados nas próximas partes do capítulo."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "13. Checklist profissional da Parte 5"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Entendo que objetos compostos precisam ser lidos em camadas.",
+        "Reconheço arrays de objetos como coleções que exigem leitura simultânea da lista e da entidade.",
+        "Consigo consultar, filtrar e transformar arrays de objetos por propriedades relevantes.",
+        "Percebo que subcoleções internas podem ser percorridas a partir do objeto principal.",
+        "Entendo a importância da legibilidade na navegação por estruturas profundas.",
+        "Estou preparado para estudar erros comuns e armadilhas de modelagem com objetos na próxima parte."
+      ]
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "14. Conexão com a próxima parte"
+    },
+    {
+      "type": "paragraph",
+      "text": "Agora que o leitor já começou a navegar por objetos compostos e arrays de objetos com mais segurança, o próximo passo é mapear os erros e armadilhas mais comuns nesse tipo de modelagem: confusão entre níveis, propriedades mal escolhidas, estruturas excessivamente achatadas ou excessivamente confusas e outros problemas recorrentes. Na próxima parte, faremos esse exame crítico."
+    },
+    {
+      "type": "paragraph",
+      "text": "Essa continuidade é essencial porque objetos raramente falham apenas por sintaxe. Eles falham muito por modelagem ruim, agrupamento inadequado de dados e leitura confusa da estrutura. É exatamente essa camada que será fortalecida em seguida."
+    }
+  ]
+}
